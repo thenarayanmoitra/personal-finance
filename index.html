@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="FAV.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Pratim's Finance Tracker</title>
-<link rel="icon" type="image/x-icon" href="FAV.svg">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -224,8 +224,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   </div>
 </div>
 <div class="tabs">
-  <button class="tab active" data-page="overview">Overview</button>
-  <button class="tab" data-page="logbook">Logbook</button>
+  <button class="tab" data-page="overview">Overview</button>
+  <button class="tab active" data-page="logbook">Logbook</button>
   <button class="tab" data-page="networth">Net Worth</button>
   <button class="tab" data-page="budget">Budget</button>
   <button class="tab" data-page="emis">EMIs</button>
@@ -238,7 +238,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 </div>
 
 <!-- OVERVIEW -->
-<div class="page active" id="page-overview">
+<div class="page" id="page-overview">
   <div class="section-header"><div><h2>Dashboard</h2><div class="section-sub" id="ov-date"></div></div><button class="btn btn-primary" onclick="generateReview()">📋 Monthly Review</button></div>
   <div class="grid grid-4 mb-16">
     <div class="stat-card"><div class="card-title">Net Worth</div><div class="big-number" id="ov-nw"></div><div class="big-label" id="ov-nw-sub"></div></div>
@@ -258,7 +258,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 </div>
 
 <!-- LOGBOOK -->
-<div class="page" id="page-logbook">
+<div class="page active" id="page-logbook">
   <div class="section-header"><div><h2>Logbook</h2><div class="section-sub">Tap to log a transaction in seconds</div></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <select id="log-mf" style="width:auto" onchange="renderLogbook()"></select>
@@ -288,14 +288,29 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
     </div>
   </div>
 
+  <!-- BUDGET INTELLIGENCE -->
+  <div id="lg-budget-banner"></div>
+
+  <div class="card mb-16">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Variable Spending vs Budget</span>
+      <span id="lg-budget-pace" style="text-transform:none;letter-spacing:0;font-weight:600"></span>
+    </div>
+    <div id="lg-cat-budget"></div>
+  </div>
+
   <div class="grid grid-3 mb-16">
     <div class="stat-card red"><div class="card-title">Expenses</div><div class="big-number red" id="lg-exp"></div></div>
     <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Freelancer Payouts</div><div class="big-number" id="lg-pay" style="color:var(--amber)"></div></div>
     <div class="stat-card green"><div class="card-title">Income</div><div class="big-number green" id="lg-inc"></div></div>
   </div>
   <div class="grid grid-2 mb-16">
+    <div class="card"><div class="card-title">Spending by Category</div><div class="chart-box sm"><canvas id="ch-lg-cat"></canvas></div></div>
+    <div class="card"><div class="card-title">Daily Spending</div><div class="chart-box sm"><canvas id="ch-lg-daily"></canvas></div></div>
+  </div>
+  <div class="grid grid-2 mb-16">
     <div class="card"><div class="card-title">Payouts by Freelancer</div><div id="lg-pay-l"></div></div>
-    <div class="card"><div class="card-title">Spending by Category</div><div id="lg-exp-l"></div></div>
+    <div class="card"><div class="card-title">Category Totals</div><div id="lg-exp-l"></div></div>
   </div>
   <div class="card"><div class="card-title">All Entries</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="amount">₹</th><th></th></tr></thead><tbody id="lg-tbl"></tbody></table></div></div>
 </div>
@@ -502,18 +517,44 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div id="rev-content"></div>
   <div class="form-row mt-16"><button class="btn btn-primary" onclick="copyReview()">Copy Report</button><button class="btn btn-secondary" onclick="closeM('m-review')">Close</button></div>
 </div></div>
+
+<div class="modal-overlay" id="m-listedit"><div class="modal">
+  <h3 id="list-edit-title">Edit List</h3>
+  <input type="hidden" id="list-edit-which" value="">
+  <div id="list-edit-rows"></div>
+  <button class="btn btn-secondary btn-sm mt-8 mb-12" onclick="addListRow()">+ Add</button>
+  <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveListEdit()">Save</button><button class="btn btn-secondary" onclick="closeM('m-listedit')">Cancel</button></div>
+</div></div>
 <script>
 // ============ CONSTANTS ============
-const CATS=['Food','Transaction','Health Care','Utilities','Dining Out & Entertainment','Shopping','Miscellaneous Fun Gifting','Hobbies & Memberships'];
-const FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
-const CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
+const CATS=['Food','Transaction','Health Care','Utilities','Dining Out & Entertainment','Shopping','Miscellaneous Fun Gifting'];
+// Variable categories that get live budget tracking in the Logbook.
+// cat = logbook category key | label = display name | bgName = matching BG.variable line
+const VARCATS=[
+  {cat:'Food',label:'Groceries',bgName:'Groceries'},
+  {cat:'Health Care',label:'Health & Nutrition',bgName:'Health + Nutrition'},
+  {cat:'Transaction',label:'Transport',bgName:'Transport'},
+  {cat:'Utilities',label:'Utilities',bgName:'Utilities'},
+  {cat:'Dining Out & Entertainment',label:'Dining Out',bgName:'Dining Out'},
+  {cat:'Shopping',label:'Shopping',bgName:'Shopping'},
+  {cat:'Miscellaneous Fun Gifting',label:'Miscellaneous',bgName:'Miscellaneous'}
+];
+const VARCAT_KEYS=VARCATS.map(v=>v.cat);
+// Pull the live budget for a variable category from the Budget tab (BG.variable is the source of truth)
+function catBudget(cat){
+  const v=VARCATS.find(x=>x.cat===cat);if(!v)return CATBUD[cat]||0;
+  const line=BG.variable.find(b=>b.name===v.bgName);
+  return line?line.amount:(CATBUD[cat]||0);
+}
+let FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
+let CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
 
 // ============ SUPABASE STORAGE ============
 const SUPA_URL='https://ylchesnapobhqrdobtgj.supabase.co';
 const SUPA_KEY='sb_publishable_nmmRj8XhIbnlj6pQZhQHEg_L5Iijxi4';
 const SUPA_HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
 
-const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud'};
+const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',freelancers:'pft_freelancers',clients:'pft_clients'};
 
 // In-memory cache — all reads are instant from here after initial load
 const _cache={};
@@ -610,7 +651,7 @@ let FLAT=L(K.flat,{rent:13000,startMonth:'2026-02',endMonth:'2026-11',myPayments
 let GOALS=L(K.goals,[]);
 let WISH=L(K.wish,[{name:'Cold Juicer',price:12499,priority:1},{name:'Good Running Shoes',price:0,priority:2},{name:'Coros Pace 3',price:0,priority:3}]);
 // Category budgets (maps the 8 Spendee/logbook categories to monthly limits derived from your budget)
-let CATBUD=L(K.catbud,{'Food':8000,'Transaction':2000,'Health Care':2150,'Utilities':5260,'Dining Out & Entertainment':5000,'Shopping':8000,'Miscellaneous Fun Gifting':1200,'Hobbies & Memberships':1500});
+let CATBUD=L(K.catbud,{'Food':8000,'Transaction':2000,'Health Care':2150,'Utilities':5260,'Dining Out & Entertainment':5000,'Shopping':8000,'Miscellaneous Fun Gifting':1200});
 
 // ============ ASYNC INIT ============
 // Data variables are declared below with defaults.
@@ -623,17 +664,23 @@ async function initApp(){
   NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);
   AG=L(K.ag,AG);SL=L(K.sl,SL);SP=L(K.sp,SP);LB=L(K.lb,LB);INV=L(K.inv,INV);
   FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CATBUD=L(K.catbud,CATBUD);
+  FREELANCERS=L(K.freelancers,FREELANCERS);CLIENTS_LIST=L(K.clients,CLIENTS_LIST);
+
+  // Migration: remove the retired Hobbies & Memberships category from any saved budget
+  if(CATBUD&&CATBUD['Hobbies & Memberships']!==undefined){delete CATBUD['Hobbies & Memberships'];S(K.catbud,CATBUD)}
 
   // If this is a brand new Supabase project (no rows yet), seed defaults
   const allKeys=Object.values(K);
   const seeded=allKeys.filter(k=>_cache[k]!==undefined);
   if(seeded.length===0){
-    [[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.catbud,CATBUD]].forEach(([k,v])=>S(k,v));
+    [[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.catbud,CATBUD],[K.freelancers,FREELANCERS],[K.clients,CLIENTS_LIST]].forEach(([k,v])=>S(k,v));
   }
 
   document.getElementById('loading-screen').style.display='none';
   setLogType('expense');
   renderAll();
+  // Logbook is the home page — make sure the date field is primed
+  const di=document.getElementById('log-d');if(di&&!di.value)di.value=td();
 }
 
 // ============ TABS ============
@@ -667,11 +714,38 @@ let LOG_TYPE='expense',LOG_CAT='';
 function setLogType(t){LOG_TYPE=t;LOG_CAT='';document.querySelectorAll('#log-segment button').forEach(b=>{b.classList.toggle('active',b.dataset.lt===t)});renderLogChips()}
 function renderLogChips(){
   const sec=document.getElementById('log-cat-section');const chips=document.getElementById('log-chips');const lbl=document.getElementById('log-amt-label');
+  const secLabel=sec.querySelector('label');
   let opts=[];
-  if(LOG_TYPE==='expense'){opts=CATS;sec.querySelector('label').textContent='Category';lbl.textContent='Amount Spent (₹)'}
-  else if(LOG_TYPE==='payout'){opts=FREELANCERS;sec.querySelector('label').textContent='Freelancer';lbl.textContent='Payout Amount (₹)'}
-  else{opts=CLIENTS_LIST;sec.querySelector('label').textContent='Client / Source';lbl.textContent='Income Received (₹)'}
+  if(LOG_TYPE==='expense'){opts=CATS;secLabel.innerHTML='Category';lbl.textContent='Amount Spent (₹)'}
+  else if(LOG_TYPE==='payout'){opts=FREELANCERS;secLabel.innerHTML=`Freelancer <span onclick="editList('freelancers')" style="float:right;color:var(--terra);cursor:pointer;font-size:11px;font-weight:700;text-transform:none;letter-spacing:0">✎ Edit list</span>`;lbl.textContent='Payout Amount (₹)'}
+  else{opts=CLIENTS_LIST;secLabel.innerHTML=`Client / Source <span onclick="editList('clients')" style="float:right;color:var(--terra);cursor:pointer;font-size:11px;font-weight:700;text-transform:none;letter-spacing:0">✎ Edit list</span>`;lbl.textContent='Income Received (₹)'}
   chips.innerHTML=opts.map(o=>`<div class="chip ${LOG_CAT===o?'selected':''}" onclick="selectChip('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('');
+}
+// Edit the freelancer or client list inline
+function editList(which){
+  const isF=which==='freelancers';
+  const arr=isF?FREELANCERS:CLIENTS_LIST;
+  const title=isF?'Freelancers':'Clients / Income Sources';
+  document.getElementById('list-edit-title').textContent='Edit '+title;
+  document.getElementById('list-edit-which').value=which;
+  renderListEditRows(arr.slice());
+  openM('m-listedit');
+}
+function renderListEditRows(arr){
+  const box=document.getElementById('list-edit-rows');
+  box.innerHTML=arr.map((name,i)=>`<div class="form-row" style="margin-bottom:8px"><div class="form-group"><input value="${(name||'').replace(/"/g,'&quot;')}" data-le="${i}" placeholder="Name"></div><button class="icon-btn" onclick="removeListRow(${i})">✕</button></div>`).join('')||'<div style="font-size:12px;color:var(--light);padding:8px 0">No entries. Add one below.</div>';
+}
+function collectListRows(){
+  return [...document.querySelectorAll('[data-le]')].map(i=>i.value.trim()).filter(Boolean);
+}
+function removeListRow(i){const cur=collectListRows();cur.splice(i,1);renderListEditRows(cur)}
+function addListRow(){const cur=collectListRows();cur.push('');renderListEditRows(cur)}
+function saveListEdit(){
+  const which=document.getElementById('list-edit-which').value;
+  const arr=collectListRows();
+  if(which==='freelancers'){FREELANCERS=arr;S(K.freelancers,FREELANCERS)}
+  else{CLIENTS_LIST=arr;S(K.clients,CLIENTS_LIST)}
+  closeM('m-listedit');renderLogChips();
 }
 function selectChip(c){LOG_CAT=c;renderLogChips()}
 function renderLogbook(){
@@ -683,26 +757,134 @@ function renderLogbook(){
   const fm=sel.value||cm();
   const f=LB.filter(e=>e.date.startsWith(fm));
   const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income');
-  document.getElementById('lg-exp').textContent=fmt(exp.reduce((s,e)=>s+e.amount,0));
+  const expTot=exp.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('lg-exp').textContent=fmt(expTot);
   document.getElementById('lg-pay').textContent=fmt(pay.reduce((s,e)=>s+e.amount,0));
   document.getElementById('lg-inc').textContent=fmt(inc.reduce((s,e)=>s+e.amount,0));
   const grp=arr=>{const m={};arr.forEach(e=>{m[e.who]=(m[e.who]||0)+e.amount});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   const rList=(entries,tot)=>entries.length?entries.map((e,i)=>`<div class="summary-row"><span><span class="cat-dot" style="background:${CC[i%CC.length]}"></span>${e[0]}</span><span class="amount neg">${fmt(e[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount neg">${fmt(tot)}</span></div>`:'<div class="empty-state" style="padding:18px"><p>Nothing logged this month</p></div>';
   document.getElementById('lg-pay-l').innerHTML=rList(grp(pay),pay.reduce((s,e)=>s+e.amount,0));
-  document.getElementById('lg-exp-l').innerHTML=rList(grp(exp),exp.reduce((s,e)=>s+e.amount,0));
+  document.getElementById('lg-exp-l').innerHTML=rList(grp(exp),expTot);
   const tt=t=>t==='payout'?'<span class="tag tag-amber">Payout</span>':t==='income'?'<span class="tag tag-green">Income</span>':'<span class="tag tag-red">Expense</span>';
   const sorted=[...f].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   document.getElementById('lg-tbl').innerHTML=sorted.length?sorted.map(e=>`<tr><td>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${tt(e.type)}</td><td>${e.who}</td><td style="font-size:11px;color:var(--light)">${e.note||''}</td><td class="amount ${e.type==='income'?'pos':'neg'}">${fmt(e.amount)}</td><td><button class="icon-btn" onclick="LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--light)">No entries yet. Log your first transaction above.</td></tr>';
+
+  // ===== BUDGET INTELLIGENCE (variable categories only) =====
+  renderLogBudget(exp,fm);
+}
+
+function renderLogBudget(exp,fm){
+  // Spend per variable category this month
+  const spent={};VARCAT_KEYS.forEach(c=>spent[c]=0);
+  exp.forEach(e=>{if(spent.hasOwnProperty(e.who))spent[e.who]+=e.amount});
+  const varBud=VARCAT_KEYS.reduce((s,c)=>s+catBudget(c),0);
+  const varSpent=VARCAT_KEYS.reduce((s,c)=>s+spent[c],0);
+  const over=varSpent-varBud;
+
+  // Pace: where you should be by today if spending evenly
+  const isCurrentMonth=fm===cm();
+  const today=new Date();
+  const daysInMonth=new Date(+fm.split('-')[0],+fm.split('-')[1],0).getDate();
+  const dayOfMonth=isCurrentMonth?today.getDate():daysInMonth;
+  const monthProgress=dayOfMonth/daysInMonth;
+  const expectedByNow=varBud*monthProgress;
+  const daysLeft=Math.max(0,daysInMonth-dayOfMonth);
+  const budgetLeft=Math.max(0,varBud-varSpent);
+  const perDayLeft=daysLeft>0?Math.round(budgetLeft/daysLeft):budgetLeft;
+
+  // Banner verdict
+  let bn,bc,bi;
+  const ratio=varBud>0?varSpent/varBud:0;
+  if(ratio>1){bc='red';bi='⚠️';bn=`You are ${fmt(over)} over your ${fmt(varBud)} variable budget. ${overspendNudge(spent)}`}
+  else if(isCurrentMonth&&varSpent>expectedByNow*1.1){bc='amber';bi='🟡';bn=`Spending is running ahead of pace. By day ${dayOfMonth} you would expect about ${fmt(Math.round(expectedByNow))} spent, you are at ${fmt(varSpent)}. Ease off the fast movers below.`}
+  else if(ratio>0.9){bc='amber';bi='👀';bn=`You are at ${pct(varSpent,varBud)}% of your ${fmt(varBud)} variable budget with ${fmt(budgetLeft)} left. Cutting it close, watch the rest of the month.`}
+  else if(varSpent===0){bc='green';bi='🟢';bn=`Fresh month. ${fmt(varBud)} variable budget to work with across groceries, transport, dining, and the rest. Log as you go and this updates live.`}
+  else{bc='green';bi='✅';bn=`On track. ${fmt(varSpent)} spent of ${fmt(varBud)}, ${fmt(budgetLeft)} still in hand.${isCurrentMonth&&daysLeft>0?` That is about ${fmt(perDayLeft)} a day for the remaining ${daysLeft} ${daysLeft===1?'day':'days'}.`:''}`}
+  document.getElementById('lg-budget-banner').innerHTML=`<div class="budget-banner ${bc}" style="margin-bottom:16px"><span class="icon">${bi}</span><span>${bn}</span></div>`;
+
+  // Pace label on the card header
+  const paceEl=document.getElementById('lg-budget-pace');
+  if(isCurrentMonth&&varBud>0){const paceColor=varSpent>expectedByNow*1.1?'var(--red)':varSpent>expectedByNow?'var(--amber)':'var(--green)';paceEl.innerHTML=`<span style="color:${paceColor}">${fmt(varSpent)}</span> <span style="color:var(--light)">of ${fmt(varBud)}</span>`}
+  else{paceEl.innerHTML=`<span style="color:${over>0?'var(--red)':'var(--green)'}">${fmt(varSpent)}</span> <span style="color:var(--light)">of ${fmt(varBud)}</span>`}
+
+  // Per-category rows (variable only) with expandable transaction list
+  const monthExpAll=exp;
+  document.getElementById('lg-cat-budget').innerHTML=VARCATS.map(({cat,label})=>{
+    const sp=spent[cat]||0;const bud=catBudget(cat);
+    const p=bud>0?Math.min(100,pct(sp,bud)):0;
+    const isOver=sp>bud&&bud>0;
+    const overPace=isCurrentMonth&&bud>0&&sp>(bud*monthProgress)*1.15&&!isOver;
+    const status=bud===0?'<span class="cat-budget-status" style="background:var(--tag-bg);color:var(--light)">No budget</span>':isOver?`<span class="cat-budget-status tag-red">${fmtS(sp-bud)} over</span>`:overPace?`<span class="cat-budget-status tag-amber">ahead of pace</span>`:`<span class="cat-budget-status tag-green">${fmtS(bud-sp)} left</span>`;
+    const col=isOver?'var(--red)':overPace?'var(--amber)':p>85?'var(--amber)':'var(--green)';
+    // transactions in this category this month
+    const txs=monthExpAll.filter(e=>e.who===cat).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+    const txCount=txs.length;
+    const txRows=txs.length?txs.map(t=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12px"><span style="color:var(--light);min-width:54px">${new Date(t.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span><span style="flex:1;color:var(--ink)">${t.note||'<span style=\'color:var(--light)\'>No note</span>'}</span><span class="amount neg" style="font-weight:600">${fmt(t.amount)}</span></div>`).join(''):'<div style="padding:8px 0;font-size:12px;color:var(--light)">Nothing logged in this category yet</div>';
+    return`<div class="cat-budget-row" style="border-bottom:1px solid var(--rule)">
+      <div class="cat-budget-head" onclick="toggleCatRow('${cat.replace(/'/g,"\\'")}')" style="cursor:pointer;user-select:none">
+        <span style="display:flex;align-items:center;gap:6px"><span class="cat-caret" data-caret="${cat}" style="display:inline-block;transition:transform .2s;color:var(--light);font-size:10px">▶</span><strong>${label}</strong>${txCount?`<span style="font-size:10px;color:var(--light);font-weight:600">${txCount}</span>`:''}</span>
+        <span>${fmt(sp)}${bud>0?' / '+fmt(bud):''} ${status}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${col}"></div></div>
+      <div class="cat-tx-list" data-txlist="${cat}" style="display:none;margin-top:10px;padding-left:16px">${txRows}</div>
+    </div>`;
+  }).join('');
+
+  // Category doughnut (variable spend)
+  const catData=VARCATS.map(({cat,label})=>({label,v:spent[cat]||0})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  if(catData.length){MC('ch-lg-cat',{type:'doughnut',data:{labels:catData.map(c=>c.label),datasets:[{data:catData.map(c=>c.v),backgroundColor:catData.map((_,i)=>CC[i%CC.length]),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:10},padding:8}}}}});}
+  else{if(CI['ch-lg-cat'])CI['ch-lg-cat'].destroy();const c=document.getElementById('ch-lg-cat');if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='#7A7062';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('No spending logged yet',c.width/2,c.height/2)}}
+
+  // Daily spending bar — ALL expenses this month, not just variable, so nothing is hidden
+  const dt={};exp.forEach(e=>{const day=e.date.split('-')[2];dt[day]=(dt[day]||0)+e.amount});
+  const dl=Array.from({length:daysInMonth},(_,i)=>String(i+1).padStart(2,'0'));
+  const dailyTotal=exp.reduce((s,e)=>s+e.amount,0);
+  const avgLine=dailyTotal/daysInMonth;
+  MC('ch-lg-daily',{type:'bar',data:{labels:dl,datasets:[{label:'Daily',data:dl.map(x=>dt[x]||0),backgroundColor:'#9C6B2F',borderRadius:3},{label:'Avg',type:'line',data:dl.map(()=>avgLine),borderColor:'#B44040',borderDash:[4,3],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtS(v)}},x:{ticks:{font:{size:8}}}}}});
+}
+
+// Toggle the transaction list under a category row
+function toggleCatRow(cat){
+  const list=document.querySelector(`[data-txlist="${cat}"]`);
+  const caret=document.querySelector(`[data-caret="${cat}"]`);
+  if(!list)return;
+  const open=list.style.display!=='none';
+  list.style.display=open?'none':'block';
+  if(caret)caret.style.transform=open?'rotate(0deg)':'rotate(90deg)';
+}
+
+function overspendNudge(spent){
+  // Find biggest variable overspend and give one targeted tip
+  let worst=null,worstOver=0;
+  VARCATS.forEach(({cat,label})=>{const sp=spent[cat]||0;const bud=catBudget(cat);if(bud>0&&sp-bud>worstOver){worstOver=sp-bud;worst={cat,label}}});
+  if(!worst)return 'Pull back on the categories in red below.';
+  return `${worst.label} is the biggest offender at ${fmt(worstOver)} over. ${optTip(worst.cat,worstOver)}`;
 }
 function addLog(){
   const d=document.getElementById('log-d').value;const a=+document.getElementById('log-a').value||0;const n=document.getElementById('log-n').value.trim();
   if(!LOG_CAT){alert('Pick a category first');return}
   if(!a){document.getElementById('log-a').focus();return}
+  const wasCat=LOG_CAT,wasType=LOG_TYPE,wasMonth=d.substring(0,7);
   LB.push({id:Date.now(),date:d,type:LOG_TYPE,who:LOG_CAT,amount:a,note:n});S(K.lb,LB);
   document.getElementById('log-a').value='';document.getElementById('log-n').value='';LOG_CAT='';renderLogbook();
   // subtle confirmation
   const btn=event.target;const orig=btn.textContent;btn.textContent='✓ Added';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=orig;btn.style.background=''},900);
   document.getElementById('log-a').focus();
+  // Budget-cross toast for variable expense categories
+  if(wasType==='expense'&&VARCAT_KEYS.includes(wasCat)){
+    const monthExp=LB.filter(e=>e.type==='expense'&&e.date.startsWith(wasMonth)&&e.who===wasCat);
+    const sp=monthExp.reduce((s,e)=>s+e.amount,0);const bud=catBudget(wasCat);
+    const label=(VARCATS.find(v=>v.cat===wasCat)||{}).label||wasCat;
+    if(bud>0&&sp>bud)toast(`⚠️ ${label} is now ${fmt(sp-bud)} over its ${fmt(bud)} budget`,'red');
+    else if(bud>0&&sp>bud*0.9)toast(`👀 ${label} at ${pct(sp,bud)}% of budget, ${fmt(bud-sp)} left`,'amber');
+  }
+}
+function toast(msg,color){
+  let t=document.getElementById('budget-toast');
+  if(!t){t=document.createElement('div');t.id='budget-toast';t.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(28px + env(safe-area-inset-bottom));z-index:500;padding:13px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(31,20,9,.25);max-width:90vw;text-align:center;transition:opacity .3s,transform .3s';document.body.appendChild(t)}
+  const bg=color==='red'?'#B44040':color==='amber'?'#C4882F':'#3A7D44';
+  t.style.background=bg;t.style.color='#fff';t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._timer);t._timer=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)'},3500);
 }
 function exportLogCSV(){const m=document.getElementById('log-mf').value||cm();const f=LB.filter(e=>e.date.startsWith(m));if(!f.length){alert('Nothing to export');return}const csv=['Date,Type,Category,Amount,Note',...f.map(e=>`${e.date},${e.type},"${e.who}",${e.amount},"${e.note||''}"`)].join('\n');const b=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`logbook_${m}.csv`;a.click()}
 // ============ NET WORTH ============
@@ -849,8 +1031,7 @@ function mapCat(raw){
   if(/util|electric|water|gas|internet|wifi|recharge|mobile|bill|rent/.test(r))return 'Utilities';
   if(/dining|restaurant|cafe|coffee|food out|entertain|movie|cinema|bar|drink/.test(r))return 'Dining Out & Entertainment';
   if(/shop|cloth|amazon|flipkart|myntra|electronic|gadget/.test(r))return 'Shopping';
-  if(/gift|fun|misc|donat|charit/.test(r))return 'Miscellaneous Fun Gifting';
-  if(/hobby|hobbies|member|subscription|book|game|course|learn/.test(r))return 'Hobbies & Memberships';
+  if(/gift|fun|misc|donat|charit|hobby|hobbies|member|subscription|book|game|course|learn/.test(r))return 'Miscellaneous Fun Gifting';
   return 'Miscellaneous Fun Gifting';
 }
 function totalCatBudget(){return Object.values(CATBUD).reduce((s,v)=>s+v,0)}
@@ -1002,16 +1183,15 @@ function optTip(cat,over){
     'Utilities':'Audit your recharges and bills. A forgotten subscription or high data plan often hides here.',
     'Dining Out & Entertainment':'This is the easiest lever. Cut two or three eat outs and you recover most of the overspend without feeling deprived.',
     'Shopping':'Apply your own wishlist priority rule here. If it was not on the list before this month, it can probably wait.',
-    'Miscellaneous Fun Gifting':'Hard to budget by nature. Set a soft monthly cap and track gifting separately so it does not surprise you.',
-    'Hobbies & Memberships':'Check for memberships you are not actively using. One paused subscription clears most of this.'
+    'Miscellaneous Fun Gifting':'Hard to budget by nature. Set a soft monthly cap and track gifting separately so it does not surprise you.'
   };
   return tips[cat]||'Review this category line by line and cut the least essential item.';
 }
 function copyReview(){const t=document.querySelector('.review-box');if(t){const text=t.innerText;navigator.clipboard.writeText(text).then(()=>{const b=event.target;b.textContent='✓ Copied';setTimeout(()=>b.textContent='Copy Report',1200)}).catch(()=>alert('Copy failed, select manually'))}}
 
 // ============ EXPORT / IMPORT ============
-function exportAll(){const data={app:'Pratim Finance Tracker',version:3,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,catbud:CATBUD};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
-function importAll(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);const map={nw:'NW',nwh:'NWH',bg:'BG',emis:'EMIS',subs:'SUBS',ag:'AG',sl:'SL',sp:'SP',lb:'LB',inv:'INV',flat:'FLAT',goals:'GOALS',wish:'WISH',catbud:'CATBUD'};const kmap={nw:K.nw,nwh:K.nwh,bg:K.bg,emis:K.emi,subs:K.sub,ag:K.ag,sl:K.sl,sp:K.sp,lb:K.lb,inv:K.inv,flat:K.flat,goals:K.goals,wish:K.wish,catbud:K.catbud};Object.keys(map).forEach(key=>{if(data[key]!==undefined){window[map[key]]=data[key];S(kmap[key],data[key])}});renderAll();alert('All data restored successfully.')}catch(err){alert('Invalid backup file: '+err.message)}};reader.readAsText(file);e.target.value=''}
+function exportAll(){const data={app:'Pratim Finance Tracker',version:4,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,catbud:CATBUD,freelancers:FREELANCERS,clients:CLIENTS_LIST};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
+function importAll(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);const map={nw:'NW',nwh:'NWH',bg:'BG',emis:'EMIS',subs:'SUBS',ag:'AG',sl:'SL',sp:'SP',lb:'LB',inv:'INV',flat:'FLAT',goals:'GOALS',wish:'WISH',catbud:'CATBUD',freelancers:'FREELANCERS',clients:'CLIENTS_LIST'};const kmap={nw:K.nw,nwh:K.nwh,bg:K.bg,emis:K.emi,subs:K.sub,ag:K.ag,sl:K.sl,sp:K.sp,lb:K.lb,inv:K.inv,flat:K.flat,goals:K.goals,wish:K.wish,catbud:K.catbud,freelancers:K.freelancers,clients:K.clients};Object.keys(map).forEach(key=>{if(data[key]!==undefined){window[map[key]]=data[key];S(kmap[key],data[key])}});renderAll();alert('All data restored successfully.')}catch(err){alert('Invalid backup file: '+err.message)}};reader.readAsText(file);e.target.value=''}
 
 // ============ RENDER ALL ============
 function renderAll(){renderOverview();renderLogbook();renderNetWorth();renderBudget();renderEMIs();renderInvestments();renderAgency();renderFlat();renderGoals();renderSpendee()}
