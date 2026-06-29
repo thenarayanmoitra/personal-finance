@@ -527,13 +527,13 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 </div></div>
 <script>
 // ============ CONSTANTS ============
-const CATS=['Food','Transaction','Health Care','Utilities','Dining Out & Entertainment','Shopping','Miscellaneous Fun Gifting'];
+const CATS=['Food','Transportation','Health Care','Utilities','Dining Out & Entertainment','Shopping','Miscellaneous Fun Gifting'];
 // Variable categories that get live budget tracking in the Logbook.
 // cat = logbook category key | label = display name | bgName = matching BG.variable line
 const VARCATS=[
   {cat:'Food',label:'Groceries',bgName:'Groceries'},
   {cat:'Health Care',label:'Health & Nutrition',bgName:'Health + Nutrition'},
-  {cat:'Transaction',label:'Transport',bgName:'Transport'},
+  {cat:'Transportation',label:'Transport',bgName:'Transport'},
   {cat:'Utilities',label:'Utilities',bgName:'Utilities'},
   {cat:'Dining Out & Entertainment',label:'Dining Out',bgName:'Dining Out'},
   {cat:'Shopping',label:'Shopping',bgName:'Shopping'},
@@ -651,7 +651,7 @@ let FLAT=L(K.flat,{rent:13000,startMonth:'2026-02',endMonth:'2026-11',myPayments
 let GOALS=L(K.goals,[]);
 let WISH=L(K.wish,[{name:'Cold Juicer',price:12499,priority:1},{name:'Good Running Shoes',price:0,priority:2},{name:'Coros Pace 3',price:0,priority:3}]);
 // Category budgets (maps the 8 Spendee/logbook categories to monthly limits derived from your budget)
-let CATBUD=L(K.catbud,{'Food':8000,'Transaction':2000,'Health Care':2150,'Utilities':5260,'Dining Out & Entertainment':5000,'Shopping':8000,'Miscellaneous Fun Gifting':1200});
+let CATBUD=L(K.catbud,{'Food':8000,'Transportation':2000,'Health Care':2150,'Utilities':5260,'Dining Out & Entertainment':5000,'Shopping':8000,'Miscellaneous Fun Gifting':1200});
 
 // ============ ASYNC INIT ============
 // Data variables are declared below with defaults.
@@ -1178,7 +1178,7 @@ function section(title,body){return `<div style="margin-bottom:16px"><div style=
 function optTip(cat,over){
   const tips={
     'Food':'Batch cook and buy groceries weekly instead of daily top ups. The small convenience runs add up fast.',
-    'Transaction':'Review transfers and transport. Consolidate bike trips and check for any duplicate or forgotten auto debits.',
+    'Transportation':'Review transfers and transport. Consolidate bike trips and check for any duplicate or forgotten auto debits.',
     'Health Care':'Health is worth it, but check if any supplement or gym add on is unused. Buy supplements in bulk to cut per unit cost.',
     'Utilities':'Audit your recharges and bills. A forgotten subscription or high data plan often hides here.',
     'Dining Out & Entertainment':'This is the easiest lever. Cut two or three eat outs and you recover most of the overspend without feeling deprived.',
