@@ -231,11 +231,33 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 @media(max-width:380px){
   .check-btn{width:32px;height:32px;font-size:13px}
 }
+
+/* ===== UX POLISH (additive only, no logic changes) ===== */
+/* Visible keyboard focus ring for accessibility */
+button:focus-visible,.btn:focus-visible,.tab:focus-visible,.ghost-btn:focus-visible{outline:2px solid var(--terra);outline-offset:2px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
+
+/* Stop iOS Safari auto zooming when tapping inputs (needs 16px minimum) */
+@media(max-width:768px){
+  input,select,textarea{font-size:16px}
+}
+
+/* Smoother tab strip on touch devices */
+.tabs{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+
+/* Slightly richer modal entrance and card feel */
+.modal-overlay{backdrop-filter:blur(5px)}
+.card,.stat-card{transition:box-shadow .2s ease,transform .2s ease}
+
+/* Respect users who prefer less motion */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <span class="dot"></span>
+  <span class="dot" title="Cloud sync status. Green means synced, amber means saving, red means sync failed"></span>
   <h1>Pratim's Finance Tracker</h1>
   <div class="actions">
     <button class="ghost-btn" onclick="exportAll()">⬇ <span class="lbl">Export</span></button>
