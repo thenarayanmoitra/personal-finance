@@ -256,6 +256,28 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* TOTAL OUT BAR (logbook monthly total: personal + agency) */
+.total-out-bar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:linear-gradient(135deg,var(--espresso),#3A2817);color:var(--cream);border-radius:var(--radius);padding:16px 22px;margin-bottom:16px;box-shadow:var(--shadow-lg)}
+.total-out-bar .to-main{display:flex;flex-direction:column}
+.total-out-bar .to-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;opacity:.6;font-weight:700}
+.total-out-bar .to-value{font-family:Georgia,serif;font-size:31px;line-height:1.05;letter-spacing:-.5px;margin-top:3px}
+.total-out-bar .to-break{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.total-out-bar .to-chip{display:flex;flex-direction:column}
+.total-out-bar .to-chip .k{font-size:10px;text-transform:uppercase;letter-spacing:.6px;opacity:.55;font-weight:700}
+.total-out-bar .to-chip .v{font-family:Georgia,serif;font-size:19px;margin-top:2px}
+.total-out-bar .to-chip .v.inc{color:#8FD19E}
+.total-out-bar .to-plus{font-size:18px;opacity:.4;font-weight:400;align-self:flex-end;padding-bottom:2px}
+@media(max-width:768px){
+  .total-out-bar{padding:15px 17px;gap:14px}
+  .total-out-bar .to-value{font-size:27px}
+  .total-out-bar .to-break{gap:16px;width:100%}
+  .total-out-bar .to-plus{display:none}
+}
+
+/* EDIT-LIST CHIP */
+.chip.chip-edit{background:var(--tag-bg);border:1.5px dashed var(--terra);color:var(--terra);box-shadow:none;transform:none}
+.chip.chip-edit:active{transform:scale(.95)}
 </style>
 </head>
 <body>
@@ -321,8 +343,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   <div class="card mb-16" id="quick-log-card">
     <div class="segment mb-16" id="log-segment">
       <button class="active exp" data-lt="expense" onclick="setLogType('expense')">Expense</button>
-      <button data-lt="payout" onclick="setLogType('payout')">Payout</button>
-      <button data-lt="income" onclick="setLogType('income')">Income</button>
+      <button class="pay" data-lt="payout" onclick="setLogType('payout')">Agency</button>
+      <button class="inc" data-lt="income" onclick="setLogType('income')">Income</button>
     </div>
 
     <div id="log-cat-section">
@@ -344,14 +366,26 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
     </div>
   </div>
 
+  <div class="total-out-bar" id="total-out-bar">
+    <div class="to-main">
+      <span class="to-label">Total Out This Month</span>
+      <span class="to-value" id="to-total">₹0</span>
+    </div>
+    <div class="to-break">
+      <div class="to-chip"><span class="k">Personal Expenses</span><span class="v" id="to-exp">₹0</span></div>
+      <div class="to-plus">+</div>
+      <div class="to-chip"><span class="k">Agency Expenses</span><span class="v" id="to-agy">₹0</span></div>
+      <div class="to-chip"><span class="k">Income In</span><span class="v inc" id="to-inc">₹0</span></div>
+    </div>
+  </div>
   <div class="grid grid-4 mb-16">
-    <div class="stat-card red"><div class="card-title">Expenses</div><div class="big-number red" id="lg-exp"></div></div>
-    <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Freelancer Payouts</div><div class="big-number" id="lg-pay" style="color:var(--amber)"></div></div>
+    <div class="stat-card red"><div class="card-title">Personal Expenses</div><div class="big-number red" id="lg-exp"></div></div>
+    <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Agency Expenses</div><div class="big-number" id="lg-pay" style="color:var(--amber)"></div></div>
     <div class="stat-card green"><div class="card-title">Income</div><div class="big-number green" id="lg-inc"></div></div>
     <div class="stat-card blue"><div class="card-title">Credit Card Charged</div><div class="big-number" id="lg-cc" style="color:var(--blue)"></div><button class="btn btn-secondary btn-xs mt-8" id="lg-cc-clear" onclick="clearCC()">Mark Cleared</button></div>
   </div>
   <div class="grid grid-2 mb-16">
-    <div class="card"><div class="card-title">Payouts by Freelancer</div><div id="lg-pay-l"></div></div>
+    <div class="card"><div class="card-title" style="display:flex;justify-content:space-between;align-items:center">Agency Expenses <button class="btn btn-secondary btn-xs" style="text-transform:none;letter-spacing:0" onclick="openPayeesModal()">✎ Edit list</button></div><div id="lg-pay-l"></div></div>
     <div class="card"><div class="card-title">Income This Month</div><div id="lg-inc-l"></div></div>
   </div>
   <div class="card mb-16"><div class="card-title">Spending vs Budget · <span id="lg-budget-status" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div><div id="lg-exp-l"></div></div>
@@ -444,7 +478,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   </div>
   <div class="grid grid-2">
     <div class="card"><div class="card-title">Client Revenue</div><table><thead><tr><th>Client</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-cl-tbl"></tbody></table></div>
-    <div class="card"><div class="card-title">Fixed Costs</div><table><thead><tr><th>Item</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-co-tbl"></tbody></table><div class="card-title mt-16">Payouts This Month (from Logbook)</div><div id="ag-payouts"></div></div>
+    <div class="card"><div class="card-title">Fixed Costs</div><table><thead><tr><th>Item</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-co-tbl"></tbody></table><div class="card-title mt-16">Logged Agency Expenses This Month</div><div id="ag-payouts"></div></div>
   </div>
 </div>
 
@@ -534,6 +568,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveAgency()">Save</button><button class="btn btn-secondary" onclick="closeM('m-agency')">Cancel</button></div>
 </div></div>
 
+<div class="modal-overlay" id="m-payees"><div class="modal"><h3>Edit Agency Expense List</h3>
+  <p style="font-size:12.5px;color:var(--light);margin:-8px 0 16px;line-height:1.45">These are the names you pick from when logging an agency expense. Add freelancers, subscriptions, tools, anything you pay for. Editing this list never changes entries you have already logged.</p>
+  <div id="payee-ed"></div>
+  <button class="btn btn-secondary btn-sm mt-8 mb-12" onclick="addPayee()">+ Add item</button>
+  <div class="form-row mt-12"><button class="btn btn-primary" onclick="savePayees()">Save</button><button class="btn btn-secondary" onclick="closeM('m-payees')">Cancel</button></div>
+</div></div>
+
 <div class="modal-overlay" id="m-flat"><div class="modal"><h3>Edit Flat &amp; Lending</h3>
   <div class="form-row"><div class="form-group"><label>My Rent (₹)</label><input type="number" id="fl-rent"></div><div class="form-group"><label>Start</label><input type="month" id="fl-start"></div><div class="form-group"><label>End</label><input type="month" id="fl-end"></div></div>
   <div class="card-title mt-12">People Who Owe Me</div><div id="fl-people-ed"></div>
@@ -571,7 +612,7 @@ const FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
 const CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
 
 // ============ STORAGE ============
-const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc'};
+const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees'};
 // note: catbud key retained only for cleanup of legacy data; budgets now live in BG.variable
 const L=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 // ===== SUPABASE CLOUD SYNC =====
@@ -585,7 +626,7 @@ const S=(k,d)=>{const s=JSON.stringify(d);localStorage.setItem(k,s);_queueSync(k
 function _queueSync(key,strValue){if(!_supaOn()||!_syncReady)return;_syncQueue[key]=strValue;_dot('saving');clearTimeout(_syncTimer);_syncTimer=setTimeout(_flushSync,600);}
 async function _flushSync(){_syncTimer=null;const q=_syncQueue;_syncQueue={};const rows=Object.entries(q).map(([key,value])=>({key,value,updated_at:new Date().toISOString()}));if(!rows.length)return;try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?on_conflict=key',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify(rows)});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}_dot('ok');}catch(e){_dot('err');console.error('Supabase sync failed',e);}}
 function _pushAll(){if(!_supaOn())return;Object.values(K).forEach(kk=>{const v=localStorage.getItem(kk);if(v!=null)_syncQueue[kk]=v;});_flushSync();}
-function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);SP=L(K.sp,SP);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);}
+function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);SP=L(K.sp,SP);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);PAYEES=L(K.payees,PAYEES);}
 async function _loadAllFromSupabase(){if(!_supaOn()){_syncReady=true;return;}try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=key,value',{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}const rows=await res.json();if(rows&&rows.length){rows.forEach(r=>{const v=(typeof r.value==='string')?r.value:JSON.stringify(r.value);try{localStorage.setItem(r.key,v);}catch(e){}});_reloadVars();_syncReady=true;renderAll();}else{_syncReady=true;_pushAll();}_dot('ok');}catch(e){_syncReady=true;_dot('err');console.error('Supabase load failed',e);}}
 // Pull fresh data whenever this device comes back to the foreground, but only if nothing local is waiting to upload
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&_supaOn()&&_syncReady&&!_syncTimer&&!Object.keys(_syncQueue).length)_loadAllFromSupabase();});
@@ -614,6 +655,8 @@ let BG=L(K.bg,{income:142514,fixed:[{name:'Rent',amount:13000},{name:'EMIs',amou
 let EMIS=L(K.emi,[{name:'Chair (Rentomojo)',category:'Furniture',amount:1064,end:'2027-03'},{name:'Table (Rentomojo)',category:'Furniture',amount:978,end:'2027-03'},{name:'Washing Machine + Fridge',category:'Furniture',amount:1573,end:'2027-03'},{name:'Water Purifier',category:'Furniture',amount:430,end:'2027-03'},{name:'Bed (Rentomojo)',category:'Furniture',amount:250,end:'2026-12'},{name:'CC Loan (Bike)',category:'Personal',amount:3268,end:'2026-07'},{name:'CC Loan (Gym)',category:'Personal',amount:1081,end:'2028-11'},{name:'CC Loan (PS5)',category:'Personal',amount:1474,end:'2028-11'},{name:'Bike Loan (HDFC)',category:'Vehicle',amount:4954,end:'2029-06'}]);
 let SUBS=L(K.sub,[{name:'Claude Professional',amount:2240},{name:'Canva Professional',amount:500},{name:'Mail (Domain)',amount:360},{name:'Mail Meteor',amount:350}]);
 let AG=L(K.ag,{clients:[{name:'Druk Asia',amount:38000},{name:'WFTA',amount:38257},{name:'Kipling India Travels',amount:30000},{name:'Blue Poppy Bhutan',amount:26500},{name:'Santosh Kumar (Booking.com)',amount:10000}],costs:[{name:'Claude Professional',amount:2240},{name:'Canva Professional',amount:500},{name:'Social Daddy (Kipling)',amount:500}]});
+// Editable list of agency expense payees (freelancers, subscriptions, tools). Editing this never touches past logged entries, which store the name string directly.
+let PAYEES=L(K.payees,['Chirag','Nupur','Gautam','Claude Professional','Canva Professional']);
 let SL=L(K.sl,[{month:'2026-05',sip:'done',travel:'done',notes:''},{month:'2026-06',sip:'done',travel:'done',notes:''},{month:'2026-07',sip:'pending',travel:'skipped',notes:'Travel month.'},{month:'2026-08',sip:'pending',travel:'skipped',notes:'Travel month.'}]);
 let SP=L(K.sp,[]);
 let LB=L(K.lb,[]);
@@ -668,6 +711,7 @@ if(!BG.fixed)BG.fixed=[];if(!BG.savings)BG.savings=[];
 if(!INV||!Array.isArray(INV.sips)){INV={sips:[],quarterly:[]}}
 if(!Array.isArray(INV.quarterly))INV.quarterly=[];
 if(!AG||!Array.isArray(AG.clients))AG={clients:[],costs:[]};if(!Array.isArray(AG.costs))AG.costs=[];
+if(!Array.isArray(PAYEES))PAYEES=['Chirag','Nupur','Gautam','Claude Professional','Canva Professional'];
 if(!FLAT||!Array.isArray(FLAT.people))FLAT={rent:13000,startMonth:cm(),endMonth:cm(),myPayments:{},people:[]};
 // MIGRATION: map any old logged category names to the current variable budget category names.
 (function migrateCats(){
@@ -688,7 +732,7 @@ if(!FLAT||!Array.isArray(FLAT.people))FLAT={rent:13000,startMonth:cm(),endMonth:
   if(localStorage.getItem(K.catbud))localStorage.removeItem(K.catbud);
 })();
 
-[[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.cc,CC],[K.calc,CALC]].forEach(([k,v])=>{if(!localStorage.getItem(k))S(k,v)});
+[[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.cc,CC],[K.calc,CALC],[K.payees,PAYEES]].forEach(([k,v])=>{if(!localStorage.getItem(k))S(k,v)});
 
 // ============ TABS ============
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');window.scrollTo(0,0);renderAll();if(t.dataset.page==='calculator'){loadCalcInputs();calcRun()}}));
@@ -742,11 +786,23 @@ function renderLogChips(){
   const sec=document.getElementById('log-cat-section');const chips=document.getElementById('log-chips');const lbl=document.getElementById('log-amt-label');
   let opts=[];
   if(LOG_TYPE==='expense'){opts=CATSlist();sec.querySelector('label').textContent='Category';lbl.textContent='Amount Spent (₹)'}
-  else if(LOG_TYPE==='payout'){opts=FREELANCERS;sec.querySelector('label').textContent='Freelancer';lbl.textContent='Payout Amount (₹)'}
+  else if(LOG_TYPE==='payout'){opts=PAYEES;sec.querySelector('label').textContent='Agency Expense (freelancer, subscription, tool)';lbl.textContent='Amount (₹)'}
   else{opts=CLIENTS_LIST;sec.querySelector('label').textContent='Client / Source';lbl.textContent='Income Received (₹)'}
-  chips.innerHTML=opts.map(o=>`<div class="chip ${LOG_CAT===o?'selected':''}" onclick="selectChip('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('');
+  let chipHtml=opts.map(o=>`<div class="chip ${LOG_CAT===o?'selected':''}" onclick="selectChip('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('');
+  if(LOG_TYPE==='payout')chipHtml+=`<div class="chip chip-edit" onclick="openPayeesModal()" title="Add, rename or remove items">✎ Edit list</div>`;
+  chips.innerHTML=chipHtml;
 }
 function selectChip(c){LOG_CAT=c;renderLogChips()}
+// ---- Agency expense list editor ----
+function _readPayeeInputs(){document.querySelectorAll('#payee-ed [data-pay]').forEach(inp=>{const i=+inp.dataset.pay;if(i>=0&&i<PAYEES.length)PAYEES[i]=inp.value});}
+function openPayeesModal(){
+  const ed=document.getElementById('payee-ed');
+  ed.innerHTML=PAYEES.length?PAYEES.map((p,i)=>`<div class="form-row" style="margin-bottom:8px;align-items:center"><div class="form-group"><input value="${(p||'').replace(/"/g,'&quot;')}" data-pay="${i}" placeholder="Freelancer, subscription, tool..."></div><button class="icon-btn" title="Remove" onclick="removePayee(${i})">✕</button></div>`).join(''):'<div style="font-size:12.5px;color:var(--light);padding:6px 0 10px">No items yet. Add your first below.</div>';
+  openM('m-payees');
+}
+function addPayee(){_readPayeeInputs();PAYEES.push('');openPayeesModal();const ins=document.querySelectorAll('#payee-ed [data-pay]');if(ins.length)ins[ins.length-1].focus();}
+function removePayee(i){_readPayeeInputs();PAYEES.splice(i,1);openPayeesModal();}
+function savePayees(){_readPayeeInputs();PAYEES=PAYEES.map(p=>(p||'').trim()).filter(Boolean).filter((p,i,a)=>a.indexOf(p)===i);S(K.payees,PAYEES);closeM('m-payees');renderLogChips();renderLogbook();}
 function renderLogbook(){
   const di=document.getElementById('log-d');
   if(di){const t=td();if(!di.value){di.value=t;window._logAutoDate=t;}else if(di.value===window._logAutoDate&&window._logAutoDate!==t){di.value=t;window._logAutoDate=t;}}
@@ -757,17 +813,23 @@ function renderLogbook(){
   const fm=sel.value||cm();
   const f=LB.filter(e=>e.date.startsWith(fm));
   const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income');
-  document.getElementById('lg-exp').textContent=fmt(exp.reduce((s,e)=>s+e.amount,0));
-  document.getElementById('lg-pay').textContent=fmt(pay.reduce((s,e)=>s+e.amount,0));
-  document.getElementById('lg-inc').textContent=fmt(inc.reduce((s,e)=>s+e.amount,0));
+  const expT=exp.reduce((s,e)=>s+e.amount,0),payT=pay.reduce((s,e)=>s+e.amount,0),incT=inc.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('lg-exp').textContent=fmt(expT);
+  document.getElementById('lg-pay').textContent=fmt(payT);
+  document.getElementById('lg-inc').textContent=fmt(incT);
   document.getElementById('lg-cc').textContent=fmt(ccChargedThisMonth(fm));
+  // Total Out bar = everything that left your pocket this month (personal + agency)
+  document.getElementById('to-exp').textContent=fmt(expT);
+  document.getElementById('to-agy').textContent=fmt(payT);
+  document.getElementById('to-inc').textContent=fmt(incT);
+  document.getElementById('to-total').textContent=fmt(expT+payT);
   const grp=arr=>{const m={};arr.forEach(e=>{m[e.who]=(m[e.who]||0)+e.amount});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   const rList=(entries,tot,sign)=>entries.length?entries.map((e,i)=>`<div class="summary-row"><span><span class="cat-dot" style="background:${CC_COLORS[i%CC_COLORS.length]}"></span>${e[0]}</span><span class="amount ${sign}">${fmt(e[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount ${sign}">${fmt(tot)}</span></div>`:'<div class="empty-state" style="padding:18px"><p>Nothing logged this month</p></div>';
   document.getElementById('lg-pay-l').innerHTML=rList(grp(pay),pay.reduce((s,e)=>s+e.amount,0),'neg');
   document.getElementById('lg-inc-l').innerHTML=rList(grp(inc),inc.reduce((s,e)=>s+e.amount,0),'pos');
   // BUDGET-AWARE expense breakdown with per-category date drilldown
   renderLogBudget(fm,exp);
-  const tt=t=>t==='payout'?'<span class="tag tag-amber">Payout</span>':t==='income'?'<span class="tag tag-green">Income</span>':'<span class="tag tag-red">Expense</span>';
+  const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':'<span class="tag tag-red">Expense</span>';
   const sorted=[...f].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   document.getElementById('lg-tbl').innerHTML=sorted.length?sorted.map(e=>`<tr><td>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${tt(e.type)}</td><td>${e.who}${e.cc?'<span class="cc-pill" title="Paid by credit card">CC</span>':''}</td><td style="font-size:11px;color:var(--light)">${e.note||''}</td><td class="amount ${e.type==='income'?'pos':'neg'}">${fmt(e.amount)}</td><td><button class="icon-btn" onclick="LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--light)">No entries yet. Log your first transaction above.</td></tr>';
 }
@@ -933,7 +995,7 @@ function renderAgency(){
   document.getElementById('ag-cl-tbl').innerHTML=AG.clients.map(c=>`<tr><td>${c.name}</td><td class="amount pos">${fmt(c.amount)}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount pos"><strong>${fmt(rev)}</strong></td></tr>`;
   document.getElementById('ag-co-tbl').innerHTML=AG.costs.map(c=>`<tr><td>${c.name}</td><td class="amount neg">${fmt(c.amount)}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount neg"><strong>${fmt(cost)}</strong></td></tr>`;
   const mp=LB.filter(e=>e.type==='payout'&&e.date.startsWith(cm()));const byP={};mp.forEach(p=>{byP[p.who]=(byP[p.who]||0)+p.amount});const pe=Object.entries(byP).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('ag-payouts').innerHTML=pe.length?pe.map(p=>`<div class="summary-row"><span>${p[0]}</span><span class="amount neg">${fmt(p[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount neg">${fmt(mp.reduce((s,e)=>s+e.amount,0))}</span></div>`:'<div style="font-size:12px;color:var(--light);padding:8px 0">No payouts logged yet. Use the Logbook tab.</div>';
+  document.getElementById('ag-payouts').innerHTML=pe.length?pe.map(p=>`<div class="summary-row"><span>${p[0]}</span><span class="amount neg">${fmt(p[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount neg">${fmt(mp.reduce((s,e)=>s+e.amount,0))}</span></div>`:'<div style="font-size:12px;color:var(--light);padding:8px 0">No agency expenses logged yet. Use the Logbook tab.</div>';
 }
 function openAgencyModal(){let h='';AG.clients.forEach((c,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${c.name}" data-ac="${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${c.amount}" data-ac="${i}-a"></div><button class="icon-btn" onclick="AG.clients.splice(${i},1);S(K.ag,AG);openAgencyModal()">✕</button></div>`});document.getElementById('ag-cl-ed').innerHTML=h;let h2='';AG.costs.forEach((c,i)=>{h2+=`<div class="form-row"><div class="form-group"><input value="${c.name}" data-aco="${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${c.amount}" data-aco="${i}-a"></div><button class="icon-btn" onclick="AG.costs.splice(${i},1);S(K.ag,AG);openAgencyModal()">✕</button></div>`});document.getElementById('ag-co-ed').innerHTML=h2;openM('m-agency')}
 function saveAgency(){AG.clients.forEach((c,i)=>{const n=document.querySelector(`[data-ac="${i}-n"]`),a=document.querySelector(`[data-ac="${i}-a"]`);if(n)c.name=n.value;if(a)c.amount=+a.value||0});AG.clients=AG.clients.filter(c=>c.name.trim());AG.costs.forEach((c,i)=>{const n=document.querySelector(`[data-aco="${i}-n"]`),a=document.querySelector(`[data-aco="${i}-a"]`);if(n)c.name=n.value;if(a)c.amount=+a.value||0});AG.costs=AG.costs.filter(c=>c.name.trim());S(K.ag,AG);closeM('m-agency');renderAll()}
@@ -1093,7 +1155,7 @@ function buildReview(){
     <div style="flex:1;min-width:120px;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:12px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--light);font-weight:700">Est. Saved</div><div style="font-family:Georgia,serif;font-size:20px;color:${estSavings>=0?'var(--green)':'var(--red)'}">${fmtSign(estSavings)}</div><div style="font-size:11px;color:var(--light)">${savingsRate}% of income</div></div>
   </div>`;
 
-  h+=section('💰 Income & Cash Flow',`Income basis for this month is ${fmt(incomeBasis)} (${incomeSource}). After ${fmt(realSpend)} in spending${payT>0?` and ${fmt(payT)} in freelancer payouts`:''}, your estimated saving is ${fmtSign(estSavings)}, a ${savingsRate}% savings rate. ${savingsRate>=40?'That is an excellent rate, keep this momentum.':savingsRate>=25?'Solid rate, but there is room to push higher if you tighten variable spending.':savingsRate>=0?'This is on the low side for your goals. Look at the overspending categories below.':'You spent more than you earned this month. This needs attention.'}`);
+  h+=section('💰 Income & Cash Flow',`Income basis for this month is ${fmt(incomeBasis)} (${incomeSource}). After ${fmt(realSpend)} in spending${payT>0?` and ${fmt(payT)} in agency expenses`:''}, your estimated saving is ${fmtSign(estSavings)}, a ${savingsRate}% savings rate. ${savingsRate>=40?'That is an excellent rate, keep this momentum.':savingsRate>=25?'Solid rate, but there is room to push higher if you tighten variable spending.':savingsRate>=0?'This is on the low side for your goals. Look at the overspending categories below.':'You spent more than you earned this month. This needs attention.'}`);
 
   // Spending breakdown
   let spendBody=`Total spending was ${fmt(realSpend)} tracked via your ${spendSource}, against a category budget of ${fmt(budTot)}. `;
@@ -1113,7 +1175,7 @@ function buildReview(){
   if(topCats.length){let tb='Your three biggest spending buckets:<br><br>';topCats.forEach((c,i)=>{tb+=`${i+1}. <strong>${c[0]}</strong>: ${fmt(c[1])} (${pct(c[1],realSpend)}% of total)<br>`});h+=section('🏆 Biggest Buckets',tb)}
 
   // Freelancer payouts
-  if(payT>0){const byP={};pay.forEach(e=>{byP[e.who]=(byP[e.who]||0)+e.amount});let pb=`You paid out ${fmt(payT)} to freelancers this month:<br><br>`;Object.entries(byP).sort((a,b)=>b[1]-a[1]).forEach(p=>{pb+=`• ${p[0]}: ${fmt(p[1])}<br>`});const agRev=AG.clients.reduce((s,c)=>s+c.amount,0);pb+=`<br>That is ${pct(payT,agRev)}% of your gross agency revenue going to execution. ${pct(payT,agRev)>35?'On the higher side, make sure the output justifies it.':'Healthy margin, your delegation is paying off.'}`;h+=section('👥 Freelancer Payouts',pb)}
+  if(payT>0){const byP={};pay.forEach(e=>{byP[e.who]=(byP[e.who]||0)+e.amount});let pb=`Your agency expenses this month came to ${fmt(payT)}.<br><br>`;Object.entries(byP).sort((a,b)=>b[1]-a[1]).forEach(p=>{pb+=`• ${p[0]}: ${fmt(p[1])}<br>`});const agRev=AG.clients.reduce((s,c)=>s+c.amount,0);pb+=`<br>That is ${pct(payT,agRev)}% of your gross agency revenue. ${pct(payT,agRev)>35?'On the higher side, make sure the output justifies it.':'Healthy margin, your delegation is paying off.'}`;h+=section('👥 Agency Expenses',pb)}
 
   // SIP
   let sipBody='';if(sipData){sipBody=`SIP for this month is marked <strong>${sipData.sip}</strong> and travel fund <strong>${sipData.travel}</strong>.`;if(sipData.sip==='skipped')sipBody+=' A skipped SIP is a real cost to your long term compounding. If it was a travel month that is understandable, but try not to make it a habit.';if(sipData.notes)sipBody+=` Note: ${sipData.notes}`}else sipBody='No SIP status logged for this month. Head to the Investments tab and mark whether your SIP went through.';
@@ -1155,7 +1217,7 @@ function optTip(cat,over){
 function copyReview(){const t=document.querySelector('.review-box');if(t){const text=t.innerText;navigator.clipboard.writeText(text).then(()=>{const b=event.target;b.textContent='✓ Copied';setTimeout(()=>b.textContent='Copy Report',1200)}).catch(()=>alert('Copy failed, select manually'))}}
 
 // ============ EXPORT / IMPORT ============
-function exportAll(){const data={app:'Pratim Finance Tracker',version:5,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
+function exportAll(){const data={app:'Pratim Finance Tracker',version:6,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC,payees:PAYEES};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
 function importAll(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);
   if(data.nw!==undefined){NW=data.nw;S(K.nw,NW)}
   if(data.nwh!==undefined){NWH=data.nwh;S(K.nwh,NWH)}
@@ -1172,6 +1234,7 @@ function importAll(e){const file=e.target.files[0];if(!file)return;const reader=
   if(data.wish!==undefined){WISH=data.wish;S(K.wish,WISH)}
   if(data.cc!==undefined){CC=data.cc;S(K.cc,CC)}
   if(data.calc!==undefined){CALC=data.calc;S(K.calc,CALC)}
+  if(data.payees!==undefined){PAYEES=data.payees;S(K.payees,PAYEES)}
   renderAll();alert('All data restored successfully.')}catch(err){alert('Invalid backup file: '+err.message)}};reader.readAsText(file);e.target.value=''}
 
 // ============ BEHAVIOR ANALYTICS ============
