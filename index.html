@@ -189,6 +189,7 @@ button:active,.btn:active{transform:scale(.97)}
 .segment button.active.exp{color:var(--red)}
 .segment button.active.pay{color:var(--amber)}
 .segment button.active.inc{color:var(--green)}
+.segment button.active.fix{color:var(--terra)}
 
 /* QUICK CATEGORY CHIPS */
 .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
@@ -278,6 +279,63 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 /* EDIT-LIST CHIP */
 .chip.chip-edit{background:var(--tag-bg);border:1.5px dashed var(--terra);color:var(--terra);box-shadow:none;transform:none}
 .chip.chip-edit:active{transform:scale(.95)}
+
+/* ===== APPLE-STYLE POLISH (additive only, no structure or logic change) ===== */
+/* Springier, calmer easing across interactive elements */
+button,.btn,.chip,.tab,.check-btn,.icon-btn,.toggle,.stat-card,.card{transition-timing-function:cubic-bezier(.32,.72,0,1)}
+button:active,.btn:active{transform:scale(.96)}
+
+/* Segmented control feels like a physical switch */
+.segment{box-shadow:inset 0 1px 2px rgba(31,20,9,.05)}
+.segment button{transition:background .22s cubic-bezier(.32,.72,0,1),color .22s,transform .12s,box-shadow .22s}
+.segment button.active{transform:translateY(-.5px);box-shadow:0 2px 6px rgba(31,20,9,.1),0 1px 2px rgba(31,20,9,.06)}
+.segment button:active{transform:scale(.97)}
+
+/* Chips lift softly on hover and settle on press */
+.chip{transition:transform .18s cubic-bezier(.32,.72,0,1),box-shadow .18s,background .15s,border-color .15s,color .15s}
+.chip:hover:not(.selected){border-color:var(--terra-lt);transform:translateY(-1px);box-shadow:0 4px 10px rgba(31,20,9,.06)}
+
+/* Cards gain a quiet depth and a hairline highlight on hover */
+.card{transition:box-shadow .28s cubic-bezier(.32,.72,0,1),transform .28s,border-color .2s}
+.card:hover{border-color:var(--rule-dk)}
+.stat-card{transition:box-shadow .28s cubic-bezier(.32,.72,0,1),transform .28s}
+
+/* Tab underline glides in */
+.tab{transition:color .2s,border-color .25s cubic-bezier(.32,.72,0,1)}
+.tab.active{border-bottom-width:2.5px}
+
+/* Inputs settle with a softer, wider focus halo */
+input,select,textarea{transition:border-color .2s cubic-bezier(.32,.72,0,1),box-shadow .2s,background .2s}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)}
+
+/* Icon buttons get a gentle hover fill */
+.icon-btn{transition:background .18s,transform .12s,box-shadow .18s}
+.icon-btn:hover{background:#E6DECF}
+.icon-btn:active{transform:scale(.9)}
+
+/* Primary button hover has a touch more presence */
+.btn-primary{transition:box-shadow .25s cubic-bezier(.32,.72,0,1),transform .12s,filter .2s}
+.btn-primary:hover{filter:saturate(1.05)}
+
+/* Total Out bar carries a soft inner sheen */
+.total-out-bar{box-shadow:0 10px 40px rgba(31,20,9,.16),inset 0 1px 0 rgba(255,255,255,.06)}
+.total-out-bar .to-value{transition:opacity .2s}
+
+/* Modals ease in a shade more smoothly */
+.modal{animation:slideUp .34s cubic-bezier(.32,.72,0,1)}
+
+/* Toggle knob eases like iOS */
+.toggle-knob{transition:left .24s cubic-bezier(.32,.72,0,1)}
+
+/* Segmented four-up stays comfortable on small screens */
+@media(max-width:420px){
+  .segment button{padding:8px 6px;font-size:12px}
+}
+
+/* Honour reduced-motion preference for all the above too */
+@media(prefers-reduced-motion:reduce){
+  .card:hover,.chip:hover:not(.selected),.segment button.active{transform:none}
+}
 </style>
 </head>
 <body>
@@ -343,6 +401,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   <div class="card mb-16" id="quick-log-card">
     <div class="segment mb-16" id="log-segment">
       <button class="active exp" data-lt="expense" onclick="setLogType('expense')">Expense</button>
+      <button class="fix" data-lt="fixed" onclick="setLogType('fixed')">Fixed</button>
       <button class="pay" data-lt="payout" onclick="setLogType('payout')">Agency</button>
       <button class="inc" data-lt="income" onclick="setLogType('income')">Income</button>
     </div>
@@ -374,6 +433,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
     <div class="to-break">
       <div class="to-chip"><span class="k">Personal Expenses</span><span class="v" id="to-exp">₹0</span></div>
       <div class="to-plus">+</div>
+      <div class="to-chip"><span class="k">Fixed Costs</span><span class="v" id="to-fix">₹0</span></div>
+      <div class="to-plus">+</div>
       <div class="to-chip"><span class="k">Agency Expenses</span><span class="v" id="to-agy">₹0</span></div>
       <div class="to-chip"><span class="k">Income In</span><span class="v inc" id="to-inc">₹0</span></div>
     </div>
@@ -388,6 +449,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
     <div class="card"><div class="card-title" style="display:flex;justify-content:space-between;align-items:center">Agency Expenses <button class="btn btn-secondary btn-xs" style="text-transform:none;letter-spacing:0" onclick="openPayeesModal()">✎ Edit list</button></div><div id="lg-pay-l"></div></div>
     <div class="card"><div class="card-title">Income This Month</div><div id="lg-inc-l"></div></div>
   </div>
+  <div class="card mb-16"><div class="card-title">Fixed Costs This Month</div><div id="lg-fix-l"></div></div>
   <div class="card mb-16"><div class="card-title">Spending vs Budget · <span id="lg-budget-status" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div><div id="lg-exp-l"></div></div>
   <div class="card"><div class="card-title">All Entries</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="amount">₹</th><th></th></tr></thead><tbody id="lg-tbl"></tbody></table></div></div>
 </div>
@@ -421,14 +483,29 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
     <div class="card"><div class="card-title">EMI Breakdown</div><div class="chart-box"><canvas id="ch-emi"></canvas></div></div>
     <div class="card"><div class="card-title">Subscriptions</div><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div>
   </div>
+  <div class="card mt-16" style="border-left:3px solid var(--terra);background:linear-gradient(135deg,var(--amber-bg),#fff)">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="font-size:20px;line-height:1">🛡️</div>
+      <div style="font-size:12.5px;line-height:1.55;color:var(--ink)">No tracking for health or term insurance premiums, renewal dates, or coverage amounts. Easy to forget a renewal date when it only comes up once a year.</div>
+    </div>
+  </div>
 </div>
 
 <!-- INVESTMENTS -->
 <div class="page" id="page-investments">
   <div class="section-header"><div><h2>Investments</h2><div class="section-sub">Edit any fund, amount, or target</div></div><button class="btn btn-primary" onclick="openInvEdit()">Edit Funds</button></div>
   <div class="grid grid-2 mb-16">
-    <div class="card"><div class="card-title">Monthly SIPs · 11th</div><table><thead><tr><th>Fund</th><th class="amount">Target</th><th class="amount">Current</th></tr></thead><tbody id="sip-tbl"></tbody></table></div>
+    <div class="card"><div class="card-title">Monthly SIPs · 11th</div><table><thead><tr><th>Fund</th><th class="amount">Target</th><th class="amount">Current</th><th>Purpose</th></tr></thead><tbody id="sip-tbl"></tbody></table></div>
     <div class="card"><div class="card-title">Quarterly Lump Sum</div><table><thead><tr><th>Fund</th><th class="amount">Amount</th><th>Purpose</th></tr></thead><tbody id="lump-tbl"></tbody></table></div>
+  </div>
+  <div class="card mb-16">
+    <div class="card-title">Current Fund Balances</div>
+    <div class="section-sub" style="margin:-4px 0 14px">What you hold right now. Type a value and it saves instantly.</div>
+    <div class="grid grid-3">
+      <div class="form-group"><label>Emergency Fund (₹)</label><input type="number" id="fund-emergency" inputmode="numeric" placeholder="0" oninput="saveFund('emergency',this.value)"></div>
+      <div class="form-group"><label>Travel Fund (₹)</label><input type="number" id="fund-travel" inputmode="numeric" placeholder="0" oninput="saveFund('travel',this.value)"></div>
+      <div class="form-group"><label>Investments (₹)</label><input type="number" id="fund-investment" inputmode="numeric" placeholder="0" oninput="saveFund('investment',this.value)"></div>
+    </div>
   </div>
   <div class="card"><div class="section-header" style="margin-bottom:12px"><div class="card-title" style="margin:0">SIP Completion Log</div><button class="btn btn-secondary btn-sm" onclick="openSIPLog()">Log Month</button></div><table><thead><tr><th>Month</th><th>SIP</th><th>Travel Fund</th><th>Notes</th></tr></thead><tbody id="siplog-tbl"></tbody></table></div>
 </div>
@@ -575,6 +652,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   <div class="form-row mt-12"><button class="btn btn-primary" onclick="savePayees()">Save</button><button class="btn btn-secondary" onclick="closeM('m-payees')">Cancel</button></div>
 </div></div>
 
+<div class="modal-overlay" id="m-sources"><div class="modal"><h3>Edit Income Sources</h3>
+  <p style="font-size:12.5px;color:var(--light);margin:-8px 0 16px;line-height:1.45">These are the names you pick from when logging income. Add clients or any other inflow. Editing this list never changes income you have already logged.</p>
+  <div id="source-ed"></div>
+  <button class="btn btn-secondary btn-sm mt-8 mb-12" onclick="addSource()">+ Add source</button>
+  <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveSources()">Save</button><button class="btn btn-secondary" onclick="closeM('m-sources')">Cancel</button></div>
+</div></div>
+
 <div class="modal-overlay" id="m-flat"><div class="modal"><h3>Edit Flat &amp; Lending</h3>
   <div class="form-row"><div class="form-group"><label>My Rent (₹)</label><input type="number" id="fl-rent"></div><div class="form-group"><label>Start</label><input type="month" id="fl-start"></div><div class="form-group"><label>End</label><input type="month" id="fl-end"></div></div>
   <div class="card-title mt-12">People Who Owe Me</div><div id="fl-people-ed"></div>
@@ -612,7 +696,7 @@ const FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
 const CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
 
 // ============ STORAGE ============
-const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees'};
+const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees',sources:'pft_sources'};
 // note: catbud key retained only for cleanup of legacy data; budgets now live in BG.variable
 const L=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 // ===== SUPABASE CLOUD SYNC =====
@@ -626,7 +710,7 @@ const S=(k,d)=>{const s=JSON.stringify(d);localStorage.setItem(k,s);_queueSync(k
 function _queueSync(key,strValue){if(!_supaOn()||!_syncReady)return;_syncQueue[key]=strValue;_dot('saving');clearTimeout(_syncTimer);_syncTimer=setTimeout(_flushSync,600);}
 async function _flushSync(){_syncTimer=null;const q=_syncQueue;_syncQueue={};const rows=Object.entries(q).map(([key,value])=>({key,value,updated_at:new Date().toISOString()}));if(!rows.length)return;try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?on_conflict=key',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify(rows)});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}_dot('ok');}catch(e){_dot('err');console.error('Supabase sync failed',e);}}
 function _pushAll(){if(!_supaOn())return;Object.values(K).forEach(kk=>{const v=localStorage.getItem(kk);if(v!=null)_syncQueue[kk]=v;});_flushSync();}
-function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);SP=L(K.sp,SP);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);PAYEES=L(K.payees,PAYEES);}
+function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);SP=L(K.sp,SP);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);PAYEES=L(K.payees,PAYEES);SOURCES=L(K.sources,SOURCES);}
 async function _loadAllFromSupabase(){if(!_supaOn()){_syncReady=true;return;}try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=key,value',{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}const rows=await res.json();if(rows&&rows.length){rows.forEach(r=>{const v=(typeof r.value==='string')?r.value:JSON.stringify(r.value);try{localStorage.setItem(r.key,v);}catch(e){}});_reloadVars();_syncReady=true;renderAll();}else{_syncReady=true;_pushAll();}_dot('ok');}catch(e){_syncReady=true;_dot('err');console.error('Supabase load failed',e);}}
 // Pull fresh data whenever this device comes back to the foreground, but only if nothing local is waiting to upload
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&_supaOn()&&_syncReady&&!_syncTimer&&!Object.keys(_syncQueue).length)_loadAllFromSupabase();});
@@ -657,6 +741,8 @@ let SUBS=L(K.sub,[{name:'Claude Professional',amount:2240},{name:'Canva Professi
 let AG=L(K.ag,{clients:[{name:'Druk Asia',amount:38000},{name:'WFTA',amount:38257},{name:'Kipling India Travels',amount:30000},{name:'Blue Poppy Bhutan',amount:26500},{name:'Santosh Kumar (Booking.com)',amount:10000}],costs:[{name:'Claude Professional',amount:2240},{name:'Canva Professional',amount:500},{name:'Social Daddy (Kipling)',amount:500}]});
 // Editable list of agency expense payees (freelancers, subscriptions, tools). Editing this never touches past logged entries, which store the name string directly.
 let PAYEES=L(K.payees,['Chirag','Nupur','Gautam','Claude Professional','Canva Professional']);
+// Editable list of income sources (clients, other inflows). Editing this never touches income already logged, which stores the name string directly.
+let SOURCES=L(K.sources,CLIENTS_LIST.slice());
 let SL=L(K.sl,[{month:'2026-05',sip:'done',travel:'done',notes:''},{month:'2026-06',sip:'done',travel:'done',notes:''},{month:'2026-07',sip:'pending',travel:'skipped',notes:'Travel month.'},{month:'2026-08',sip:'pending',travel:'skipped',notes:'Travel month.'}]);
 let SP=L(K.sp,[]);
 let LB=L(K.lb,[]);
@@ -712,6 +798,12 @@ if(!INV||!Array.isArray(INV.sips)){INV={sips:[],quarterly:[]}}
 if(!Array.isArray(INV.quarterly))INV.quarterly=[];
 if(!AG||!Array.isArray(AG.clients))AG={clients:[],costs:[]};if(!Array.isArray(AG.costs))AG.costs=[];
 if(!Array.isArray(PAYEES))PAYEES=['Chirag','Nupur','Gautam','Claude Professional','Canva Professional'];
+if(!Array.isArray(SOURCES))SOURCES=CLIENTS_LIST.slice();
+if(!INV.funds||typeof INV.funds!=='object'||Array.isArray(INV.funds))INV.funds={emergency:0,travel:0,investment:0};
+if(typeof INV.funds.emergency!=='number')INV.funds.emergency=0;
+if(typeof INV.funds.travel!=='number')INV.funds.travel=0;
+if(typeof INV.funds.investment!=='number')INV.funds.investment=0;
+INV.sips.forEach(s=>{if(typeof s.why!=='string')s.why=''});
 if(!FLAT||!Array.isArray(FLAT.people))FLAT={rent:13000,startMonth:cm(),endMonth:cm(),myPayments:{},people:[]};
 // MIGRATION: map any old logged category names to the current variable budget category names.
 (function migrateCats(){
@@ -732,7 +824,7 @@ if(!FLAT||!Array.isArray(FLAT.people))FLAT={rent:13000,startMonth:cm(),endMonth:
   if(localStorage.getItem(K.catbud))localStorage.removeItem(K.catbud);
 })();
 
-[[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.cc,CC],[K.calc,CALC],[K.payees,PAYEES]].forEach(([k,v])=>{if(!localStorage.getItem(k))S(k,v)});
+[[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.cc,CC],[K.calc,CALC],[K.payees,PAYEES],[K.sources,SOURCES]].forEach(([k,v])=>{if(!localStorage.getItem(k))S(k,v)});
 
 // ============ TABS ============
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');window.scrollTo(0,0);renderAll();if(t.dataset.page==='calculator'){loadCalcInputs();calcRun()}}));
@@ -786,10 +878,13 @@ function renderLogChips(){
   const sec=document.getElementById('log-cat-section');const chips=document.getElementById('log-chips');const lbl=document.getElementById('log-amt-label');
   let opts=[];
   if(LOG_TYPE==='expense'){opts=CATSlist();sec.querySelector('label').textContent='Category';lbl.textContent='Amount Spent (₹)'}
+  else if(LOG_TYPE==='fixed'){opts=BG.fixed.map(f=>f.name);sec.querySelector('label').textContent='Fixed Cost';lbl.textContent='Amount Paid (₹)'}
   else if(LOG_TYPE==='payout'){opts=PAYEES;sec.querySelector('label').textContent='Agency Expense (freelancer, subscription, tool)';lbl.textContent='Amount (₹)'}
-  else{opts=CLIENTS_LIST;sec.querySelector('label').textContent='Client / Source';lbl.textContent='Income Received (₹)'}
+  else{opts=SOURCES;sec.querySelector('label').textContent='Client / Source';lbl.textContent='Income Received (₹)'}
   let chipHtml=opts.map(o=>`<div class="chip ${LOG_CAT===o?'selected':''}" onclick="selectChip('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('');
   if(LOG_TYPE==='payout')chipHtml+=`<div class="chip chip-edit" onclick="openPayeesModal()" title="Add, rename or remove items">✎ Edit list</div>`;
+  if(LOG_TYPE==='income')chipHtml+=`<div class="chip chip-edit" onclick="openSourcesModal()" title="Add, rename or remove income sources">✎ Edit list</div>`;
+  if(LOG_TYPE==='fixed')chipHtml+=`<div class="chip chip-edit" onclick="switchToBudgetForFixed()" title="Fixed costs come from your Budget tab">✎ Edit list</div>`;
   chips.innerHTML=chipHtml;
 }
 function selectChip(c){LOG_CAT=c;renderLogChips()}
@@ -803,6 +898,18 @@ function openPayeesModal(){
 function addPayee(){_readPayeeInputs();PAYEES.push('');openPayeesModal();const ins=document.querySelectorAll('#payee-ed [data-pay]');if(ins.length)ins[ins.length-1].focus();}
 function removePayee(i){_readPayeeInputs();PAYEES.splice(i,1);openPayeesModal();}
 function savePayees(){_readPayeeInputs();PAYEES=PAYEES.map(p=>(p||'').trim()).filter(Boolean).filter((p,i,a)=>a.indexOf(p)===i);S(K.payees,PAYEES);closeM('m-payees');renderLogChips();renderLogbook();}
+// ---- Income source list editor (mirrors the agency expense list) ----
+function _readSourceInputs(){document.querySelectorAll('#source-ed [data-src]').forEach(inp=>{const i=+inp.dataset.src;if(i>=0&&i<SOURCES.length)SOURCES[i]=inp.value});}
+function openSourcesModal(){
+  const ed=document.getElementById('source-ed');
+  ed.innerHTML=SOURCES.length?SOURCES.map((p,i)=>`<div class="form-row" style="margin-bottom:8px;align-items:center"><div class="form-group"><input value="${(p||'').replace(/"/g,'&quot;')}" data-src="${i}" placeholder="Client or income source..."></div><button class="icon-btn" title="Remove" onclick="removeSource(${i})">✕</button></div>`).join(''):'<div style="font-size:12.5px;color:var(--light);padding:6px 0 10px">No sources yet. Add your first below.</div>';
+  openM('m-sources');
+}
+function addSource(){_readSourceInputs();SOURCES.push('');openSourcesModal();const ins=document.querySelectorAll('#source-ed [data-src]');if(ins.length)ins[ins.length-1].focus();}
+function removeSource(i){_readSourceInputs();SOURCES.splice(i,1);openSourcesModal();}
+function saveSources(){_readSourceInputs();SOURCES=SOURCES.map(p=>(p||'').trim()).filter(Boolean).filter((p,i,a)=>a.indexOf(p)===i);S(K.sources,SOURCES);closeM('m-sources');renderLogChips();renderLogbook();}
+// Fixed cost categories are the single source of truth in the Budget tab. Jump there to edit them.
+function switchToBudgetForFixed(){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const t=document.querySelector('[data-page="budget"]');if(t)t.classList.add('active');document.getElementById('page-budget').classList.add('active');window.scrollTo(0,0);renderBudget();openBudgetModal();}
 function renderLogbook(){
   const di=document.getElementById('log-d');
   if(di){const t=td();if(!di.value){di.value=t;window._logAutoDate=t;}else if(di.value===window._logAutoDate&&window._logAutoDate!==t){di.value=t;window._logAutoDate=t;}}
@@ -812,24 +919,26 @@ function renderLogbook(){
   sel.innerHTML=[...ms].sort().reverse().map(m=>`<option value="${m}" ${m===cv?'selected':''}>${monthName(m)}</option>`).join('');
   const fm=sel.value||cm();
   const f=LB.filter(e=>e.date.startsWith(fm));
-  const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income');
-  const expT=exp.reduce((s,e)=>s+e.amount,0),payT=pay.reduce((s,e)=>s+e.amount,0),incT=inc.reduce((s,e)=>s+e.amount,0);
+  const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income'),fix=f.filter(e=>e.type==='fixed');
+  const expT=exp.reduce((s,e)=>s+e.amount,0),payT=pay.reduce((s,e)=>s+e.amount,0),incT=inc.reduce((s,e)=>s+e.amount,0),fixT=fix.reduce((s,e)=>s+e.amount,0);
   document.getElementById('lg-exp').textContent=fmt(expT);
   document.getElementById('lg-pay').textContent=fmt(payT);
   document.getElementById('lg-inc').textContent=fmt(incT);
   document.getElementById('lg-cc').textContent=fmt(ccChargedThisMonth(fm));
-  // Total Out bar = everything that left your pocket this month (personal + agency)
+  // Total Out bar = everything that left your pocket this month (personal + fixed + agency)
   document.getElementById('to-exp').textContent=fmt(expT);
+  document.getElementById('to-fix').textContent=fmt(fixT);
   document.getElementById('to-agy').textContent=fmt(payT);
   document.getElementById('to-inc').textContent=fmt(incT);
-  document.getElementById('to-total').textContent=fmt(expT+payT);
+  document.getElementById('to-total').textContent=fmt(expT+fixT+payT);
   const grp=arr=>{const m={};arr.forEach(e=>{m[e.who]=(m[e.who]||0)+e.amount});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   const rList=(entries,tot,sign)=>entries.length?entries.map((e,i)=>`<div class="summary-row"><span><span class="cat-dot" style="background:${CC_COLORS[i%CC_COLORS.length]}"></span>${e[0]}</span><span class="amount ${sign}">${fmt(e[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount ${sign}">${fmt(tot)}</span></div>`:'<div class="empty-state" style="padding:18px"><p>Nothing logged this month</p></div>';
   document.getElementById('lg-pay-l').innerHTML=rList(grp(pay),pay.reduce((s,e)=>s+e.amount,0),'neg');
   document.getElementById('lg-inc-l').innerHTML=rList(grp(inc),inc.reduce((s,e)=>s+e.amount,0),'pos');
+  document.getElementById('lg-fix-l').innerHTML=rList(grp(fix),fixT,'neg');
   // BUDGET-AWARE expense breakdown with per-category date drilldown
   renderLogBudget(fm,exp);
-  const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':'<span class="tag tag-red">Expense</span>';
+  const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':t==='fixed'?'<span class="tag tag-blue">Fixed</span>':'<span class="tag tag-red">Expense</span>';
   const sorted=[...f].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   document.getElementById('lg-tbl').innerHTML=sorted.length?sorted.map(e=>`<tr><td>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${tt(e.type)}</td><td>${e.who}${e.cc?'<span class="cc-pill" title="Paid by credit card">CC</span>':''}</td><td style="font-size:11px;color:var(--light)">${e.note||''}</td><td class="amount ${e.type==='income'?'pos':'neg'}">${fmt(e.amount)}</td><td><button class="icon-btn" onclick="LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--light)">No entries yet. Log your first transaction above.</td></tr>';
 }
@@ -935,20 +1044,23 @@ function saveEMI(){const idx=document.getElementById('emi-edit-idx').value;const
 
 // ============ INVESTMENTS ============
 function renderInvestments(){
-  document.getElementById('sip-tbl').innerHTML=INV.sips.map(s=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.target)}</td><td class="amount">${fmt(s.current)}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.target,0))}</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.current,0))}</strong></td></tr>`;
+  document.getElementById('sip-tbl').innerHTML=INV.sips.map(s=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.target)}</td><td class="amount">${fmt(s.current)}</td><td style="font-size:11px;color:var(--light)">${s.why||''}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.target,0))}</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.current,0))}</strong></td><td></td></tr>`;
   document.getElementById('lump-tbl').innerHTML=INV.quarterly.map(l=>`<tr><td>${l.name}</td><td class="amount">${fmt(l.amount)}</td><td style="font-size:11px;color:var(--light)">${l.why}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.quarterly.reduce((s,x)=>s+x.amount,0))}</strong></td><td></td></tr>`;
   const si=s=>s==='done'?'<span class="tag tag-green">Done</span>':s==='skipped'?'<span class="tag tag-red">Skipped</span>':'<span class="tag tag-amber">Pending</span>';
   document.getElementById('siplog-tbl').innerHTML=SL.map(l=>`<tr><td>${monthName(l.month)}</td><td>${si(l.sip)}</td><td>${si(l.travel)}</td><td style="font-size:11px">${l.notes||''}</td></tr>`).join('');
+  if(!INV.funds||typeof INV.funds!=='object')INV.funds={emergency:0,travel:0,investment:0};
+  ['emergency','travel','investment'].forEach(k=>{const el=document.getElementById('fund-'+k);if(el&&document.activeElement!==el)el.value=INV.funds[k]?INV.funds[k]:''});
 }
+function saveFund(which,val){if(!INV.funds||typeof INV.funds!=='object')INV.funds={emergency:0,travel:0,investment:0};INV.funds[which]=+val||0;S(K.inv,INV);}
 function openInvEdit(){
-  let h='';INV.sips.forEach((s,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${s.name}" data-si="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:100px"><label>Target</label><input type="number" value="${s.target}" data-si="${i}-t"></div><div class="form-group" style="max-width:100px"><label>Current</label><input type="number" value="${s.current}" data-si="${i}-c"></div><button class="icon-btn" onclick="INV.sips.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
+  let h='';INV.sips.forEach((s,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${s.name}" data-si="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:100px"><label>Target</label><input type="number" value="${s.target}" data-si="${i}-t"></div><div class="form-group" style="max-width:100px"><label>Current</label><input type="number" value="${s.current}" data-si="${i}-c"></div><div class="form-group"><label>Purpose</label><input value="${(s.why||'').replace(/"/g,'&quot;')}" data-si="${i}-w" placeholder="Why this fund"></div><button class="icon-btn" onclick="INV.sips.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
   document.getElementById('inv-sip-ed').innerHTML=h;
   let h2='';INV.quarterly.forEach((l,i)=>{h2+=`<div class="form-row"><div class="form-group"><input value="${l.name}" data-qi="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:100px"><label>Amount</label><input type="number" value="${l.amount}" data-qi="${i}-a"></div><div class="form-group"><label>Purpose</label><input value="${l.why}" data-qi="${i}-w"></div><button class="icon-btn" onclick="INV.quarterly.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
   document.getElementById('inv-lump-ed').innerHTML=h2;openM('m-inv');
 }
-function addSIPRow(){INV.sips.push({name:'',target:0,current:0});openInvEdit()}
+function addSIPRow(){INV.sips.push({name:'',target:0,current:0,why:''});openInvEdit()}
 function addLumpRow(){INV.quarterly.push({name:'',amount:0,why:''});openInvEdit()}
-function saveInvestments(){INV.sips.forEach((s,i)=>{const n=document.querySelector(`[data-si="${i}-n"]`),t=document.querySelector(`[data-si="${i}-t"]`),c=document.querySelector(`[data-si="${i}-c"]`);if(n)s.name=n.value;if(t)s.target=+t.value||0;if(c)s.current=+c.value||0});INV.sips=INV.sips.filter(s=>s.name.trim());INV.quarterly.forEach((l,i)=>{const n=document.querySelector(`[data-qi="${i}-n"]`),a=document.querySelector(`[data-qi="${i}-a"]`),w=document.querySelector(`[data-qi="${i}-w"]`);if(n)l.name=n.value;if(a)l.amount=+a.value||0;if(w)l.why=w.value});INV.quarterly=INV.quarterly.filter(l=>l.name.trim());S(K.inv,INV);closeM('m-inv');renderAll()}
+function saveInvestments(){INV.sips.forEach((s,i)=>{const n=document.querySelector(`[data-si="${i}-n"]`),t=document.querySelector(`[data-si="${i}-t"]`),c=document.querySelector(`[data-si="${i}-c"]`),w=document.querySelector(`[data-si="${i}-w"]`);if(n)s.name=n.value;if(t)s.target=+t.value||0;if(c)s.current=+c.value||0;if(w)s.why=w.value});INV.sips=INV.sips.filter(s=>s.name.trim());INV.quarterly.forEach((l,i)=>{const n=document.querySelector(`[data-qi="${i}-n"]`),a=document.querySelector(`[data-qi="${i}-a"]`),w=document.querySelector(`[data-qi="${i}-w"]`);if(n)l.name=n.value;if(a)l.amount=+a.value||0;if(w)l.why=w.value});INV.quarterly=INV.quarterly.filter(l=>l.name.trim());S(K.inv,INV);closeM('m-inv');renderAll()}
 function openSIPLog(){document.getElementById('sl-month').value=cm();openM('m-siplog')}
 function saveSIPLog(){const m=document.getElementById('sl-month').value,sip=document.getElementById('sl-sip').value,travel=document.getElementById('sl-travel').value,notes=document.getElementById('sl-notes').value;if(!m)return;const ex=SL.findIndex(l=>l.month===m);if(ex>=0)SL[ex]={month:m,sip,travel,notes};else{SL.push({month:m,sip,travel,notes});SL.sort((a,b)=>a.month.localeCompare(b.month))}S(K.sl,SL);closeM('m-siplog');renderAll()}
 
@@ -1217,7 +1329,7 @@ function optTip(cat,over){
 function copyReview(){const t=document.querySelector('.review-box');if(t){const text=t.innerText;navigator.clipboard.writeText(text).then(()=>{const b=event.target;b.textContent='✓ Copied';setTimeout(()=>b.textContent='Copy Report',1200)}).catch(()=>alert('Copy failed, select manually'))}}
 
 // ============ EXPORT / IMPORT ============
-function exportAll(){const data={app:'Pratim Finance Tracker',version:6,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC,payees:PAYEES};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
+function exportAll(){const data={app:'Pratim Finance Tracker',version:7,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,sp:SP,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC,payees:PAYEES,sources:SOURCES};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
 function importAll(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);
   if(data.nw!==undefined){NW=data.nw;S(K.nw,NW)}
   if(data.nwh!==undefined){NWH=data.nwh;S(K.nwh,NWH)}
@@ -1235,6 +1347,7 @@ function importAll(e){const file=e.target.files[0];if(!file)return;const reader=
   if(data.cc!==undefined){CC=data.cc;S(K.cc,CC)}
   if(data.calc!==undefined){CALC=data.calc;S(K.calc,CALC)}
   if(data.payees!==undefined){PAYEES=data.payees;S(K.payees,PAYEES)}
+  if(data.sources!==undefined){SOURCES=data.sources;S(K.sources,SOURCES)}
   renderAll();alert('All data restored successfully.')}catch(err){alert('Invalid backup file: '+err.message)}};reader.readAsText(file);e.target.value=''}
 
 // ============ BEHAVIOR ANALYTICS ============
