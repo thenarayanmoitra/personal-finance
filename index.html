@@ -336,6 +336,67 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
 @media(prefers-reduced-motion:reduce){
   .card:hover,.chip:hover:not(.selected),.segment button.active{transform:none}
 }
+
+/* ===== V2 ADDITIONS (additive only, no data or logic changes) ===== */
+
+/* Auto-fit stat grid so a row of 5 cards wraps gracefully on every screen */
+.grid-auto{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+@media(max-width:768px){.grid-auto{gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
+@media(max-width:420px){.grid-auto{grid-template-columns:1fr 1fr}}
+
+/* Five item segmented control stays comfortable down to small iPhones */
+.segment.five button{white-space:nowrap}
+@media(max-width:520px){
+  .segment.five button{padding:9px 4px;font-size:12px;letter-spacing:-.2px}
+}
+@media(max-width:380px){
+  .segment.five button{padding:8px 2px;font-size:11px}
+}
+
+/* Investment accent (used by the new log type and its tag) */
+.segment button.active.inv{color:#6B4C9A}
+.tag-invest{background:#EDE7F6;color:#6B4C9A}
+
+/* Total Out bar: a second headline value for what is left, plus an investments chip */
+.total-out-bar .to-heads{display:flex;gap:26px;flex-wrap:wrap}
+.total-out-bar .to-value.left{color:#8FD19E}
+.total-out-bar .to-value.left.neg{color:#F0A6A6}
+.total-out-bar .to-chip .v.inv{color:#C6B0E8}
+@media(max-width:768px){
+  .total-out-bar .to-heads{gap:18px;width:100%;justify-content:space-between}
+}
+
+/* EMI category ranking rows */
+.rank-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--rule)}
+.rank-row:last-child{border-bottom:none}
+.rank-row .rk-badge{width:24px;height:24px;border-radius:7px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rank-row .rk-body{flex:1;min-width:0}
+.rank-row .rk-head{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px}
+.rank-row .rk-sub{font-size:11px;color:var(--light)}
+.rank-row .rk-track{height:7px;background:var(--tag-bg);border-radius:5px;overflow:hidden;margin-top:5px}
+.rank-row .rk-fill{height:100%;border-radius:5px;transition:width .5s cubic-bezier(.32,.72,0,1)}
+
+/* Client revenue: secondary meta line under a client name */
+.cl-meta{font-size:11px;color:var(--light);margin-top:2px;line-height:1.4}
+.cl-sort{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.sort-btn{padding:5px 10px;font-size:11px;border-radius:8px;background:var(--tag-bg);color:var(--ink);border:1px solid var(--rule-dk);cursor:pointer;font-weight:600}
+.sort-btn.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+
+/* Taller chart wells for the EMI breakdown so columns get room to breathe */
+.chart-box.tall{height:340px}
+@media(max-width:768px){.chart-box.tall{height:300px}}
+
+/* Edge fade on the scrolling tab strip so it reads as scrollable on touch */
+.tabs-wrap{position:relative}
+.tabs-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:26px;pointer-events:none;background:linear-gradient(90deg,rgba(31,20,9,0),rgba(31,20,9,.55));z-index:100}
+
+/* A touch more breathing room and legibility on phones */
+@media(max-width:768px){
+  .card-title{font-size:10.5px}
+  .summary-row{font-size:13px;padding:8px 0}
+  .stat-card::before{width:3px}
+  .big-number{letter-spacing:-.3px}
+}
 </style>
 </head>
 <body>
@@ -399,11 +460,12 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
   </div>
 
   <div class="card mb-16" id="quick-log-card">
-    <div class="segment mb-16" id="log-segment">
+    <div class="segment five mb-16" id="log-segment">
       <button class="active exp" data-lt="expense" onclick="setLogType('expense')">Expense</button>
       <button class="fix" data-lt="fixed" onclick="setLogType('fixed')">Fixed</button>
       <button class="pay" data-lt="payout" onclick="setLogType('payout')">Agency</button>
       <button class="inc" data-lt="income" onclick="setLogType('income')">Income</button>
+      <button class="inv" data-lt="investment" onclick="setLogType('investment')">Invest</button>
     </div>
 
     <div id="log-cat-section">
@@ -426,9 +488,15 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
   </div>
 
   <div class="total-out-bar" id="total-out-bar">
-    <div class="to-main">
-      <span class="to-label">Total Out This Month</span>
-      <span class="to-value" id="to-total">₹0</span>
+    <div class="to-heads">
+      <div class="to-main">
+        <span class="to-label">Total Out This Month</span>
+        <span class="to-value" id="to-total">₹0</span>
+      </div>
+      <div class="to-main">
+        <span class="to-label">Left This Month</span>
+        <span class="to-value left" id="to-left">₹0</span>
+      </div>
     </div>
     <div class="to-break">
       <div class="to-chip"><span class="k">Personal Expenses</span><span class="v" id="to-exp">₹0</span></div>
@@ -436,12 +504,15 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
       <div class="to-chip"><span class="k">Fixed Costs</span><span class="v" id="to-fix">₹0</span></div>
       <div class="to-plus">+</div>
       <div class="to-chip"><span class="k">Agency Expenses</span><span class="v" id="to-agy">₹0</span></div>
+      <div class="to-plus">+</div>
+      <div class="to-chip"><span class="k">Investments</span><span class="v inv" id="to-inv">₹0</span></div>
       <div class="to-chip"><span class="k">Income In</span><span class="v inc" id="to-inc">₹0</span></div>
     </div>
   </div>
-  <div class="grid grid-4 mb-16">
+  <div class="grid-auto mb-16">
     <div class="stat-card red"><div class="card-title">Personal Expenses</div><div class="big-number red" id="lg-exp"></div></div>
     <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Agency Expenses</div><div class="big-number" id="lg-pay" style="color:var(--amber)"></div></div>
+    <div class="stat-card" style="--terra:#6B4C9A"><div class="card-title">Investments</div><div class="big-number" id="lg-inv" style="color:#6B4C9A"></div></div>
     <div class="stat-card green"><div class="card-title">Income</div><div class="big-number green" id="lg-inc"></div></div>
     <div class="stat-card blue"><div class="card-title">Credit Card Charged</div><div class="big-number" id="lg-cc" style="color:var(--blue)"></div><button class="btn btn-secondary btn-xs mt-8" id="lg-cc-clear" onclick="clearCC()">Mark Cleared</button></div>
   </div>
@@ -449,7 +520,10 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
     <div class="card"><div class="card-title" style="display:flex;justify-content:space-between;align-items:center">Agency Expenses <button class="btn btn-secondary btn-xs" style="text-transform:none;letter-spacing:0" onclick="openPayeesModal()">✎ Edit list</button></div><div id="lg-pay-l"></div></div>
     <div class="card"><div class="card-title">Income This Month</div><div id="lg-inc-l"></div></div>
   </div>
-  <div class="card mb-16"><div class="card-title">Fixed Costs This Month</div><div id="lg-fix-l"></div></div>
+  <div class="grid grid-2 mb-16">
+    <div class="card"><div class="card-title">Investments This Month</div><div id="lg-inv-l"></div></div>
+    <div class="card"><div class="card-title">Fixed Costs This Month</div><div id="lg-fix-l"></div></div>
+  </div>
   <div class="card mb-16"><div class="card-title">Spending vs Budget · <span id="lg-budget-status" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div><div id="lg-exp-l"></div></div>
   <div class="card"><div class="card-title">All Entries</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="amount">₹</th><th></th></tr></thead><tbody id="lg-tbl"></tbody></table></div></div>
 </div>
@@ -478,11 +552,9 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
 <!-- EMIS -->
 <div class="page" id="page-emis">
   <div class="section-header"><div><h2>EMIs &amp; Subscriptions</h2><div class="section-sub">Tap edit to change any value anytime</div></div><button class="btn btn-primary" onclick="openEMIAdd()">+ Add</button></div>
-  <div class="card mb-16"><div class="card-title">Active EMIs</div><div class="scroll-table"><table><thead><tr><th>Item</th><th>Category</th><th class="amount">Monthly</th><th>Ends</th><th>Status</th><th></th></tr></thead><tbody id="emi-tbl"></tbody></table></div></div>
-  <div class="grid grid-2">
-    <div class="card"><div class="card-title">EMI Breakdown</div><div class="chart-box"><canvas id="ch-emi"></canvas></div></div>
-    <div class="card"><div class="card-title">Subscriptions</div><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div>
-  </div>
+  <div class="card mb-16"><div class="section-header" style="margin-bottom:12px"><div class="card-title" style="margin:0">Active EMIs</div><div class="card-title" style="margin:0;color:var(--terra);text-transform:none;letter-spacing:0;font-size:12px" id="emi-total-lbl"></div></div><div class="scroll-table"><table><thead><tr><th>Item</th><th>Category</th><th class="amount">Monthly</th><th>Ends</th><th>Status</th><th></th></tr></thead><tbody id="emi-tbl"></tbody></table></div></div>
+  <div class="card mb-16"><div class="card-title">Where Your EMIs Go, Most To Least</div><div class="grid grid-2" style="align-items:center"><div class="chart-box tall"><canvas id="ch-emi"></canvas></div><div id="emi-cat-rank"></div></div></div>
+  <div class="card"><div class="card-title">Subscriptions</div><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div>
   <div class="card mt-16" style="border-left:3px solid var(--terra);background:linear-gradient(135deg,var(--amber-bg),#fff)">
     <div style="display:flex;gap:12px;align-items:flex-start">
       <div style="font-size:20px;line-height:1">🛡️</div>
@@ -493,9 +565,9 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
 
 <!-- INVESTMENTS -->
 <div class="page" id="page-investments">
-  <div class="section-header"><div><h2>Investments</h2><div class="section-sub">Edit any fund, amount, or target</div></div><button class="btn btn-primary" onclick="openInvEdit()">Edit Funds</button></div>
+  <div class="section-header"><div><h2>Investments</h2><div class="section-sub">Edit any fund, amount, or purpose</div></div><button class="btn btn-primary" onclick="openInvEdit()">Edit Funds</button></div>
   <div class="grid grid-2 mb-16">
-    <div class="card"><div class="card-title">Monthly SIPs · 11th</div><table><thead><tr><th>Fund</th><th class="amount">Target</th><th class="amount">Current</th><th>Purpose</th></tr></thead><tbody id="sip-tbl"></tbody></table></div>
+    <div class="card"><div class="card-title">Monthly SIPs · 11th</div><table><thead><tr><th>Fund</th><th class="amount">Monthly</th><th>Purpose</th></tr></thead><tbody id="sip-tbl"></tbody></table></div>
     <div class="card"><div class="card-title">Quarterly Lump Sum</div><table><thead><tr><th>Fund</th><th class="amount">Amount</th><th>Purpose</th></tr></thead><tbody id="lump-tbl"></tbody></table></div>
   </div>
   <div class="card mb-16">
@@ -550,12 +622,12 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
   <div class="section-header"><div><h2>Agency P&amp;L</h2><div class="section-sub">Revenue, costs and freelancer payouts</div></div><button class="btn btn-primary" onclick="openAgencyModal()">Edit</button></div>
   <div class="grid grid-3 mb-16">
     <div class="stat-card green"><div class="card-title">Gross Revenue</div><div class="big-number green" id="ag-rev"></div></div>
-    <div class="stat-card red"><div class="card-title">Fixed Costs</div><div class="big-number red" id="ag-cost"></div></div>
-    <div class="stat-card blue"><div class="card-title">Net Take Home</div><div class="big-number" id="ag-net"></div></div>
+    <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Agency Expenses This Month</div><div class="big-number" id="ag-exp-m" style="color:var(--amber)"></div></div>
+    <div class="stat-card blue"><div class="card-title">Net This Month</div><div class="big-number" id="ag-net"></div></div>
   </div>
   <div class="grid grid-2">
-    <div class="card"><div class="card-title">Client Revenue</div><table><thead><tr><th>Client</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-cl-tbl"></tbody></table></div>
-    <div class="card"><div class="card-title">Fixed Costs</div><table><thead><tr><th>Item</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-co-tbl"></tbody></table><div class="card-title mt-16">Logged Agency Expenses This Month</div><div id="ag-payouts"></div></div>
+    <div class="card"><div class="card-title">Client Revenue</div><div class="cl-sort"><span style="font-size:11px;color:var(--light);font-weight:600">Sort</span><button class="sort-btn" id="ag-sort-amt" onclick="setAgencySort('amount')">Highest paid</button><button class="sort-btn" id="ag-sort-az" onclick="setAgencySort('name')">A to Z</button></div><table><thead><tr><th>Client</th><th class="amount">Monthly</th></tr></thead><tbody id="ag-cl-tbl"></tbody></table></div>
+    <div class="card"><div class="card-title">Logged Agency Expenses This Month</div><div id="ag-payouts"></div></div>
   </div>
 </div>
 
@@ -640,8 +712,9 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
 </div></div>
 
 <div class="modal-overlay" id="m-agency"><div class="modal"><h3>Edit Agency</h3>
-  <div class="card-title">Clients</div><div id="ag-cl-ed"></div><button class="btn btn-secondary btn-sm mt-12 mb-12" onclick="AG.clients.push({name:'',amount:0});openAgencyModal()">+ Add Client</button>
-  <div class="card-title">Fixed Costs</div><div id="ag-co-ed"></div><button class="btn btn-secondary btn-sm mt-12 mb-12" onclick="AG.costs.push({name:'',amount:0});openAgencyModal()">+ Add Cost</button>
+  <div class="card-title">Clients</div>
+  <p style="font-size:12px;color:var(--light);margin:-4px 0 12px;line-height:1.45">Add the monthly amount, when you joined them, and which dates they pay you.</p>
+  <div id="ag-cl-ed"></div><button class="btn btn-secondary btn-sm mt-12 mb-12" onclick="AG.clients.push({name:'',amount:0,joined:'',payDates:''});openAgencyModal()">+ Add Client</button>
   <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveAgency()">Save</button><button class="btn btn-secondary" onclick="closeM('m-agency')">Cancel</button></div>
 </div></div>
 
@@ -694,6 +767,7 @@ function catBudgetFor(name){const v=BG.variable.find(x=>x.name===name);return v?
 function totalCatBudget(){return BG.variable.reduce((s,v)=>s+v.amount,0)}
 const FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
 const CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
+const INVEST_CATS=['SIP','Lump Sum','Gold','Emergency Fund','Travel Fund','Stocks','Other'];
 
 // ============ STORAGE ============
 const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',sp:'pft_sp',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees',sources:'pft_sources'};
@@ -827,7 +901,7 @@ if(!FLAT||!Array.isArray(FLAT.people))FLAT={rent:13000,startMonth:cm(),endMonth:
 [[K.nw,NW],[K.bg,BG],[K.emi,EMIS],[K.sub,SUBS],[K.ag,AG],[K.sl,SL],[K.inv,INV],[K.flat,FLAT],[K.wish,WISH],[K.cc,CC],[K.calc,CALC],[K.payees,PAYEES],[K.sources,SOURCES]].forEach(([k,v])=>{if(!localStorage.getItem(k))S(k,v)});
 
 // ============ TABS ============
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');window.scrollTo(0,0);renderAll();if(t.dataset.page==='calculator'){loadCalcInputs();calcRun()}}));
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));t.classList.add('active');try{t.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}document.getElementById('page-'+t.dataset.page).classList.add('active');window.scrollTo(0,0);renderAll();if(t.dataset.page==='calculator'){loadCalcInputs();calcRun()}}));
 function goLogbook(){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelector('[data-page="logbook"]').classList.add('active');document.getElementById('page-logbook').classList.add('active');window.scrollTo(0,0);renderLogbook();document.getElementById('log-a').focus()}
 
 // ============ OVERVIEW ============
@@ -840,8 +914,8 @@ function renderOverview(){
   // NW trend
   if(NWH.length>=2){const prev=NWH[NWH.length-2];const pv=prev.bank+prev.investments+prev.cash+prev.resellables+prev.lending;const diff=ta-pv;document.getElementById('ov-nw-sub').innerHTML=`<span style="color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'▲':'▼'} ${fmt(Math.abs(diff))}</span> since last`}else document.getElementById('ov-nw-sub').textContent='Update to track growth';
   document.getElementById('ov-inc').textContent=fmt(BG.income);
-  document.getElementById('ov-out').textContent=fmt(ft+vt);
-  document.getElementById('ov-out-sub').textContent=`Fixed ${fmtS(ft)} + Var ${fmtS(vt)}`;
+  document.getElementById('ov-out').textContent=fmt(ft+vt+st);
+  document.getElementById('ov-out-sub').textContent=`Fixed ${fmtS(ft)} + Var ${fmtS(vt)} + Invest ${fmtS(st)}`;
   document.getElementById('ov-sur').textContent=fmt(surplus);
   document.getElementById('ov-sur').className='big-number '+(surplus>=0?'green':'red');
   const ir=pct(st,BG.income);document.getElementById('ov-ir').textContent=ir+'%';document.getElementById('ov-irbar').style.width=ir+'%';
@@ -880,6 +954,7 @@ function renderLogChips(){
   if(LOG_TYPE==='expense'){opts=CATSlist();sec.querySelector('label').textContent='Category';lbl.textContent='Amount Spent (₹)'}
   else if(LOG_TYPE==='fixed'){opts=BG.fixed.map(f=>f.name);sec.querySelector('label').textContent='Fixed Cost';lbl.textContent='Amount Paid (₹)'}
   else if(LOG_TYPE==='payout'){opts=PAYEES;sec.querySelector('label').textContent='Agency Expense (freelancer, subscription, tool)';lbl.textContent='Amount (₹)'}
+  else if(LOG_TYPE==='investment'){opts=INVEST_CATS;sec.querySelector('label').textContent='Investment';lbl.textContent='Amount Invested (₹)'}
   else{opts=SOURCES;sec.querySelector('label').textContent='Client / Source';lbl.textContent='Income Received (₹)'}
   let chipHtml=opts.map(o=>`<div class="chip ${LOG_CAT===o?'selected':''}" onclick="selectChip('${o.replace(/'/g,"\\'")}')">${o}</div>`).join('');
   if(LOG_TYPE==='payout')chipHtml+=`<div class="chip chip-edit" onclick="openPayeesModal()" title="Add, rename or remove items">✎ Edit list</div>`;
@@ -919,26 +994,34 @@ function renderLogbook(){
   sel.innerHTML=[...ms].sort().reverse().map(m=>`<option value="${m}" ${m===cv?'selected':''}>${monthName(m)}</option>`).join('');
   const fm=sel.value||cm();
   const f=LB.filter(e=>e.date.startsWith(fm));
-  const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income'),fix=f.filter(e=>e.type==='fixed');
-  const expT=exp.reduce((s,e)=>s+e.amount,0),payT=pay.reduce((s,e)=>s+e.amount,0),incT=inc.reduce((s,e)=>s+e.amount,0),fixT=fix.reduce((s,e)=>s+e.amount,0);
+  const exp=f.filter(e=>e.type==='expense'),pay=f.filter(e=>e.type==='payout'),inc=f.filter(e=>e.type==='income'),fix=f.filter(e=>e.type==='fixed'),invm=f.filter(e=>e.type==='investment');
+  const expT=exp.reduce((s,e)=>s+e.amount,0),payT=pay.reduce((s,e)=>s+e.amount,0),incT=inc.reduce((s,e)=>s+e.amount,0),fixT=fix.reduce((s,e)=>s+e.amount,0),invT=invm.reduce((s,e)=>s+e.amount,0);
   document.getElementById('lg-exp').textContent=fmt(expT);
   document.getElementById('lg-pay').textContent=fmt(payT);
+  const lgInvEl=document.getElementById('lg-inv');if(lgInvEl)lgInvEl.textContent=fmt(invT);
   document.getElementById('lg-inc').textContent=fmt(incT);
   document.getElementById('lg-cc').textContent=fmt(ccChargedThisMonth(fm));
-  // Total Out bar = everything that left your pocket this month (personal + fixed + agency)
+  // Total Out bar = everything that left your pocket this month (personal + fixed + agency + investments)
   document.getElementById('to-exp').textContent=fmt(expT);
   document.getElementById('to-fix').textContent=fmt(fixT);
   document.getElementById('to-agy').textContent=fmt(payT);
+  const toInvEl=document.getElementById('to-inv');if(toInvEl)toInvEl.textContent=fmt(invT);
   document.getElementById('to-inc').textContent=fmt(incT);
-  document.getElementById('to-total').textContent=fmt(expT+fixT+payT);
+  const totalOut=expT+fixT+payT+invT;
+  document.getElementById('to-total').textContent=fmt(totalOut);
+  // Left this month = income received minus everything that went out (including investments)
+  const leftEl=document.getElementById('to-left');
+  if(leftEl){const left=incT-totalOut;leftEl.textContent=fmtSign(left);leftEl.classList.toggle('neg',left<0);}
   const grp=arr=>{const m={};arr.forEach(e=>{m[e.who]=(m[e.who]||0)+e.amount});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   const rList=(entries,tot,sign)=>entries.length?entries.map((e,i)=>`<div class="summary-row"><span><span class="cat-dot" style="background:${CC_COLORS[i%CC_COLORS.length]}"></span>${e[0]}</span><span class="amount ${sign}">${fmt(e[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount ${sign}">${fmt(tot)}</span></div>`:'<div class="empty-state" style="padding:18px"><p>Nothing logged this month</p></div>';
   document.getElementById('lg-pay-l').innerHTML=rList(grp(pay),pay.reduce((s,e)=>s+e.amount,0),'neg');
   document.getElementById('lg-inc-l').innerHTML=rList(grp(inc),inc.reduce((s,e)=>s+e.amount,0),'pos');
   document.getElementById('lg-fix-l').innerHTML=rList(grp(fix),fixT,'neg');
+  const invGrp=grp(invm);
+  document.getElementById('lg-inv-l').innerHTML=invGrp.length?invGrp.map(e=>`<div class="summary-row"><span><span class="cat-dot" style="background:#6B4C9A"></span>${e[0]}</span><span class="amount" style="color:#6B4C9A">${fmt(e[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount" style="color:#6B4C9A">${fmt(invT)}</span></div>`:'<div class="empty-state" style="padding:18px"><p>No investments logged this month</p></div>';
   // BUDGET-AWARE expense breakdown with per-category date drilldown
   renderLogBudget(fm,exp);
-  const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':t==='fixed'?'<span class="tag tag-blue">Fixed</span>':'<span class="tag tag-red">Expense</span>';
+  const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':t==='fixed'?'<span class="tag tag-blue">Fixed</span>':t==='investment'?'<span class="tag tag-invest">Invest</span>':'<span class="tag tag-red">Expense</span>';
   const sorted=[...f].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
   document.getElementById('lg-tbl').innerHTML=sorted.length?sorted.map(e=>`<tr><td>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${tt(e.type)}</td><td>${e.who}${e.cc?'<span class="cc-pill" title="Paid by credit card">CC</span>':''}</td><td style="font-size:11px;color:var(--light)">${e.note||''}</td><td class="amount ${e.type==='income'?'pos':'neg'}">${fmt(e.amount)}</td><td><button class="icon-btn" onclick="LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--light)">No entries yet. Log your first transaction above.</td></tr>';
 }
@@ -949,10 +1032,11 @@ function renderLogBudget(fm,exp){
   const budTot=totalCatBudget();
   // overall status line
   const sl=document.getElementById('lg-budget-status');
-  if(totalSpent===0){sl.innerHTML='<span style="color:var(--light)">Nothing logged yet</span>'}
-  else if(totalSpent>budTot){sl.innerHTML=`<span style="color:var(--red)">${fmt(totalSpent)} spent, ${fmt(totalSpent-budTot)} over your ${fmt(budTot)} budget</span>`}
-  else if(totalSpent>budTot*0.9){sl.innerHTML=`<span style="color:var(--amber)">${fmt(totalSpent)} spent, cutting it close at ${pct(totalSpent,budTot)}% of budget</span>`}
-  else{sl.innerHTML=`<span style="color:var(--green)">${fmt(totalSpent)} spent, ${fmt(budTot-totalSpent)} still in budget</span>`}
+  const remTot=budTot-totalSpent;
+  if(totalSpent===0){sl.innerHTML=`<span style="color:var(--light)">${fmt(budTot)} left, nothing logged yet</span>`}
+  else if(remTot<=0){sl.innerHTML=`<span style="color:var(--red)">Over by ${fmt(Math.abs(remTot))} on your ${fmt(budTot)} budget</span>`}
+  else if(totalSpent>budTot*0.9){sl.innerHTML=`<span style="color:var(--amber)">${fmt(remTot)} left, cutting it close at ${pct(totalSpent,budTot)}% of budget</span>`}
+  else{sl.innerHTML=`<span style="color:var(--green)">${fmt(remTot)} left of your ${fmt(budTot)} budget</span>`}
   // per category, derived live from the variable budget
   const byCat={};exp.forEach(e=>{if(!byCat[e.who])byCat[e.who]=[];byCat[e.who].push(e)});
   let html='';
@@ -961,19 +1045,20 @@ function renderLogBudget(fm,exp){
     const spent=entries.reduce((s,e)=>s+e.amount,0);
     const bud=catBudgetFor(cat);
     const p=bud>0?Math.min(100,pct(spent,bud)):0;
-    const isOver=bud>0&&spent>bud;
+    const rem=bud-spent;
+    const isOver=bud>0&&rem<=0;
     const isClose=bud>0&&!isOver&&spent>bud*0.85;
     let tag;
     if(bud===0)tag='<span class="cat-budget-status" style="background:var(--tag-bg);color:var(--light)">No budget</span>';
-    else if(isOver)tag=`<span class="cat-budget-status tag-red">${fmtS(spent-bud)} over</span>`;
-    else if(isClose)tag=`<span class="cat-budget-status tag-amber">${fmtS(bud-spent)} left</span>`;
-    else tag=`<span class="cat-budget-status tag-green">${fmtS(bud-spent)} left</span>`;
+    else if(isOver)tag=`<span class="cat-budget-status tag-red">Over by ${fmtS(Math.abs(rem))}</span>`;
+    else if(isClose)tag=`<span class="cat-budget-status tag-amber">${fmtS(rem)} left</span>`;
+    else tag=`<span class="cat-budget-status tag-green">${fmtS(rem)} left</span>`;
     const barCol=isOver?'var(--red)':isClose?'var(--amber)':'var(--green)';
     const isOpen=LG_OPEN_CAT===cat;
     const hasEntries=entries.length>0;
     const caret=hasEntries?`<span style="transition:transform .2s;display:inline-block;transform:rotate(${isOpen?90:0}deg);color:var(--light);margin-right:6px">▶</span>`:'<span style="margin-right:6px;opacity:0;display:inline-block">▶</span>';
     html+=`<div class="cat-budget-row" style="cursor:${hasEntries?'pointer':'default'}" ${hasEntries?`onclick="toggleLogCat('${cat.replace(/'/g,"\\'")}')"`:''}>
-      <div class="cat-budget-head"><span>${caret}${cat} ${hasEntries?`<span style="color:var(--light);font-size:11px">(${entries.length})</span>`:''}</span><span>${fmt(spent)}${bud>0?' / '+fmt(bud):''} ${tag}</span></div>
+      <div class="cat-budget-head"><span>${caret}${cat} ${hasEntries?`<span style="color:var(--light);font-size:11px">(${entries.length})</span>`:''}</span><span>${tag}</span></div>
       <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${barCol}"></div></div>`;
     if(isOpen&&hasEntries){
       html+=`<div style="margin:10px 0 4px;padding:10px 12px;background:var(--cream);border-radius:10px">`;
@@ -1029,11 +1114,25 @@ function openBudgetModal(){
 function saveBudget(){BG.income=+document.getElementById('bg-inc-e').value||0;['fixed','variable','savings'].forEach(t=>{BG[t].forEach((x,i)=>{const n=document.querySelector(`[data-b="${t}-${i}-n"]`),a=document.querySelector(`[data-b="${t}-${i}-a"]`);if(n)x.name=n.value;if(a)x.amount=+a.value||0});BG[t]=BG[t].filter(x=>x.name.trim())});S(K.bg,BG);closeM('m-budget');renderAll()}
 
 // ============ EMIS ============
+const EMI_CAT_COL={Furniture:'#9C6B2F',Personal:'#B44040',Vehicle:'#3B6FA0',Tech:'#3A7D44',Service:'#C4882F'};
 function renderEMIs(){
-  document.getElementById('emi-tbl').innerHTML=EMIS.map((e,i)=>{const r=mRem(e.end);const ended=r!==null&&r<=0;const st=ended?'<span class="tag tag-green">Done</span>':r!==null&&r<=3?'<span class="tag tag-amber">Ending Soon</span>':'<span class="tag tag-blue">Active</span>';return`<tr style="${ended?'opacity:.5':''}"><td>${e.name}</td><td><span class="tag tag-amber">${e.category}</span></td><td class="amount">${fmt(e.amount)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" onclick="editEMI(${i})">✏️</button> <button class="icon-btn" onclick="EMIS.splice(${i},1);S(K.emi,EMIS);renderAll()">✕</button></td></tr>`}).join('');
-  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.amount)}</td><td style="white-space:nowrap"><button class="icon-btn" onclick="editSub(${i})">✏️</button> <button class="icon-btn" onclick="SUBS.splice(${i},1);S(K.sub,SUBS);renderAll()">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td></td></tr>`;
   const ae=EMIS.filter(e=>{const r=mRem(e.end);return r===null||r>0});
-  if(ae.length)MC('ch-emi',{type:'bar',data:{labels:ae.map(e=>e.name.length>16?e.name.substring(0,16)+'…':e.name),datasets:[{data:ae.map(e=>e.amount),backgroundColor:'#9C6B2F',borderRadius:5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fmtS(v)}}}}});
+  const activeTotal=ae.reduce((s,e)=>s+e.amount,0);
+  // Active EMIs table keeps its natural order so edit and remove indices stay aligned, with a monthly total row appended
+  const rows=EMIS.map((e,i)=>{const r=mRem(e.end);const ended=r!==null&&r<=0;const st=ended?'<span class="tag tag-green">Done</span>':r!==null&&r<=3?'<span class="tag tag-amber">Ending Soon</span>':'<span class="tag tag-blue">Active</span>';return`<tr style="${ended?'opacity:.5':''}"><td>${e.name}</td><td><span class="tag tag-amber">${e.category}</span></td><td class="amount">${fmt(e.amount)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" onclick="editEMI(${i})">✏️</button> <button class="icon-btn" onclick="EMIS.splice(${i},1);S(K.emi,EMIS);renderAll()">✕</button></td></tr>`}).join('');
+  document.getElementById('emi-tbl').innerHTML=rows+`<tr><td colspan="2"><strong>Total each month (active)</strong></td><td class="amount"><strong>${fmt(activeTotal)}</strong></td><td colspan="3"></td></tr>`;
+  const tl=document.getElementById('emi-total-lbl');if(tl)tl.textContent=`${fmt(activeTotal)} / month · ${ae.length} active`;
+  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.amount)}</td><td style="white-space:nowrap"><button class="icon-btn" onclick="editSub(${i})">✏️</button> <button class="icon-btn" onclick="SUBS.splice(${i},1);S(K.sub,SUBS);renderAll()">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td></td></tr>`;
+  // Category ranking, heaviest first, so the leak is obvious at a glance
+  const catTot={};ae.forEach(e=>{catTot[e.category]=(catTot[e.category]||0)+e.amount});
+  const ranked=Object.entries(catTot).sort((a,b)=>b[1]-a[1]);
+  const maxc=ranked.length?ranked[0][1]:0;
+  const catKeys=Object.keys(catTot);
+  const colFor=c=>EMI_CAT_COL[c]||CC_COLORS[Math.max(0,catKeys.indexOf(c))%CC_COLORS.length];
+  const rankEl=document.getElementById('emi-cat-rank');
+  if(rankEl)rankEl.innerHTML=ranked.length?ranked.map((r,i)=>{const share=pct(r[1],activeTotal);return`<div class="rank-row"><div class="rk-badge" style="background:${colFor(r[0])}">${i+1}</div><div class="rk-body"><div class="rk-head"><span>${r[0]}</span><span>${fmt(r[1])}</span></div><div class="rk-track"><div class="rk-fill" style="width:${maxc?Math.round(r[1]/maxc*100):0}%;background:${colFor(r[0])}"></div></div><div class="rk-sub">${share}% of your monthly EMI load</div></div></div>`}).join(''):'<div class="empty-state" style="padding:20px"><p>No active EMIs right now.</p></div>';
+  if(ranked.length)MC('ch-emi',{type:'bar',data:{labels:ranked.map(r=>r[0]),datasets:[{data:ranked.map(r=>r[1]),backgroundColor:ranked.map(r=>colFor(r[0])),borderRadius:6,maxBarThickness:70}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.parsed.y)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>fmtS(v)},grid:{color:'rgba(31,20,9,.06)'}},x:{grid:{display:false}}}}});
+  else if(CI['ch-emi']){CI['ch-emi'].destroy();delete CI['ch-emi'];}
 }
 function openEMIAdd(){document.getElementById('emi-modal-title').textContent='Add EMI / Subscription';document.getElementById('emi-edit-idx').value='-1';document.getElementById('emi-name').value='';document.getElementById('emi-type').value='emi';document.getElementById('emi-cat').value='Furniture';document.getElementById('emi-amt').value='';document.getElementById('emi-end').value='';openM('m-emi')}
 function editEMI(i){const e=EMIS[i];document.getElementById('emi-modal-title').textContent='Edit EMI';document.getElementById('emi-edit-idx').value=i;document.getElementById('emi-name').value=e.name;document.getElementById('emi-type').value='emi';document.getElementById('emi-cat').value=e.category;document.getElementById('emi-amt').value=e.amount;document.getElementById('emi-end').value=e.end||'';openM('m-emi')}
@@ -1044,7 +1143,7 @@ function saveEMI(){const idx=document.getElementById('emi-edit-idx').value;const
 
 // ============ INVESTMENTS ============
 function renderInvestments(){
-  document.getElementById('sip-tbl').innerHTML=INV.sips.map(s=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.target)}</td><td class="amount">${fmt(s.current)}</td><td style="font-size:11px;color:var(--light)">${s.why||''}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.target,0))}</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.current,0))}</strong></td><td></td></tr>`;
+  document.getElementById('sip-tbl').innerHTML=INV.sips.map(s=>`<tr><td>${s.name}</td><td class="amount">${fmt(s.current)}</td><td style="font-size:11px;color:var(--light)">${s.why||''}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.sips.reduce((s,x)=>s+x.current,0))}</strong></td><td></td></tr>`;
   document.getElementById('lump-tbl').innerHTML=INV.quarterly.map(l=>`<tr><td>${l.name}</td><td class="amount">${fmt(l.amount)}</td><td style="font-size:11px;color:var(--light)">${l.why}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(INV.quarterly.reduce((s,x)=>s+x.amount,0))}</strong></td><td></td></tr>`;
   const si=s=>s==='done'?'<span class="tag tag-green">Done</span>':s==='skipped'?'<span class="tag tag-red">Skipped</span>':'<span class="tag tag-amber">Pending</span>';
   document.getElementById('siplog-tbl').innerHTML=SL.map(l=>`<tr><td>${monthName(l.month)}</td><td>${si(l.sip)}</td><td>${si(l.travel)}</td><td style="font-size:11px">${l.notes||''}</td></tr>`).join('');
@@ -1053,7 +1152,7 @@ function renderInvestments(){
 }
 function saveFund(which,val){if(!INV.funds||typeof INV.funds!=='object')INV.funds={emergency:0,travel:0,investment:0};INV.funds[which]=+val||0;S(K.inv,INV);}
 function openInvEdit(){
-  let h='';INV.sips.forEach((s,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${s.name}" data-si="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:100px"><label>Target</label><input type="number" value="${s.target}" data-si="${i}-t"></div><div class="form-group" style="max-width:100px"><label>Current</label><input type="number" value="${s.current}" data-si="${i}-c"></div><div class="form-group"><label>Purpose</label><input value="${(s.why||'').replace(/"/g,'&quot;')}" data-si="${i}-w" placeholder="Why this fund"></div><button class="icon-btn" onclick="INV.sips.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
+  let h='';INV.sips.forEach((s,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${s.name}" data-si="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:110px"><label>Monthly</label><input type="number" value="${s.current}" data-si="${i}-c"></div><div class="form-group"><label>Purpose</label><input value="${(s.why||'').replace(/"/g,'&quot;')}" data-si="${i}-w" placeholder="Why this fund"></div><button class="icon-btn" onclick="INV.sips.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
   document.getElementById('inv-sip-ed').innerHTML=h;
   let h2='';INV.quarterly.forEach((l,i)=>{h2+=`<div class="form-row"><div class="form-group"><input value="${l.name}" data-qi="${i}-n" placeholder="Fund name"></div><div class="form-group" style="max-width:100px"><label>Amount</label><input type="number" value="${l.amount}" data-qi="${i}-a"></div><div class="form-group"><label>Purpose</label><input value="${l.why}" data-qi="${i}-w"></div><button class="icon-btn" onclick="INV.quarterly.splice(${i},1);S(K.inv,INV);openInvEdit()">✕</button></div>`});
   document.getElementById('inv-lump-ed').innerHTML=h2;openM('m-inv');
@@ -1100,17 +1199,29 @@ function calcRun(){
   document.getElementById('calc-tbl').innerHTML=yearData.map(d=>`<tr><td>Year ${d.year}</td><td class="amount">${fmt(d.invested)}</td><td class="amount pos">${fmt(d.mv)}</td><td class="amount" style="color:var(--green)">${fmt(d.mv-d.invested)}</td></tr>`).join('');
 }
 // ============ AGENCY ============
+let AG_SORT='amount';
+function setAgencySort(mode){AG_SORT=mode;renderAgency();}
 function renderAgency(){
-  const rev=AG.clients.reduce((s,c)=>s+c.amount,0),cost=AG.costs.reduce((s,c)=>s+c.amount,0);
-  document.getElementById('ag-rev').textContent=fmt(rev);document.getElementById('ag-cost').textContent=fmt(cost);
-  document.getElementById('ag-net').textContent=fmt(rev-cost);document.getElementById('ag-net').className='big-number '+(rev-cost>=0?'green':'red');
-  document.getElementById('ag-cl-tbl').innerHTML=AG.clients.map(c=>`<tr><td>${c.name}</td><td class="amount pos">${fmt(c.amount)}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount pos"><strong>${fmt(rev)}</strong></td></tr>`;
-  document.getElementById('ag-co-tbl').innerHTML=AG.costs.map(c=>`<tr><td>${c.name}</td><td class="amount neg">${fmt(c.amount)}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount neg"><strong>${fmt(cost)}</strong></td></tr>`;
-  const mp=LB.filter(e=>e.type==='payout'&&e.date.startsWith(cm()));const byP={};mp.forEach(p=>{byP[p.who]=(byP[p.who]||0)+p.amount});const pe=Object.entries(byP).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('ag-payouts').innerHTML=pe.length?pe.map(p=>`<div class="summary-row"><span>${p[0]}</span><span class="amount neg">${fmt(p[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount neg">${fmt(mp.reduce((s,e)=>s+e.amount,0))}</span></div>`:'<div style="font-size:12px;color:var(--light);padding:8px 0">No agency expenses logged yet. Use the Logbook tab.</div>';
+  const rev=AG.clients.reduce((s,c)=>s+c.amount,0);
+  const mp=LB.filter(e=>e.type==='payout'&&e.date.startsWith(cm()));
+  const loggedExp=mp.reduce((s,e)=>s+e.amount,0);
+  const net=rev-loggedExp;
+  document.getElementById('ag-rev').textContent=fmt(rev);
+  const expEl=document.getElementById('ag-exp-m');if(expEl)expEl.textContent=fmt(loggedExp);
+  document.getElementById('ag-net').textContent=fmt(net);document.getElementById('ag-net').className='big-number '+(net>=0?'green':'red');
+  // Client revenue, sortable, with join date and pay dates shown as a meta line
+  const list=AG.clients.slice();
+  if(AG_SORT==='name')list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else list.sort((a,b)=>b.amount-a.amount);
+  const asA=document.getElementById('ag-sort-amt'),asN=document.getElementById('ag-sort-az');
+  if(asA)asA.classList.toggle('active',AG_SORT==='amount');
+  if(asN)asN.classList.toggle('active',AG_SORT==='name');
+  document.getElementById('ag-cl-tbl').innerHTML=list.map(c=>{const bits=[];if(c.joined)bits.push('Joined '+c.joined);if(c.payDates)bits.push('Paid '+c.payDates);const meta=bits.length?`<div class="cl-meta">${bits.join(' · ')}</div>`:'';return`<tr><td><div style="font-weight:600">${c.name}</div>${meta}</td><td class="amount pos">${fmt(c.amount)}</td></tr>`}).join('')+`<tr><td><strong>Total</strong></td><td class="amount pos"><strong>${fmt(rev)}</strong></td></tr>`;
+  const byP={};mp.forEach(p=>{byP[p.who]=(byP[p.who]||0)+p.amount});const pe=Object.entries(byP).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('ag-payouts').innerHTML=pe.length?pe.map(p=>`<div class="summary-row"><span>${p[0]}</span><span class="amount neg">${fmt(p[1])}</span></div>`).join('')+`<div class="summary-row total"><span>Total</span><span class="amount neg">${fmt(loggedExp)}</span></div>`:'<div style="font-size:12px;color:var(--light);padding:8px 0">No agency expenses logged yet. Use the Logbook tab.</div>';
 }
-function openAgencyModal(){let h='';AG.clients.forEach((c,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${c.name}" data-ac="${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${c.amount}" data-ac="${i}-a"></div><button class="icon-btn" onclick="AG.clients.splice(${i},1);S(K.ag,AG);openAgencyModal()">✕</button></div>`});document.getElementById('ag-cl-ed').innerHTML=h;let h2='';AG.costs.forEach((c,i)=>{h2+=`<div class="form-row"><div class="form-group"><input value="${c.name}" data-aco="${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${c.amount}" data-aco="${i}-a"></div><button class="icon-btn" onclick="AG.costs.splice(${i},1);S(K.ag,AG);openAgencyModal()">✕</button></div>`});document.getElementById('ag-co-ed').innerHTML=h2;openM('m-agency')}
-function saveAgency(){AG.clients.forEach((c,i)=>{const n=document.querySelector(`[data-ac="${i}-n"]`),a=document.querySelector(`[data-ac="${i}-a"]`);if(n)c.name=n.value;if(a)c.amount=+a.value||0});AG.clients=AG.clients.filter(c=>c.name.trim());AG.costs.forEach((c,i)=>{const n=document.querySelector(`[data-aco="${i}-n"]`),a=document.querySelector(`[data-aco="${i}-a"]`);if(n)c.name=n.value;if(a)c.amount=+a.value||0});AG.costs=AG.costs.filter(c=>c.name.trim());S(K.ag,AG);closeM('m-agency');renderAll()}
+function openAgencyModal(){let h='';AG.clients.forEach((c,i)=>{h+=`<div class="card mb-12" style="padding:12px"><div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Client</label><input value="${(c.name||'').replace(/"/g,'&quot;')}" data-ac="${i}-n"></div><div class="form-group" style="max-width:120px"><label>Monthly (₹)</label><input type="number" value="${c.amount||0}" data-ac="${i}-a"></div><button class="icon-btn" title="Remove" onclick="AG.clients.splice(${i},1);S(K.ag,AG);openAgencyModal()">✕</button></div><div class="form-row" style="margin-bottom:0"><div class="form-group"><label>Joined</label><input value="${(c.joined||'').replace(/"/g,'&quot;')}" data-ac="${i}-j" placeholder="e.g. Mar 2026"></div><div class="form-group"><label>Pay dates</label><input value="${(c.payDates||'').replace(/"/g,'&quot;')}" data-ac="${i}-p" placeholder="e.g. 1st and 15th"></div></div></div>`});document.getElementById('ag-cl-ed').innerHTML=h;openM('m-agency')}
+function saveAgency(){AG.clients.forEach((c,i)=>{const n=document.querySelector(`[data-ac="${i}-n"]`),a=document.querySelector(`[data-ac="${i}-a"]`),j=document.querySelector(`[data-ac="${i}-j"]`),p=document.querySelector(`[data-ac="${i}-p"]`);if(n)c.name=n.value;if(a)c.amount=+a.value||0;if(j)c.joined=j.value.trim();if(p)c.payDates=p.value.trim()});AG.clients=AG.clients.filter(c=>c.name.trim());S(K.ag,AG);closeM('m-agency');renderAll()}
 
 // ============ FLAT & LENDING ============
 function renderFlat(){
