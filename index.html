@@ -442,12 +442,16 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
     <div class="card"><div class="card-title">Active EMI Load</div><div class="big-number" id="ov-emi"></div><div class="big-label" id="ov-emi-lbl"></div></div>
   </div>
 
-  <div class="grid grid-2 mt-16">
+  <div class="section-header mt-16" style="margin-bottom:8px">
+    <div><h2 style="font-size:16px">Behavior breakdown</h2><div class="section-sub">Pick any month to see how it actually went</div></div>
+    <select id="beh-month" style="max-width:220px" onchange="setBehaviorMonth(this.value)"></select>
+  </div>
+  <div class="grid grid-2">
     <div class="card"><div class="card-title">Money Behavior Score</div><div class="score-ring-wrap"><div class="score-ring"><canvas id="ch-score" width="120" height="120"></canvas><div class="score-num"><div class="n" id="score-n">0</div><div class="l" id="score-grade">this month</div></div></div><div class="score-breakdown" id="score-breakdown"></div></div></div>
     <div class="card"><div class="card-title">Spending by Day of Week <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--light)" id="heat-month-lbl"></span></div><div class="heatmap" id="heatmap"></div><div id="heat-insight" style="font-size:12px;color:var(--light);margin-top:12px"></div></div>
   </div>
 
-  <div class="card mt-16" id="outlier-wrap" style="display:none"><div class="card-title">Largest Transaction This Month</div><div id="outlier-content"></div></div>
+  <div class="card mt-16" id="outlier-wrap" style="display:none"><div class="card-title" id="outlier-title">Largest transaction</div><div id="outlier-content"></div></div>
 </div>
 
 <!-- LOGBOOK -->
@@ -798,6 +802,28 @@ const pct=(a,b)=>b?Math.round(a/b*100):0;
 const td=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const cm=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`};
 const monthName=m=>{const[y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})};
+// Which month the behavior widgets (score, heatmap, outlier) are looking at. Null means auto pick.
+let BEHAVIOR_MONTH=null;
+// All months that have any spend data, from the logbook and Spendee reports combined, plus the current month.
+function behaviorMonths(){
+  const s=new Set([cm()]);
+  LB.forEach(e=>{if(e&&e.date)s.add(e.date.substring(0,7))});
+  SP.forEach(x=>{if(x&&x.month)s.add(x.month)});
+  return [...s].sort().reverse();
+}
+// The month a widget should read. Falls back to the newest month that actually has spending, so a fresh
+// calendar month with nothing logged does not show a blank dashboard.
+function behMonth(){
+  if(BEHAVIOR_MONTH)return BEHAVIOR_MONTH;
+  const withData=behaviorMonths().find(m=>monthSpendEvents(m).length);
+  return withData||cm();
+}
+function setBehaviorMonth(m){BEHAVIOR_MONTH=m;renderScore();renderHeatmap();renderOutlier()}
+function populateBehaviorMonths(){
+  const sel=document.getElementById('beh-month');if(!sel)return;
+  const active=behMonth();
+  sel.innerHTML=behaviorMonths().map(m=>`<option value="${m}" ${m===active?'selected':''}>${monthName(m)}${m===cm()?' (current)':''}</option>`).join('');
+}
 const mRem=end=>{if(!end)return null;const[y,m]=end.split('-').map(Number);const n=new Date();return(y-n.getFullYear())*12+(m-n.getMonth()-1)};
 const CC_COLORS=['#9C6B2F','#3A7D44','#3B6FA0','#B44040','#C4882F','#6B4C9A','#2E8B8B','#D4764E','#5B8C5A','#8B6969','#4682B4','#CD853F','#708090','#BC8F8F','#6B8E23'];
 let CI={};
@@ -924,7 +950,7 @@ function renderOverview(){
   document.getElementById('ov-emi').textContent=fmt(emiLoad);document.getElementById('ov-emi-lbl').textContent=pct(emiLoad,BG.income)+'% of income';
   MC('ch-alloc',{type:'doughnut',data:{labels:['Fixed','Variable','Investments','Surplus'],datasets:[{data:[ft,vt,st,Math.max(0,surplus)],backgroundColor:['#B44040','#C4882F','#3A7D44','#3B6FA0'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:11},padding:12}}}}});
   MC('ch-nwcomp',{type:'doughnut',data:{labels:['Bank','Investments','Cash','Resellables','Lent Out'],datasets:[{data:[NW.bank,NW.investments,NW.cash,NW.resellables,NW.lending],backgroundColor:['#3B6FA0','#3A7D44','#C4882F','#9C6B2F','#6B4C9A'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:11},padding:12}}}}});
-  renderScore();renderHeatmap();renderOutlier();
+  populateBehaviorMonths();renderScore();renderHeatmap();renderOutlier();
 }
 
 // ============ LOGBOOK ============
@@ -1469,7 +1495,7 @@ function monthSpendEvents(m){
 }
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function renderHeatmap(){
-  const m=cm();const evts=monthSpendEvents(m);
+  const m=behMonth();const evts=monthSpendEvents(m);
   document.getElementById('heat-month-lbl').textContent='· '+monthName(m);
   const byDow=[0,0,0,0,0,0,0];const cntDow=[0,0,0,0,0,0,0];
   evts.forEach(e=>{const d=new Date(e.date+'T00:00');const dow=d.getDay();byDow[dow]+=e.amount;cntDow[dow]++});
@@ -1493,8 +1519,9 @@ function renderHeatmap(){
   }else document.getElementById('heat-insight').textContent='No spending data for this month yet. Log expenses or upload a Spendee report.';
 }
 function renderOutlier(){
-  const m=cm();const evts=monthSpendEvents(m);
+  const m=behMonth();const evts=monthSpendEvents(m);
   const wrap=document.getElementById('outlier-wrap');
+  const title=document.getElementById('outlier-title');if(title)title.textContent='Largest transaction · '+monthName(m);
   if(!evts.length){wrap.style.display='none';return}
   const largest=evts.reduce((mx,e)=>e.amount>mx.amount?e:mx,evts[0]);
   const total=evts.reduce((s,e)=>s+e.amount,0);const avg=total/evts.length;
@@ -1503,7 +1530,7 @@ function renderOutlier(){
   document.getElementById('outlier-content').innerHTML=`<div class="outlier-card"><div class="outlier-icon">⚡</div><div style="flex:1"><div style="font-family:Georgia,serif;font-size:20px;color:var(--espresso)">${fmt(largest.amount)}</div><div style="font-size:12px;color:var(--light);margin-top:2px">${largest.who}${largest.note?' · '+largest.note:''} on ${new Date(largest.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div><div style="font-size:12px;margin-top:6px">This single charge is <strong>${share}%</strong> of your month and <strong>${vsAvg}x</strong> your average transaction. ${share>25?'A big outlier like this is skewing your daily average. The rest of your month is leaner than the numbers suggest.':'Reasonably in line with your normal spending, not a distorting outlier.'}</div></div></div>`;
 }
 function computeScore(){
-  const m=cm();const evts=monthSpendEvents(m);
+  const m=behMonth();const evts=monthSpendEvents(m);
   const budTot=totalCatBudget();const spent=evts.reduce((s,e)=>s+e.amount,0);
   let adherence;
   if(spent===0)adherence=100;
@@ -1531,7 +1558,7 @@ function renderScore(){
   document.getElementById('score-breakdown').innerHTML=
     bar('Budget Adherence',s.adherence,s.spent<=s.budTot?`${fmt(s.budTot-s.spent)} under budget`:`${fmt(s.spent-s.budTot)} over budget`)+
     bar('Impulse Control',s.impulse,`${Math.round(s.impulseRatio*100)}% of spend on discretionary`)+
-    bar('Logging Streak',s.streak,`${new Set(monthSpendEvents(cm()).map(e=>e.date)).size} active days tracked`);
+    bar('Logging Streak',s.streak,`${new Set(monthSpendEvents(behMonth()).map(e=>e.date)).size} active days tracked`);
 }
 
 // ============ RENDER ALL ============
