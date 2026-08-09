@@ -11,15 +11,93 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --cream:#FAF6EF;--terra:#9C6B2F;--terra-lt:#C08D52;--espresso:#1F1409;--ink:#3B3226;--light:#7A7062;--rule:#E5DDD0;--rule-dk:#C8C0B4;--card:#fff;
-  --green:#3A7D44;--green-bg:#E8F5E9;--red:#B44040;--red-bg:#FCEBEB;--amber:#C4882F;--amber-bg:#FBF3E3;--blue:#3B6FA0;--blue-bg:#E8F0F7;--tag-bg:#F0EAE0;
-  --shadow:0 1px 3px rgba(31,20,9,.06),0 1px 2px rgba(31,20,9,.04);
-  --shadow-lg:0 10px 40px rgba(31,20,9,.12);
-  --radius:14px;--radius-sm:10px;
+  color-scheme:light dark;
+  /* Apple system colors, expressed semantically. Light default.
+     Values from the HIG Color specifications. Dark and increased-contrast
+     variants override these same names in the media blocks below. */
+
+  /* Backgrounds: grouped hierarchy */
+  --cream:#F2F2F7;        /* systemGroupedBackground  (app canvas) */
+  --card:#FFFFFF;         /* secondarySystemGroupedBackground (cards) */
+  --lav:#EFEFF4;          /* tertiarySystemGroupedBackground (nested wells) */
+  --glass:rgba(242,242,247,.8);   /* toolbar / tab material */
+  --seg-active:#FFFFFF;   /* selected segment surface */
+
+  /* Fills (chips, tracks, pills) : systemFill family */
+  --tag-bg:rgba(120,120,128,.2);
+  --pill:rgba(120,120,128,.12);
+
+  /* Labels: label / secondaryLabel / tertiaryLabel */
+  --espresso:#000000;                 /* label (headings) */
+  --ink:#1C1C1E;                      /* primary body text */
+  --light:rgba(60,60,67,.6);          /* secondaryLabel (muted) */
+  --faint:rgba(60,60,67,.3);          /* tertiaryLabel */
+
+  /* Separators */
+  --rule:rgba(60,60,67,.18);          /* separator (hairline) */
+  --rule-dk:#D1D1D6;                  /* systemGray4 (input borders) */
+
+  /* Accent = system Blue */
+  --terra:#0088FF;--terra-lt:#4AA8FF;
+  --blue:#0088FF;--blue-bg:rgba(0,136,255,.12);
+  --ring:rgba(0,136,255,.35);
+
+  /* Semantic status: system Green / Red / Orange */
+  --green:#34C759;--green-bg:rgba(52,199,89,.15);--ontrack-text:#0F7A57;
+  --red:#FF383C;--red-bg:rgba(255,56,60,.12);
+  --amber:#FF8D28;--amber-bg:rgba(255,141,40,.14);
+
+  /* Neutral dark surface used by the summary/result bars */
+  --ink-a:#1C1C1E;--ink-b:#2C2C2E;
+
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.16);
+  --radius:20px;--radius-sm:14px;
+
+  --display:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',Arial,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --serif:ui-serif,'New York','Iowan Old Style',Georgia,'Times New Roman',serif;
+}
+
+/* ===== Dark appearance (system colors, dark values) ===== */
+@media(prefers-color-scheme:dark){
+  :root{
+    --cream:#000000;--card:#1C1C1E;--lav:#2C2C2E;
+    --glass:rgba(28,28,30,.72);--seg-active:#636366;
+    --tag-bg:rgba(120,120,128,.32);--pill:rgba(120,120,128,.24);
+    --espresso:#FFFFFF;--ink:#F2F2F7;--light:rgba(235,235,245,.6);--faint:rgba(235,235,245,.3);
+    --rule:rgba(255,255,255,.12);--rule-dk:#48484A;
+    --terra:#0091FF;--terra-lt:#4AA8FF;--blue:#0091FF;--blue-bg:rgba(0,145,255,.22);--ring:rgba(0,145,255,.45);
+    --green:#30D158;--green-bg:rgba(48,209,88,.2);--ontrack-text:#5DD1A4;
+    --red:#FF4245;--red-bg:rgba(255,66,69,.22);
+    --amber:#FF9230;--amber-bg:rgba(255,146,48,.22);
+    --ink-a:#2C2C2E;--ink-b:#3A3A3C;
+    --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-lg:0 16px 50px rgba(0,0,0,.6);
+  }
+}
+
+/* ===== Increased contrast, light ===== */
+@media(prefers-contrast:more) and (prefers-color-scheme:light){
+  :root{
+    --terra:#1E6EF4;--blue:#1E6EF4;--ring:rgba(30,110,244,.5);
+    --green:#008932;--ontrack-text:#0A5C40;--red:#E9152D;--amber:#C55300;
+    --espresso:#000;--ink:#000;--light:rgba(60,60,67,.85);--faint:rgba(60,60,67,.5);
+    --rule:rgba(60,60,67,.4);--rule-dk:#8E8E93;
+  }
+}
+/* ===== Increased contrast, dark ===== */
+@media(prefers-contrast:more) and (prefers-color-scheme:dark){
+  :root{
+    --terra:#5CB8FF;--blue:#5CB8FF;--ring:rgba(92,184,255,.55);
+    --green:#4AD968;--ontrack-text:#7DE0B4;--red:#FF6165;--amber:#FFA056;
+    --espresso:#FFF;--ink:#FFF;--light:rgba(235,235,245,.85);--faint:rgba(235,235,245,.55);
+    --rule:rgba(255,255,255,.28);--rule-dk:#545458;
+  }
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:14px;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+body{font-family:var(--body);background:var(--cream);color:var(--ink);line-height:1.55;font-size:14px;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
 
 /* TOPBAR */
 .topbar{background:rgba(31,20,9,.97);backdrop-filter:blur(12px);color:var(--cream);padding:0 18px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;height:calc(56px + env(safe-area-inset-top));position:sticky;top:0;z-index:100;gap:12px;box-shadow:0 1px 0 rgba(255,255,255,.06)}
@@ -394,12 +472,277 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
 @media(max-width:768px){
   .card-title{font-size:10.5px}
   .summary-row{font-size:13px;padding:8px 0}
-  .stat-card::before{width:3px}
   .big-number{letter-spacing:-.3px}
+}
+
+/* ==================================================================
+   LUMEN RESKIN  ·  visual layer only, no markup or logic changes
+   Loaded last so it wins on source order. Class names untouched.
+   ================================================================== */
+
+/* ---- Typography: SF Pro for text, New York for marquee numerals ---- */
+.topbar h1,.section-header h2,.modal h3,.upload-zone h3,.empty-state h3{font-family:var(--display)}
+.big-number,.score-num .n,.total-out-bar .to-value,.total-out-bar .to-chip .v,
+.calc-result-card .value{font-family:var(--serif);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.topbar h1{font-weight:600;letter-spacing:-.2px;font-size:18px}
+.section-header h2{font-weight:600;letter-spacing:-.4px}
+.modal h3,.upload-zone h3,.empty-state h3{font-weight:600;letter-spacing:-.3px}
+.big-number{font-weight:600;letter-spacing:-.6px}
+.total-out-bar .to-value{font-weight:600;letter-spacing:-.6px}
+.total-out-bar .to-chip .v,.calc-result-card .value,.score-num .n{font-weight:600;letter-spacing:-.4px}
+.card-title{font-weight:600;letter-spacing:.6px;color:var(--light)}
+
+/* ---- Top bar: bright glass, dark text ---- */
+.topbar{background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);color:var(--espresso);box-shadow:0 1px 0 rgba(20,22,43,.06),0 6px 20px rgba(60,70,150,.04)}
+.topbar .dot{width:8px;height:8px;box-shadow:0 0 0 4px rgba(67,97,238,.14)}
+.ghost-btn{background:var(--pill);color:var(--ink);border:1px solid var(--rule);border-radius:999px;font-weight:600;box-shadow:0 1px 2px rgba(60,70,150,.05)}
+.ghost-btn:hover{background:var(--blue-bg);color:var(--terra);border-color:var(--blue-bg)}
+
+/* ---- Tabs: light strip, active pill ---- */
+.tabs{background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);border-bottom:1px solid rgba(20,22,43,.06);padding:8px 12px;gap:4px}
+.tab{color:var(--light);border:none;border-radius:999px;padding:9px 15px;margin-bottom:0;font-weight:600}
+.tab:hover{color:var(--espresso);background:var(--pill)}
+.tab.active{color:#fff;background:var(--terra);border:none;box-shadow:0 6px 16px rgba(67,97,238,.32)}
+.tab.active:hover{color:#fff;background:var(--terra)}
+
+/* ---- Cards: airy white, big radius, soft blue-tinted depth ---- */
+.card,.stat-card,.goal-card{border:1px solid rgba(20,22,43,.05);border-radius:24px;box-shadow:0 4px 22px rgba(64,74,150,.07)}
+.card:hover{border-color:rgba(67,97,238,.16);box-shadow:0 10px 34px rgba(64,74,150,.12)}
+.stat-card::before{display:none}
+.stat-card{border-radius:22px;transition:box-shadow .28s cubic-bezier(.32,.72,0,1),transform .28s}
+.stat-card:hover{box-shadow:0 12px 30px rgba(64,74,150,.14);transform:translateY(-3px)}
+.big-number{color:var(--espresso)}
+.big-label{color:var(--light)}
+
+/* ---- Buttons: pill shapes, confident blue ---- */
+button,.btn{border-radius:999px;font-weight:600}
+.btn-primary{background:var(--terra);box-shadow:0 8px 20px rgba(67,97,238,.28)}
+.btn-primary:hover{box-shadow:0 12px 26px rgba(67,97,238,.4)}
+.btn-secondary{background:var(--pill);color:var(--espresso);border:1px solid var(--rule)}
+.btn-secondary:hover{background:var(--blue-bg);color:var(--terra)}
+.btn-danger{background:var(--red);box-shadow:0 8px 18px rgba(240,82,107,.26)}
+.icon-btn{background:var(--pill);border-radius:11px;border:1px solid var(--rule);color:var(--ink)}
+.icon-btn:hover{background:var(--blue-bg);color:var(--terra)}
+.sort-btn{border-radius:999px;background:var(--pill);border:1px solid var(--rule);color:var(--ink)}
+.sort-btn.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+
+/* ---- Inputs: rounded, cool, blue focus halo ---- */
+input,select,textarea{border:1.5px solid var(--rule-dk);border-radius:13px;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--terra);box-shadow:0 0 0 4px var(--ring)}
+label{color:var(--light);font-weight:700}
+
+/* ---- Chips & segmented control ---- */
+.chip{border-radius:999px;border:1.5px solid var(--rule-dk);background:#fff}
+.chip:hover:not(.selected){border-color:var(--terra-lt);box-shadow:0 4px 12px rgba(67,97,238,.1)}
+.chip.selected{background:var(--terra);border-color:var(--terra);box-shadow:0 6px 16px rgba(67,97,238,.34)}
+.chip.chip-edit{background:var(--pill);border:1.5px dashed var(--terra);color:var(--terra)}
+.segment{background:var(--pill);border-radius:14px;box-shadow:inset 0 1px 2px rgba(64,74,150,.06)}
+.segment button{border-radius:11px}
+.segment button.active{background:#fff;box-shadow:0 4px 12px rgba(64,74,150,.12)}
+
+/* ---- Tags & pills ---- */
+.tag{border-radius:999px;padding:3px 10px}
+.cc-pill{border-radius:6px}
+.priority-badge{box-shadow:0 4px 10px rgba(67,97,238,.32)}
+
+/* ---- Toggle ---- */
+.toggle{background:var(--rule-dk)}
+.toggle.on{background:var(--terra)}
+
+/* ---- Progress / rank fills default to blue unless coloured inline ---- */
+.progress-bar,.rk-track,.rk-track,.score-bar-head+*{background:var(--tag-bg)}
+
+/* ---- Dark feature bars: deep navy, not brown ---- */
+.total-out-bar,.calc-result-card{background:linear-gradient(135deg,var(--ink-a) 0%,var(--ink-b) 100%);border-radius:24px}
+.total-out-bar{box-shadow:0 18px 44px rgba(30,34,70,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+.calc-result-card{color:#EEF0FF}
+
+/* ---- Budget banners: soft tinted, hairline borders ---- */
+.budget-banner{border-radius:16px}
+.budget-banner.green{border-color:#BEEBD3}
+.budget-banner.amber{border-color:#F6DDA8}
+.budget-banner.red{border-color:#F7C3CC}
+
+/* ---- Upload zone ---- */
+.upload-zone{border:2px dashed var(--rule-dk);border-radius:22px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--terra);background:var(--blue-bg)}
+
+/* ---- Modals ---- */
+.modal{border-radius:26px;box-shadow:0 30px 80px rgba(30,34,70,.3)}
+.modal-overlay{background:rgba(20,22,43,.4)}
+
+/* ---- Heatmap / outlier / check button rounding ---- */
+.heat-cell{border-radius:14px;border-color:var(--rule)}
+.outlier-card{border-radius:20px}
+.check-btn{border-radius:12px}
+.review-box{border-radius:18px;background:var(--lav);border-color:var(--rule-dk)}
+
+/* ---- FAB ---- */
+.fab{box-shadow:0 10px 28px rgba(67,97,238,.45)}
+
+/* ---- Page fade a touch softer ---- */
+.page{animation:fade .4s cubic-bezier(.32,.72,0,1)}
+
+/* ==================================================================
+   BUDGET METER CARDS  ·  spending vs budget (Treatment C)
+   ================================================================== */
+.bm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px}
+.bm-card{background:#fff;border:1px solid rgba(20,22,43,.07);border-radius:16px;padding:15px 15px 14px;transition:box-shadow .22s cubic-bezier(.32,.72,0,1),transform .22s,border-color .2s}
+.bm-card.is-open{border-color:var(--terra);box-shadow:0 0 0 3px var(--ring),0 8px 22px rgba(64,74,150,.12)}
+.bm-card[onclick]:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(64,74,150,.12);border-color:rgba(67,97,238,.2)}
+.bm-card[onclick]:active{transform:translateY(0) scale(.99)}
+.bm-label{font-size:13px;color:var(--ink);font-weight:500;margin-bottom:3px;line-height:1.3}
+.bm-count{color:var(--light);font-weight:400}
+.bm-hero{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.15;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.bm-hero.is-over{color:var(--red)}
+.bm-hero.is-ontrack{color:#0F7A57}
+.bm-caption{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--light);font-weight:600;margin-top:1px;margin-bottom:11px}
+.bm-track{height:6px;background:var(--tag-bg);border-radius:4px;overflow:hidden}
+.bm-fill{height:6px;border-radius:4px;transition:width .6s cubic-bezier(.32,.72,0,1)}
+.bm-fill.is-over{background:var(--red)}
+.bm-fill.is-ontrack{background:var(--green)}
+.bm-footer{font-size:11px;color:var(--light);margin-top:7px;font-variant-numeric:tabular-nums}
+.bm-detail{grid-column:1 / -1;background:var(--lav);border:1px solid var(--rule-dk);border-radius:16px;padding:14px 16px;margin-top:12px;animation:fade .3s cubic-bezier(.32,.72,0,1)}
+.bm-detail-head{font-family:var(--display);font-weight:600;font-size:14px;color:var(--espresso);margin-bottom:8px;letter-spacing:-.2px}
+.bm-detail-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+.bm-detail-row:last-child{border-bottom:none}
+.bm-detail-row .amount{font-variant-numeric:tabular-nums}
+
+/* ==================================================================
+   TRANSACTION FEED  ·  all entries (Treatment B)
+   ================================================================== */
+.feed{padding:2px 2px 4px}
+.feed-day{font-size:12px;font-weight:600;color:var(--light);letter-spacing:-.1px;padding:16px 6px 8px;position:sticky;top:0;background:linear-gradient(var(--card) 60%,rgba(255,255,255,0));z-index:1}
+.feed-day:first-child{padding-top:4px}
+.feed-row{display:flex;align-items:center;gap:13px;padding:11px 6px;border-bottom:1px solid var(--rule);position:relative}
+.feed-row:last-child{border-bottom:none}
+.feed-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
+.feed-av span{font-size:16px}
+.feed-body{flex:1;min-width:0}
+.feed-note{font-size:15px;font-weight:600;color:var(--espresso);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.feed-sub{font-size:12px;color:var(--light);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-amt{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.2px;flex-shrink:0;white-space:nowrap}
+.feed-amt.neg{color:var(--espresso)}
+.feed-amt.pos{color:var(--green)}
+.feed-del{background:none;border:none;color:var(--light);opacity:0;font-size:13px;padding:6px;margin-right:-4px;cursor:pointer;flex-shrink:0;border-radius:8px;transition:opacity .15s,background .15s,color .15s}
+.feed-row:hover .feed-del{opacity:.55}
+.feed-del:hover{opacity:1;background:var(--red-bg);color:var(--red)}
+.feed-empty{text-align:center;padding:26px;color:var(--light)}
+@media(hover:none){.feed-del{opacity:.4}}
+@media(max-width:768px){
+  .feed-note,.feed-amt{font-size:14px}
+  .feed-av{width:38px;height:38px;font-size:17px}
+}
+
+/* ---- Segmented + tabs: a touch more iOS ---- */
+.segment button{font-weight:500}
+.segment button.active{font-weight:600}
+.tab{font-weight:500}
+.tab.active{font-weight:600}
+
+/* ==================================================================
+   APPLE ADAPTIVE PATCHES
+   Surfaces bind to semantic tokens so the whole UI tracks light,
+   dark, and increased contrast. Accent is reserved for the primary
+   action and the selected state; bars stay monochromatic.
+   ================================================================== */
+.topbar,.tabs{background:var(--glass)}
+.topbar{box-shadow:0 .5px 0 var(--rule),0 1px 12px rgba(0,0,0,.04)}
+.tabs{border-bottom:.5px solid var(--rule)}
+
+/* Monochromatic tab bar: accent only on the selected label + hairline */
+.tab{background:none;color:var(--light);border-radius:0;padding:12px 12px;margin-bottom:0;position:relative}
+.tab:hover{background:none;color:var(--ink)}
+.tab.active{background:none;color:var(--terra);box-shadow:none}
+.tab.active:hover{background:none;color:var(--terra)}
+.tab.active::after{content:'';position:absolute;left:12px;right:12px;bottom:4px;height:2.5px;border-radius:2px;background:var(--terra)}
+
+/* Surfaces bind to tokens */
+.card,.stat-card,.goal-card{background:var(--card);border:.5px solid var(--rule);box-shadow:var(--shadow)}
+.card:hover{border-color:var(--rule-dk);box-shadow:var(--shadow-lg)}
+.bm-card{background:var(--card);border:.5px solid var(--rule)}
+.modal{background:var(--card);border:.5px solid var(--rule)}
+.check-btn{background:var(--card)}
+input,select,textarea{background:var(--card);border:.5px solid var(--rule-dk)}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+.segment button.active{background:var(--seg-active);box-shadow:var(--shadow)}
+.chip{background:var(--card);border:.5px solid var(--rule-dk)}
+
+/* Selection uses a restrained accent tint, not a saturated fill */
+.chip.selected{background:var(--blue-bg);border-color:var(--terra);color:var(--terra);box-shadow:none;transform:none}
+.chip.selected:hover{background:var(--blue-bg);border-color:var(--terra)}
+.chip.chip-edit{background:var(--pill);border:1px dashed var(--terra);color:var(--terra)}
+
+/* Status hero text tracks contrast */
+.bm-hero.is-ontrack{color:var(--ontrack-text)}
+.bm-card.is-open{border-color:var(--terra);box-shadow:0 0 0 2.5px var(--ring)}
+
+/* Always-dark feature bars keep light text regardless of scheme */
+.total-out-bar,.calc-result-card{color:#F5F5F7}
+.outlier-card{background:var(--amber-bg);border-color:var(--amber)}
+
+/* Tinted status banners keep a thin semantic edge in both schemes */
+.budget-banner.green{border-color:var(--green)}
+.budget-banner.amber{border-color:var(--amber)}
+.budget-banner.red{border-color:var(--red)}
+
+/* Native controls follow the appearance (dropdown arrow, date field, scrollbars) */
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L2 4h8z'/%3E%3C/svg%3E")}
+
+/* Focus ring uses the accent */
+button:focus-visible,.btn:focus-visible,.tab:focus-visible,.ghost-btn:focus-visible{outline:2px solid var(--terra);outline-offset:2px}
+
+/* Splash adapts to dark */
+@media(prefers-color-scheme:dark){
+  #splash{background:radial-gradient(1000px 600px at 50% 28%,#1C1C1E 0%,#000 62%)}
+}
+
+/* ==================================================================
+   OPENING SPLASH  ·  brief load animation over the tracker
+   ================================================================== */
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  background:radial-gradient(1000px 600px at 50% 28%,#F4F0FF 0%,#ECEDFB 45%,#E4E7FA 100%);
+  transition:opacity .55s ease,visibility .55s ease}
+#splash.hide{opacity:0;visibility:hidden}
+#splash .stage{display:flex;flex-direction:column;align-items:center;gap:20px}
+/* app tile that springs in */
+.sp-tile{width:78px;height:78px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(150deg,var(--terra-lt) 0%,var(--terra) 100%);
+  box-shadow:0 16px 34px rgba(67,97,238,.42),inset 0 1px 0 rgba(255,255,255,.35);
+  font-family:var(--serif);font-weight:600;font-size:36px;color:#fff;position:relative;overflow:hidden;
+  transform:scale(.4);opacity:0;animation:sp-pop .7s cubic-bezier(.2,1.3,.4,1) forwards}
+.sp-tile::after{content:'';position:absolute;top:-60%;left:-30%;width:60%;height:220%;transform:rotate(18deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));
+  animation:sp-sheen 2.2s ease-in-out .5s infinite}
+/* rising equalizer bars */
+.sp-bars{display:flex;align-items:flex-end;gap:6px;height:34px}
+.sp-bars i{width:7px;border-radius:4px;background:linear-gradient(var(--terra-lt),var(--terra));height:30%;
+  animation:sp-rise 1s ease-in-out infinite;opacity:0;animation-delay:calc(.5s + var(--d))}
+.sp-bars i:nth-child(1){--d:0s}.sp-bars i:nth-child(2){--d:.12s}.sp-bars i:nth-child(3){--d:.24s}
+.sp-bars i:nth-child(4){--d:.36s}.sp-bars i:nth-child(5){--d:.48s}
+.sp-word{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.2px;color:var(--espresso);opacity:0;animation:splashword .5s ease .35s forwards}
+.sp-sub{font-size:12.5px;color:var(--light);margin-top:-14px;opacity:0;animation:splashword .5s ease .5s forwards}
+@keyframes sp-pop{0%{transform:scale(.4);opacity:0}60%{opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes sp-sheen{0%{left:-30%}55%,100%{left:130%}}
+@keyframes sp-rise{0%,100%{height:24%;opacity:.55}50%{height:100%;opacity:1}}
+@keyframes splashword{to{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  .sp-tile{animation:none;transform:none;opacity:1}
+  .sp-tile::after,.sp-bars i{animation:none}
+  .sp-bars i{opacity:1;height:60%}
+  .sp-word,.sp-sub{animation:none;opacity:1}
 }
 </style>
 </head>
 <body>
+<div id="splash" role="status" aria-label="Loading your finance tracker">
+  <div class="stage">
+    <div class="sp-tile">₹</div>
+    <div class="sp-bars"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="sp-word">Pratim's Finance Tracker</div>
+  <div class="sp-sub">Warming up your numbers</div>
+</div>
 <div class="topbar">
   <span class="dot" title="Cloud sync status. Green means synced, amber means saving, red means sync failed"></span>
   <h1>Pratim's Finance Tracker</h1>
@@ -529,7 +872,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(156,107,47,.1)
     <div class="card"><div class="card-title">Fixed Costs This Month</div><div id="lg-fix-l"></div></div>
   </div>
   <div class="card mb-16"><div class="card-title">Spending vs Budget · <span id="lg-budget-status" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div><div id="lg-exp-l"></div></div>
-  <div class="card"><div class="card-title">All Entries</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="amount">₹</th><th></th></tr></thead><tbody id="lg-tbl"></tbody></table></div></div>
+  <div class="card"><div class="card-title">All Entries</div><div class="scroll-table"><div id="lg-tbl" class="feed"></div></div></div>
 </div>
 
 <!-- NET WORTH -->
@@ -826,6 +1169,82 @@ function populateBehaviorMonths(){
 }
 const mRem=end=>{if(!end)return null;const[y,m]=end.split('-').map(Number);const n=new Date();return(y-n.getFullYear())*12+(m-n.getMonth()-1)};
 const CC_COLORS=['#9C6B2F','#3A7D44','#3B6FA0','#B44040','#C4882F','#6B4C9A','#2E8B8B','#D4764E','#5B8C5A','#8B6969','#4682B4','#CD853F','#708090','#BC8F8F','#6B8E23'];
+
+// ===== Presentation helpers for the redesigned components (no data/logic changes) =====
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function compactINR(v){const a=Math.abs(Math.round(v));if(a>=1000)return '₹'+(a/1000).toFixed(a%1000?1:0)+'K';return '₹'+a}
+// Category and type avatars for the feed
+const CAT_META={
+  'Groceries':{c:'#12B76A',e:'🛒'},
+  'Health & Nutrition':{c:'#2E9BF0',e:'🩺'},
+  'Transport':{c:'#4361EE',e:'🚗'},
+  'Utilities':{c:'#F5A524',e:'💡'},
+  'Dining Out & Entertainment':{c:'#F0526B',e:'☕'},
+  'Shopping':{c:'#7B61FF',e:'🛍️'},
+  'Miscellaneous':{c:'#8B90A8',e:'✨'}
+};
+const TYPE_META={
+  income:{c:'#12B76A',e:'💰',label:'Income'},
+  payout:{c:'#F5A524',e:'🤝',label:'Agency'},
+  fixed:{c:'#4361EE',e:'📌',label:'Fixed'},
+  investment:{c:'#7B61FF',e:'📈',label:'Invest'},
+  expense:{c:'#F0526B',e:'💸',label:'Expense'}
+};
+function _hashHue(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%360}
+function tint(c,a){return c.indexOf('hsl')===0?c.replace(')',` / ${a})`):(function(){const h=c.replace('#','');return `rgba(${parseInt(h.substr(0,2),16)},${parseInt(h.substr(2,2),16)},${parseInt(h.substr(4,2),16)},${a})`})()}
+function catAvatar(name,type){
+  if(type&&type!=='expense'){const m=TYPE_META[type]||TYPE_META.expense;return{c:m.c,e:m.e}}
+  const m=CAT_META[name];if(m)return m;
+  const hue=_hashHue(name||'?');return{c:`hsl(${hue} 60% 52%)`,letter:(name||'?').trim().charAt(0).toUpperCase()}
+}
+// Transaction feed (Treatment B): grouped by day, colored category avatars
+function feedItem(e){
+  const av=catAvatar(e.who,e.type);
+  const isInc=e.type==='income';
+  const title=(e.note&&e.note.trim())?e.note:e.who;
+  let sub;
+  if(e.type==='expense'){sub=e.who+(e.cc?' · credit card':'')}
+  else{const tm=TYPE_META[e.type]||{};sub=(tm.label||'')+((e.note&&e.note.trim()&&e.who&&e.who!==e.note)?' · '+e.who:'')}
+  const inner=av.e?av.e:`<span>${esc(av.letter||'?')}</span>`;
+  const amt=(isInc?'+ ':'− ')+fmt(e.amount);
+  return `<div class="feed-row">
+    <div class="feed-av" style="background:${tint(av.c,.15)};color:${av.c}">${inner}</div>
+    <div class="feed-body"><div class="feed-note">${esc(title)}</div><div class="feed-sub">${esc(sub)}</div></div>
+    <div class="feed-amt ${isInc?'pos':'neg'}">${amt}</div>
+    <button class="feed-del" title="Delete entry" aria-label="Delete entry" onclick="event.stopPropagation();LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button>
+  </div>`;
+}
+function feedHTML(entries){
+  if(!entries.length)return '<div class="feed-empty">No entries yet. Log your first transaction above.</div>';
+  const groups={};entries.forEach(e=>{(groups[e.date]=groups[e.date]||[]).push(e)});
+  const days=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+  return days.map(d=>{
+    const label=new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    return `<div class="feed-day">${label}</div>`+groups[d].map(feedItem).join('');
+  }).join('');
+}
+// Budget meter card (Treatment C): hero delta + capped meter
+function budgetMeterCard(o){
+  const name=o.name,count=o.count||0,spent=o.spent,budget=o.budget;
+  const hasB=budget>0,over=spent>budget;
+  const ratio=hasB?spent/budget:null;
+  const fillPct=hasB?Math.min(ratio,1)*100:(spent>0?100:0);
+  const pctv=hasB?Math.round(ratio*100):null;
+  const delta=Math.abs(spent-budget);
+  const caption=!hasB?'no budget':over?'over by':'left';
+  const hero=compactINR(hasB?delta:spent);
+  const st=(over||(!hasB&&spent>0))?'is-over':'is-ontrack';
+  const aria=hasB?`${name}, ${pctv} percent of budget, ${over?'over by':'under by'} ${fmt(delta)}`:`${name}, no budget set, spent ${fmt(spent)}`;
+  const click=o.onclick?`style="cursor:pointer" onclick="${o.onclick}"`:'';
+  return `<div class="bm-card ${o.open?'is-open':''}" role="group" aria-label="${esc(name)}" ${click}>
+    <div class="bm-label">${esc(name)}${count?` <span class="bm-count">(${count})</span>`:''}</div>
+    <div class="bm-hero ${st}">${hero}</div>
+    <div class="bm-caption">${caption}</div>
+    <div class="bm-track"><div class="bm-fill ${st}" style="width:${fillPct}%" role="progressbar" aria-valuenow="${Math.round(fillPct)}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(aria)}"></div></div>
+    <div class="bm-footer">${fmt(spent)} of ${fmt(budget)}${pctv!==null?` · ${pctv}%`:''}</div>
+  </div>`;
+}
+function budgetMeterGrid(items){return `<div class="bm-grid">${items.map(budgetMeterCard).join('')}</div>`}
 let CI={};
 function MC(id,cfg){if(CI[id])CI[id].destroy();const c=document.getElementById(id);if(!c)return;CI[id]=new Chart(c,cfg);return CI[id]}
 function openM(id){document.getElementById(id).classList.add('open')}
@@ -1049,7 +1468,7 @@ function renderLogbook(){
   renderLogBudget(fm,exp);
   const tt=t=>t==='payout'?'<span class="tag tag-amber">Agency</span>':t==='income'?'<span class="tag tag-green">Income</span>':t==='fixed'?'<span class="tag tag-blue">Fixed</span>':t==='investment'?'<span class="tag tag-invest">Invest</span>':'<span class="tag tag-red">Expense</span>';
   const sorted=[...f].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
-  document.getElementById('lg-tbl').innerHTML=sorted.length?sorted.map(e=>`<tr><td>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${tt(e.type)}</td><td>${e.who}${e.cc?'<span class="cc-pill" title="Paid by credit card">CC</span>':''}</td><td style="font-size:11px;color:var(--light)">${e.note||''}</td><td class="amount ${e.type==='income'?'pos':'neg'}">${fmt(e.amount)}</td><td><button class="icon-btn" onclick="LB.splice(LB.findIndex(x=>x.id===${e.id}),1);S(K.lb,LB);renderLogbook()">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--light)">No entries yet. Log your first transaction above.</td></tr>';
+  document.getElementById('lg-tbl').innerHTML=feedHTML(sorted);
 }
 let LG_OPEN_CAT=null;
 function toggleLogCat(cat){LG_OPEN_CAT=LG_OPEN_CAT===cat?null:cat;renderLogbook()}
@@ -1065,37 +1484,24 @@ function renderLogBudget(fm,exp){
   else{sl.innerHTML=`<span style="color:var(--green)">${fmt(remTot)} left of your ${fmt(budTot)} budget</span>`}
   // per category, derived live from the variable budget
   const byCat={};exp.forEach(e=>{if(!byCat[e.who])byCat[e.who]=[];byCat[e.who].push(e)});
-  let html='';
-  CATSlist().forEach(cat=>{
+  const cards=CATSlist().map(cat=>{
     const entries=(byCat[cat]||[]).sort((a,b)=>b.date.localeCompare(a.date));
     const spent=entries.reduce((s,e)=>s+e.amount,0);
     const bud=catBudgetFor(cat);
-    const p=bud>0?Math.min(100,pct(spent,bud)):0;
-    const rem=bud-spent;
-    const isOver=bud>0&&rem<=0;
-    const isClose=bud>0&&!isOver&&spent>bud*0.85;
-    let tag;
-    if(bud===0)tag='<span class="cat-budget-status" style="background:var(--tag-bg);color:var(--light)">No budget</span>';
-    else if(isOver)tag=`<span class="cat-budget-status tag-red">Over by ${fmtS(Math.abs(rem))}</span>`;
-    else if(isClose)tag=`<span class="cat-budget-status tag-amber">${fmtS(rem)} left</span>`;
-    else tag=`<span class="cat-budget-status tag-green">${fmtS(rem)} left</span>`;
-    const barCol=isOver?'var(--red)':isClose?'var(--amber)':'var(--green)';
-    const isOpen=LG_OPEN_CAT===cat;
-    const hasEntries=entries.length>0;
-    const caret=hasEntries?`<span style="transition:transform .2s;display:inline-block;transform:rotate(${isOpen?90:0}deg);color:var(--light);margin-right:6px">▶</span>`:'<span style="margin-right:6px;opacity:0;display:inline-block">▶</span>';
-    html+=`<div class="cat-budget-row" style="cursor:${hasEntries?'pointer':'default'}" ${hasEntries?`onclick="toggleLogCat('${cat.replace(/'/g,"\\'")}')"`:''}>
-      <div class="cat-budget-head"><span>${caret}${cat} ${hasEntries?`<span style="color:var(--light);font-size:11px">(${entries.length})</span>`:''}</span><span>${tag}</span></div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${barCol}"></div></div>`;
-    if(isOpen&&hasEntries){
-      html+=`<div style="margin:10px 0 4px;padding:10px 12px;background:var(--cream);border-radius:10px">`;
-      html+=entries.map(e=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rule);font-size:12.5px">
-        <span>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}${e.cc?'<span class="cc-pill">CC</span>':''} ${e.note?`<span style="color:var(--light)">· ${e.note}</span>`:''}</span>
-        <span class="amount neg">${fmt(e.amount)}</span></div>`).join('');
-      html+=`</div>`;
+    return budgetMeterCard({name:cat,count:entries.length,spent,budget:bud,
+      onclick:entries.length?`toggleLogCat('${cat.replace(/'/g,"\\'")}')`:'',
+      open:LG_OPEN_CAT===cat});
+  }).join('');
+  let detail='';
+  if(LG_OPEN_CAT){
+    const entries=(byCat[LG_OPEN_CAT]||[]).sort((a,b)=>b.date.localeCompare(a.date));
+    if(entries.length){
+      detail=`<div class="bm-detail"><div class="bm-detail-head">${esc(LG_OPEN_CAT)}</div>`+
+        entries.map(e=>`<div class="bm-detail-row"><span>${new Date(e.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}${e.cc?'<span class="cc-pill">CC</span>':''}${e.note?` <span style="color:var(--light)">· ${esc(e.note)}</span>`:''}</span><span class="amount neg">${fmt(e.amount)}</span></div>`).join('')+
+        `</div>`;
     }
-    html+=`</div>`;
-  });
-  document.getElementById('lg-exp-l').innerHTML=html;
+  }
+  document.getElementById('lg-exp-l').innerHTML=`<div class="bm-grid">${cards}</div>`+detail;
 }
 function addLog(){
   const d=document.getElementById('log-d').value||td();const a=+document.getElementById('log-a').value||0;const n=document.getElementById('log-n').value.trim();
@@ -1347,7 +1753,7 @@ function viewSP(month){const d=SP.find(s=>s.month===month);if(!d)return;
   else{bc='green';bi='✅';bn=`Nicely done. ${fmt(d.total)} spent, comfortably under your ${fmt(budTot)} budget with ${fmt(-over)} to spare. This is a surplus you can move to SIP or your land fund.`}
   document.getElementById('sp-budget-banner').innerHTML=`<div class="budget-banner ${bc}"><span class="icon">${bi}</span><span>${bn}</span></div>`;
   // Category vs budget bars
-  document.getElementById('sp-cat-budget').innerHTML=CATSlist().map(cat=>{const spent=mapped[cat]||0;const bud=catBudgetFor(cat);const p=bud>0?Math.min(100,pct(spent,bud)):0;const isOver=spent>bud&&bud>0;const status=bud===0?'<span class="cat-budget-status" style="background:var(--tag-bg);color:var(--light)">No budget</span>':isOver?`<span class="cat-budget-status tag-red">${fmtS(spent-bud)} over</span>`:`<span class="cat-budget-status tag-green">${fmtS(bud-spent)} left</span>`;const col=isOver?'var(--red)':p>85?'var(--amber)':'var(--green)';return`<div class="cat-budget-row"><div class="cat-budget-head"><span>${cat}</span><span>${fmt(spent)}${bud>0?' / '+fmt(bud):''} ${status}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${col}"></div></div></div>`}).join('');
+  document.getElementById('sp-cat-budget').innerHTML=budgetMeterGrid(CATSlist().map(cat=>({name:cat,spent:(mapped[cat]||0),budget:catBudgetFor(cat)})));
   // Pie
   MC('ch-spcat',{type:'doughnut',data:{labels:sc.map(c=>c[0]),datasets:[{data:sc.map(c=>c[1]),backgroundColor:sc.map((_,i)=>CC_COLORS[i%CC_COLORS.length]),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:10},padding:8}}}}});
   // Daily
@@ -1391,7 +1797,7 @@ function buildReview(){
 
   // BUILD HTML
   let h=`<div class="review-box">`;
-  h+=`<div style="background:var(--espresso);color:var(--cream);padding:16px 20px"><div style="font-family:Georgia,serif;font-size:18px">${mName}</div><div style="font-size:12px;opacity:.75;margin-top:2px">Financial Review</div></div>`;
+  h+=`<div style="background:var(--ink-a);color:#F5F5F7;padding:16px 20px"><div style="font-family:var(--serif);font-size:18px">${mName}</div><div style="font-size:12px;opacity:.75;margin-top:2px">Financial Review</div></div>`;
   h+=`<div style="padding:18px 20px">`;
 
   // Headline verdict
@@ -1400,8 +1806,8 @@ function buildReview(){
   else if(realSpend>budTot*0.92){verdict='On the edge';vcolor='var(--amber)'}
   else{verdict='Controlled';vcolor='var(--green)'}
   h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-    <div style="flex:1;min-width:120px;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:12px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--light);font-weight:700">Spending</div><div style="font-family:Georgia,serif;font-size:20px;color:${vcolor}">${verdict}</div><div style="font-size:11px;color:var(--light)">${fmt(realSpend)} of ${fmt(budTot)}</div></div>
-    <div style="flex:1;min-width:120px;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:12px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--light);font-weight:700">Est. Saved</div><div style="font-family:Georgia,serif;font-size:20px;color:${estSavings>=0?'var(--green)':'var(--red)'}">${fmtSign(estSavings)}</div><div style="font-size:11px;color:var(--light)">${savingsRate}% of income</div></div>
+    <div style="flex:1;min-width:120px;background:var(--card);border:.5px solid var(--rule);border-radius:10px;padding:12px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--light);font-weight:700">Spending</div><div style="font-family:var(--serif);font-size:20px;color:${vcolor}">${verdict}</div><div style="font-size:11px;color:var(--light)">${fmt(realSpend)} of ${fmt(budTot)}</div></div>
+    <div style="flex:1;min-width:120px;background:var(--card);border:.5px solid var(--rule);border-radius:10px;padding:12px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--light);font-weight:700">Est. Saved</div><div style="font-family:var(--serif);font-size:20px;color:${estSavings>=0?'var(--green)':'var(--red)'}">${fmtSign(estSavings)}</div><div style="font-size:11px;color:var(--light)">${savingsRate}% of income</div></div>
   </div>`;
 
   h+=section('💰 Income & Cash Flow',`Income basis for this month is ${fmt(incomeBasis)} (${incomeSource}). After ${fmt(realSpend)} in spending${payT>0?` and ${fmt(payT)} in agency expenses`:''}, your estimated saving is ${fmtSign(estSavings)}, a ${savingsRate}% savings rate. ${savingsRate>=40?'That is an excellent rate, keep this momentum.':savingsRate>=25?'Solid rate, but there is room to push higher if you tighten variable spending.':savingsRate>=0?'This is on the low side for your goals. Look at the overspending categories below.':'You spent more than you earned this month. This needs attention.'}`);
@@ -1527,7 +1933,7 @@ function renderOutlier(){
   const total=evts.reduce((s,e)=>s+e.amount,0);const avg=total/evts.length;
   const share=pct(largest.amount,total);const vsAvg=(largest.amount/avg).toFixed(1);
   wrap.style.display='block';
-  document.getElementById('outlier-content').innerHTML=`<div class="outlier-card"><div class="outlier-icon">⚡</div><div style="flex:1"><div style="font-family:Georgia,serif;font-size:20px;color:var(--espresso)">${fmt(largest.amount)}</div><div style="font-size:12px;color:var(--light);margin-top:2px">${largest.who}${largest.note?' · '+largest.note:''} on ${new Date(largest.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div><div style="font-size:12px;margin-top:6px">This single charge is <strong>${share}%</strong> of your month and <strong>${vsAvg}x</strong> your average transaction. ${share>25?'A big outlier like this is skewing your daily average. The rest of your month is leaner than the numbers suggest.':'Reasonably in line with your normal spending, not a distorting outlier.'}</div></div></div>`;
+  document.getElementById('outlier-content').innerHTML=`<div class="outlier-card"><div class="outlier-icon">⚡</div><div style="flex:1"><div style="font-family:var(--serif);font-size:20px;color:var(--espresso)">${fmt(largest.amount)}</div><div style="font-size:12px;color:var(--light);margin-top:2px">${largest.who}${largest.note?' · '+largest.note:''} on ${new Date(largest.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div><div style="font-size:12px;margin-top:6px">This single charge is <strong>${share}%</strong> of your month and <strong>${vsAvg}x</strong> your average transaction. ${share>25?'A big outlier like this is skewing your daily average. The rest of your month is leaner than the numbers suggest.':'Reasonably in line with your normal spending, not a distorting outlier.'}</div></div></div>`;
 }
 function computeScore(){
   const m=behMonth();const evts=monthSpendEvents(m);
@@ -1579,6 +1985,21 @@ function renderAll(){
 setLogType('expense');
 renderAll();
 _loadAllFromSupabase();
+
+// Opening splash: reveal the tracker after first paint with a short, deliberate beat
+(function(){
+  var s=document.getElementById('splash');if(!s)return;
+  var start=performance.now();
+  function done(){
+    var wait=Math.max(0,900-(performance.now()-start));
+    setTimeout(function(){
+      s.classList.add('hide');
+      setTimeout(function(){if(s&&s.parentNode)s.parentNode.removeChild(s);},550);
+    },wait);
+  }
+  if(document.readyState==='complete')done();
+  else window.addEventListener('load',done);
+})();
 </script>
 </body>
 </html>
