@@ -315,6 +315,33 @@ button:active,.btn:active{transform:scale(.97)}
 .chip.chip-edit{background:transparent;border:1px dashed var(--border-strong);color:var(--txt-3)}
 .chip.chip-edit:hover{border-color:var(--blue);color:var(--blue);background:transparent}
 
+/* Quick notes  ·  saved note presets per category, one tap instead of typing */
+.np-section{margin-top:15px;padding-top:14px;border-top:1px dashed var(--border)}
+.np-head{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+.np-head label{margin-bottom:0}
+.np-scope{font-family:var(--label);font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--blue);background:var(--blue-soft);padding:3px 8px;border-radius:var(--radius);line-height:1.5}
+.np-row{margin-top:0}
+#log-note-chips .np-chip{background:transparent;border:1px solid var(--border-strong);color:var(--txt-2);font-weight:550;padding:8px 14px}
+#log-note-chips .np-chip:hover{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+#log-note-chips .np-chip.selected{background:var(--blue-soft);border-color:var(--blue);color:var(--blue);font-weight:700;box-shadow:none}
+#log-note-chips .np-chip.selected:hover{background:var(--blue-soft);color:var(--blue);border-color:var(--blue)}
+#log-note-chips .np-chip.selected::before{content:'\2713';font-size:11px;margin-right:6px;font-weight:800}
+#log-note-chips .np-save{border-style:dashed;border-color:var(--green);color:var(--green);max-width:min(100%,260px);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#log-note-chips .np-save:hover{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+#log-note-chips .np-save.selected::before{content:none}
+.np-empty{font-size:12.5px;color:var(--txt-3);align-self:center}
+.np-ed-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.np-ed-row input{flex:1;min-width:0}
+.np-ed-num{font-family:var(--label);font-size:11px;color:var(--txt-3);width:18px;text-align:center;flex:0 0 18px}
+.np-hint{font-size:12.5px;color:var(--light);margin:-8px 0 16px;line-height:1.45}
+@media(max-width:480px){
+  .np-ed-num{display:none}
+  .np-ed-row{gap:6px}
+  .np-ed-row .icon-btn{width:30px;height:30px}
+}
+
 /* ==================================================================
    FEATURE BAR  ·  monthly totals
    ================================================================== */
@@ -528,7 +555,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   .card,.stat-card{padding:16px}
   .big-number{font-size:24px}
   .form-row{flex-direction:column;align-items:stretch;gap:10px}
-  .form-group{min-width:100%!important;max-width:100%!important}
+  .form-group{min-width:100%!important;max-width:100%!important;flex:0 0 auto!important}
   .section-header h2{font-size:20px}
   .modal{padding:20px;border-radius:var(--radius);max-height:92vh}
   table{font-size:12px}
@@ -766,6 +793,15 @@ tbody tr:hover td{background:var(--surface-2)}
   #log-a{font-size:26px!important;font-weight:750!important;letter-spacing:-1px;padding:12px 14px}
   #log-add-btn{padding:15px!important;font-size:15px;border-radius:var(--radius)}
   .chip{padding:10px 15px;font-size:13.5px}
+  /* Amount and date sit side by side, note and button run full width */
+  #quick-log-card .qf-row{flex-direction:row!important;flex-wrap:wrap;gap:10px;align-items:flex-end}
+  #quick-log-card .qf-row>.qf-amt{flex:1 1 46%!important;min-width:120px!important;max-width:none!important}
+  #quick-log-card .qf-row>.qf-date{flex:1 1 46%!important;min-width:146px!important;max-width:none!important}
+  #quick-log-card .qf-row>.qf-note,#quick-log-card .qf-row>.qf-btn{flex:1 1 100%!important;max-width:100%!important}
+  #quick-log-card .qf-btn label{display:none}
+  #quick-log-card #log-d{padding:12px 8px;text-align:center}
+  #quick-log-card #log-cc-row{margin-top:14px!important}
+  .np-section{margin-top:13px;padding-top:12px}
   .total-out-bar{border-radius:var(--r-lg)}
 }
 
@@ -882,6 +918,11 @@ tbody tr:hover td{background:var(--surface-2)}
       <div class="chip-row" id="log-chips"></div>
     </div>
 
+    <div class="np-section" id="log-note-section" style="display:none">
+      <div class="np-head"><label>Quick note</label><span class="np-scope" id="log-note-scope"></span></div>
+      <div class="chip-row np-row" id="log-note-chips"></div>
+    </div>
+
     <div class="mt-16" id="log-cc-row" class="mb-12" style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--cream);border:1.5px solid var(--rule-dk);border-radius:4px">
       <div style="flex:1"><div style="font-size:13px;font-weight:600">Paid by Credit Card?</div><div style="font-size:11px;color:var(--light)">Track this toward your monthly CC charge</div></div>
       <div class="toggle" id="log-cc-toggle" onclick="toggleLogCC()"><div class="toggle-knob"></div></div>
@@ -897,11 +938,11 @@ tbody tr:hover td{background:var(--surface-2)}
         <div class="form-group"><label>Rate your bank gave you</label><input type="number" id="log-fx-rate" inputmode="decimal" step="0.01" placeholder="0" oninput="fxRecalc()"></div>
       </div>
     </div>
-    <div class="form-row" style="margin-bottom:0">
-      <div class="form-group" style="flex:1.4;min-width:160px"><label id="log-amt-label">Amount (₹)</label><input type="number" id="log-a" inputmode="numeric" placeholder="0" style="font-size:18px;font-weight:700"></div>
-      <div class="form-group" style="flex:0 0 168px;max-width:168px"><label>Date</label><input type="date" id="log-d"></div>
-      <div class="form-group" style="flex:2.4;min-width:180px"><label>Note (optional)</label><input type="text" id="log-n" placeholder="What was this for?"></div>
-      <div class="form-group" style="flex:0 0 150px;max-width:150px"><label>&nbsp;</label><button class="btn btn-primary" id="log-add-btn" onclick="addLog()" style="width:100%;padding:12px">Add Entry</button></div>
+    <div class="form-row qf-row" style="margin-bottom:0">
+      <div class="form-group qf-amt" style="flex:1.4;min-width:160px"><label id="log-amt-label">Amount (₹)</label><input type="number" id="log-a" inputmode="numeric" placeholder="0" style="font-size:18px;font-weight:700"></div>
+      <div class="form-group qf-date" style="flex:0 0 168px;max-width:168px"><label>Date</label><input type="date" id="log-d"></div>
+      <div class="form-group qf-note" style="flex:2.4;min-width:180px"><label>Note (optional)</label><input type="text" id="log-n" placeholder="What was this for?" oninput="onNoteInput()"></div>
+      <div class="form-group qf-btn" style="flex:0 0 150px;max-width:150px"><label>&nbsp;</label><button class="btn btn-primary" id="log-add-btn" onclick="addLog()" style="width:100%;padding:12px">Add Entry</button></div>
     </div>
   </div>
 
@@ -1300,6 +1341,16 @@ tbody tr:hover td{background:var(--surface-2)}
   <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveSources()">Save</button><button class="btn btn-secondary" onclick="closeM('m-sources')">Cancel</button></div>
 </div></div>
 
+<div class="modal-overlay" id="m-notes"><div class="modal"><h3 id="np-title">Quick notes</h3>
+  <p class="np-hint" id="np-sub">These fill the note field with one tap, so you never type the same thing twice. They are only notes — nothing here changes your budget, your categories or anything you have already logged.</p>
+  <div id="np-ed"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
+    <button class="btn btn-secondary btn-sm" onclick="addNotePreset()">+ Add quick note</button>
+    <button class="btn btn-secondary btn-sm" id="np-restore" onclick="restoreNotePresets()" style="display:none">↺ Restore suggestions</button>
+  </div>
+  <div class="form-row mt-12"><button class="btn btn-primary" onclick="saveNotePresets()">Save</button><button class="btn btn-secondary" onclick="closeM('m-notes')">Cancel</button></div>
+</div></div>
+
 <div class="modal-overlay" id="m-flat"><div class="modal"><h3>Edit Flat &amp; Lending</h3>
   <div class="form-row"><div class="form-group"><label>My Rent (₹)</label><input type="number" id="fl-rent"></div><div class="form-group"><label>Start</label><input type="month" id="fl-start"></div><div class="form-group"><label>End</label><input type="month" id="fl-end"></div></div>
   <div class="card-title mt-12">People Who Owe Me</div><div id="fl-people-ed"></div>
@@ -1362,8 +1413,24 @@ const FREELANCERS=['Chirag','Nupur','Gautam','Vikas'];
 const CLIENTS_LIST=['Druk Asia','WFTA','Kipling India','Blue Poppy Bhutan','Santosh Kumar'];
 const INVEST_CATS=['SIP','Lump Sum','Gold','Emergency Fund','Travel Fund','Stocks','Other'];
 
+// ---- Quick notes ----------------------------------------------------------
+// Saved note text per chip, so a repeat purchase is one tap instead of typing.
+// They never touch amounts, budgets or categories. Keyed by "<type>::<chip>".
+// Suggestions below only ever seed a chip that has never been edited, so
+// anything removed stays removed.
+const NOTE_SUGGESTIONS={
+  'food':['Grocery','Zomato/Swiggy','Dining Out'],
+  'healthnutrition':['Supplements','Doctor Checkup','Health Checkup'],
+  'transport':['Uber/Rapido','Petrol'],
+  'utilities':['Electricity Recharge','Mobile Recharge','Internet Recharge'],
+  'shopping':['Clothes','Tech','Perfume','Skincare','Home','Accessories','Footwear'],
+  'miscellaneous':['Movie Tickets','Alcohol','Gifting','Grooming','Books']
+};
+const npCanon=n=>String(n||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const npKey=(t,n)=>t+'::'+String(n||'');
+
 // ============ STORAGE ============
-const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees',sources:'pft_sources',ui:'pft_ui',tax:'pft_tax',hrs:'pft_hrs'};
+const K={nw:'pft_nw',nwh:'pft_nwh',bg:'pft_bg',emi:'pft_emi',sub:'pft_sub',ag:'pft_ag',sl:'pft_sl',lb:'pft_lb',inv:'pft_inv',flat:'pft_flat',goals:'pft_goals',wish:'pft_wish',catbud:'pft_catbud',cc:'pft_cc',calc:'pft_calc',payees:'pft_payees',sources:'pft_sources',ui:'pft_ui',tax:'pft_tax',hrs:'pft_hrs',notes:'pft_notes'};
 // note: catbud key retained only for cleanup of legacy data; budgets now live in BG.variable
 const L=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 // ===== SUPABASE CLOUD SYNC =====
@@ -1377,7 +1444,7 @@ const S=(k,d)=>{const s=JSON.stringify(d);localStorage.setItem(k,s);_queueSync(k
 function _queueSync(key,strValue){if(!_supaOn()||!_syncReady)return;_syncQueue[key]=strValue;_dot('saving');clearTimeout(_syncTimer);_syncTimer=setTimeout(_flushSync,600);}
 async function _flushSync(){_syncTimer=null;const q=_syncQueue;_syncQueue={};const rows=Object.entries(q).map(([key,value])=>({key,value,updated_at:new Date().toISOString()}));if(!rows.length)return;try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?on_conflict=key',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify(rows)});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}_dot('ok');}catch(e){_dot('err');console.error('Supabase sync failed',e);}}
 function _pushAll(){if(!_supaOn())return;Object.values(K).forEach(kk=>{const v=localStorage.getItem(kk);if(v!=null)_syncQueue[kk]=v;});_flushSync();}
-function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);PAYEES=L(K.payees,PAYEES);SOURCES=L(K.sources,SOURCES);UI=L(K.ui,UI);TAX=L(K.tax,TAX);HRS=L(K.hrs,HRS);try{normalizeData()}catch(e){console.error('normalize failed',e)}}
+function _reloadVars(){NW=L(K.nw,NW);NWH=L(K.nwh,NWH);BG=L(K.bg,BG);EMIS=L(K.emi,EMIS);SUBS=L(K.sub,SUBS);AG=L(K.ag,AG);SL=L(K.sl,SL);LB=L(K.lb,LB);INV=L(K.inv,INV);FLAT=L(K.flat,FLAT);GOALS=L(K.goals,GOALS);WISH=L(K.wish,WISH);CC=L(K.cc,CC);CALC=L(K.calc,CALC);PAYEES=L(K.payees,PAYEES);SOURCES=L(K.sources,SOURCES);UI=L(K.ui,UI);TAX=L(K.tax,TAX);HRS=L(K.hrs,HRS);NOTEP=L(K.notes,NOTEP);if(!NOTEP||typeof NOTEP!=='object'||Array.isArray(NOTEP))NOTEP={};try{normalizeData()}catch(e){console.error('normalize failed',e)}}
 async function _loadAllFromSupabase(){if(!_supaOn()){_syncReady=true;return;}try{const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=key,value',{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});if(!res.ok){const body=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+' '+body);}const rows=await res.json();if(rows&&rows.length){rows.forEach(r=>{const v=(typeof r.value==='string')?r.value:JSON.stringify(r.value);try{localStorage.setItem(r.key,v);}catch(e){}});_reloadVars();_syncReady=true;renderAll();}else{_syncReady=true;_pushAll();}_dot('ok');}catch(e){_syncReady=true;_dot('err');console.error('Supabase load failed',e);}}
 // Pull fresh data whenever this device comes back to the foreground, but only if nothing local is waiting to upload
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&_supaOn()&&_syncReady&&!_syncTimer&&!Object.keys(_syncQueue).length)_loadAllFromSupabase();});
@@ -1523,6 +1590,8 @@ if(typeof TAX.otherIncome!=='number')TAX.otherIncome=0;
 if(typeof TAX.deductions!=='number')TAX.deductions=0;
 if(!TAX.parked||typeof TAX.parked!=='object'||Array.isArray(TAX.parked))TAX.parked={};
 let HRS=L(K.hrs,{months:{},target:0,basis:'received'});
+let NOTEP=L(K.notes,{});
+if(!NOTEP||typeof NOTEP!=='object'||Array.isArray(NOTEP))NOTEP={};
 if(!HRS||typeof HRS!=='object'||Array.isArray(HRS))HRS={months:{},target:0,basis:'received'};
 if(!HRS.months||typeof HRS.months!=='object'||Array.isArray(HRS.months))HRS.months={};
 if(typeof HRS.target!=='number')HRS.target=0;
@@ -1763,8 +1832,80 @@ function renderLogChips(){
   if(LOG_TYPE==='income')chipHtml+=`<div class="chip chip-edit" onclick="openSourcesModal()" title="Add, rename or remove income sources">✎ Edit list</div>`;
   if(LOG_TYPE==='fixed')chipHtml+=`<div class="chip chip-edit" onclick="switchToBudgetForFixed()" title="Fixed costs come from your Budget tab">✎ Edit list</div>`;
   chips.innerHTML=chipHtml;
+  try{seedNotePresets()}catch(e){console.error('note preset seed failed',e)}
+  renderNoteChips();
 }
 function selectChip(c){LOG_CAT=c;renderLogChips()}
+// ---- Quick notes: saved note text per chip -------------------------------
+function notePresetsFor(t,n){const v=NOTEP[npKey(t,n)];return Array.isArray(v)?v.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim()):[]}
+function noteSuggestionsFor(t,n){return t==='expense'?(NOTE_SUGGESTIONS[npCanon(n)]||[]):[]}
+// Seeds suggestions only for a chip that has never been edited, so a list you
+// cleared stays cleared and a list you edited is never overwritten.
+function seedNotePresets(){
+  if(_supaOn()&&!_syncReady)return; // wait for the cloud pull so we seed the real categories
+  let changed=false;
+  CATSlist().forEach(n=>{
+    const k=npKey('expense',n);
+    if(!Array.isArray(NOTEP[k])){const d=noteSuggestionsFor('expense',n);if(d.length){NOTEP[k]=d.slice();changed=true}}
+  });
+  if(changed)S(K.notes,NOTEP);
+}
+function renderNoteChips(){
+  const sec=document.getElementById('log-note-section');if(!sec)return;
+  const row=document.getElementById('log-note-chips'),scope=document.getElementById('log-note-scope'),inp=document.getElementById('log-n');
+  if(!LOG_CAT){sec.style.display='none';row.innerHTML='';return}
+  sec.style.display='block';scope.textContent=LOG_CAT;
+  const list=notePresetsFor(LOG_TYPE,LOG_CAT);
+  const cur=(inp&&inp.value||'').trim(),low=cur.toLowerCase();
+  let h=list.map((t,i)=>`<div class="chip np-chip ${t.toLowerCase()===low?'selected':''}" onclick="pickNote(${i})" title="Use this note">${esc(t)}</div>`).join('');
+  if(cur&&!list.some(t=>t.toLowerCase()===low))h+=`<div class="chip np-chip np-save" onclick="saveCurrentNote()" title="Save this note for next time">+ Save &ldquo;${esc(cur)}&rdquo;</div>`;
+  h+=list.length
+    ?`<div class="chip chip-edit" onclick="openNotesModal()" title="Add, rename, reorder or remove quick notes">&#9998; Edit</div>`
+    :`<div class="chip chip-edit" onclick="openNotesModal()" title="Save the notes you type most for ${esc(LOG_CAT)}">+ Add quick notes</div>`;
+  row.innerHTML=h;
+}
+function pickNote(i){
+  const t=notePresetsFor(LOG_TYPE,LOG_CAT)[i];if(t==null)return;
+  const inp=document.getElementById('log-n');
+  inp.value=(inp.value||'').trim().toLowerCase()===t.toLowerCase()?'':t; // tap the same one again to clear it
+  renderNoteChips();
+}
+function onNoteInput(){renderNoteChips()}
+function saveCurrentNote(){
+  const cur=(document.getElementById('log-n').value||'').trim();if(!cur||!LOG_CAT)return;
+  const list=notePresetsFor(LOG_TYPE,LOG_CAT);
+  if(!list.some(t=>t.toLowerCase()===cur.toLowerCase()))list.push(cur);
+  NOTEP[npKey(LOG_TYPE,LOG_CAT)]=list;S(K.notes,NOTEP);renderNoteChips();
+}
+// ---- Quick note list editor ----
+let NP_DRAFT=[],NP_KEY='',NP_LABEL='';
+function _readNoteInputs(){document.querySelectorAll('#np-ed [data-np]').forEach(inp=>{const i=+inp.dataset.np;if(i>=0&&i<NP_DRAFT.length)NP_DRAFT[i]=inp.value})}
+function openNotesModal(){
+  if(!LOG_CAT)return;
+  NP_KEY=npKey(LOG_TYPE,LOG_CAT);NP_LABEL=LOG_CAT;NP_DRAFT=notePresetsFor(LOG_TYPE,LOG_CAT);
+  renderNotesEditor();openM('m-notes');
+}
+function renderNotesEditor(){
+  document.getElementById('np-title').textContent='Quick notes · '+NP_LABEL;
+  const ed=document.getElementById('np-ed');
+  ed.innerHTML=NP_DRAFT.length?NP_DRAFT.map((t,i)=>`<div class="np-ed-row"><span class="np-ed-num">${i+1}</span><input value="${esc(t)}" data-np="${i}" placeholder="e.g. Zomato/Swiggy"><button class="icon-btn" title="Move up" onclick="moveNotePreset(${i},-1)"${i===0?' style="opacity:.3"':''}>&#8593;</button><button class="icon-btn" title="Move down" onclick="moveNotePreset(${i},1)"${i===NP_DRAFT.length-1?' style="opacity:.3"':''}>&#8595;</button><button class="icon-btn" title="Remove" onclick="removeNotePreset(${i})">&#10005;</button></div>`).join(''):`<div style="font-size:12.5px;color:var(--light);padding:6px 0 10px">Nothing here yet. Add the notes you type most often for ${esc(NP_LABEL)}.</div>`;
+  const r=document.getElementById('np-restore');
+  if(r)r.style.display=noteSuggestionsFor(LOG_TYPE,NP_LABEL).length?'inline-flex':'none';
+}
+function addNotePreset(){_readNoteInputs();NP_DRAFT.push('');renderNotesEditor();const ins=document.querySelectorAll('#np-ed [data-np]');if(ins.length)ins[ins.length-1].focus()}
+function removeNotePreset(i){_readNoteInputs();NP_DRAFT.splice(i,1);renderNotesEditor()}
+function moveNotePreset(i,d){_readNoteInputs();const j=i+d;if(j<0||j>=NP_DRAFT.length)return;const t=NP_DRAFT[i];NP_DRAFT[i]=NP_DRAFT[j];NP_DRAFT[j]=t;renderNotesEditor()}
+function restoreNotePresets(){
+  _readNoteInputs();
+  noteSuggestionsFor(LOG_TYPE,NP_LABEL).forEach(t=>{if(!NP_DRAFT.some(x=>(x||'').trim().toLowerCase()===t.toLowerCase()))NP_DRAFT.push(t)});
+  renderNotesEditor();
+}
+function saveNotePresets(){
+  _readNoteInputs();
+  NOTEP[NP_KEY]=NP_DRAFT.map(t=>(t||'').trim()).filter(Boolean)
+    .filter((t,i,a)=>a.findIndex(x=>x.toLowerCase()===t.toLowerCase())===i);
+  S(K.notes,NOTEP);closeM('m-notes');renderNoteChips();
+}
 // ---- Agency expense list editor ----
 function _readPayeeInputs(){document.querySelectorAll('#payee-ed [data-pay]').forEach(inp=>{const i=+inp.dataset.pay;if(i>=0&&i<PAYEES.length)PAYEES[i]=inp.value});}
 function openPayeesModal(){
@@ -2630,7 +2771,7 @@ function optTip(cat,over){
 function copyReview(){const t=document.querySelector('.review-box');if(t){const text=t.innerText;navigator.clipboard.writeText(text).then(()=>{const b=event.target;b.textContent='✓ Copied';setTimeout(()=>b.textContent='Copy Report',1200)}).catch(()=>alert('Copy failed, select manually'))}}
 
 // ============ EXPORT / IMPORT ============
-function exportAll(){const data={app:'Pratim Finance Tracker',version:8,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC,payees:PAYEES,sources:SOURCES,ui:UI,tax:TAX,hrs:HRS};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
+function exportAll(){const data={app:'Pratim Finance Tracker',version:9,exportDate:new Date().toISOString(),nw:NW,nwh:NWH,bg:BG,emis:EMIS,subs:SUBS,ag:AG,sl:SL,lb:LB,inv:INV,flat:FLAT,goals:GOALS,wish:WISH,cc:CC,calc:CALC,payees:PAYEES,sources:SOURCES,ui:UI,tax:TAX,hrs:HRS,notes:NOTEP};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`finance_backup_${td()}.json`;a.click()}
 function importAll(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const data=JSON.parse(ev.target.result);
   if(data.nw!==undefined){NW=data.nw;S(K.nw,NW)}
   if(data.nwh!==undefined){NWH=data.nwh;S(K.nwh,NWH)}
@@ -2651,6 +2792,7 @@ function importAll(e){const file=e.target.files[0];if(!file)return;const reader=
   if(data.ui!==undefined){UI=data.ui;S(K.ui,UI)}
   if(data.tax!==undefined){TAX=data.tax;S(K.tax,TAX)}
   if(data.hrs!==undefined){HRS=data.hrs;S(K.hrs,HRS)}
+  if(data.notes!==undefined&&data.notes&&typeof data.notes==='object'&&!Array.isArray(data.notes)){NOTEP=data.notes;S(K.notes,NOTEP)}
   renderAll();alert('All data restored successfully.')}catch(err){alert('Invalid backup file: '+err.message)}};reader.readAsText(file);e.target.value=''}
 
 // ============ BEHAVIOR ANALYTICS ============
