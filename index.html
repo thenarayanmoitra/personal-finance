@@ -1786,6 +1786,127 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
   .cct,.cct:hover,.soon-chip:hover{transform:none}
   .st-red .cch-orb::after,.st-red .cct-bar::after,.st-red .cct-st i{animation:none}
 }
+/* ==================================================================
+   v15 LAYER  ·  Every page to the Credit Cards standard
+   A plain headline on each page, secondary detail folded away, and a
+   phone layout built for one hand. Presentation only.
+   ================================================================== */
+/* Page headlines reuse the Credit Cards sentence and dark panel */
+.cch.no-panel{grid-template-columns:1fr}
+.cch-say .up{color:var(--green);font-weight:700}
+.cch-say .down{color:var(--red);font-weight:700}
+.cch-say .amt.good{color:var(--green)}
+.cpd-big{font-family:var(--num);font-size:42px;font-weight:600;letter-spacing:-1.8px;line-height:1;color:var(--paper)}
+.cpd-big .neg{color:#F6A78E}.cpd-big .pos{color:#8BE0AB}
+.cpd.is-clear .cpd-big{color:#8BE0AB;font-size:30px;letter-spacing:-1px}
+.cpd-rows{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.cpd-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;font-size:12px;align-items:baseline}
+.cpd-row span:first-child{font-family:var(--label);font-size:10px;letter-spacing:.06em;opacity:.7;white-space:nowrap}
+.cpd-row span:nth-child(2){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}
+.cpd-row b{font-family:var(--num);font-weight:600}
+@media(max-width:640px){
+  .cpd-num .cpd-big{grid-column:1;grid-row:2/span 2;align-self:center;font-size:34px}
+  .cpd-num .cpd-left{grid-column:2;grid-row:2;align-self:end}
+  .cpd-num .cpd-tot{grid-column:2;grid-row:3}
+  .cpd-rows{grid-column:1/-1;grid-row:6}
+  .cpd .cpd-btn{justify-self:start}
+}
+/* The Performance report's own headline, brought into the same family */
+.pf-hero{border-radius:var(--radius)!important;box-shadow:0 1px 2px rgba(22,36,28,.05),0 10px 30px -18px rgba(22,36,28,.25)}
+
+/* Older dark banners replaced by the headlines. Kept in the page, so nothing that fills them breaks */
+#total-out-bar,#page-tax>.total-out-bar,#page-flat>.total-out-bar{display:none}
+#page-networth .nwh-label,#page-networth .nwh-value{display:none}
+#page-networth .nw-hero .nwh-top{align-items:center}
+
+/* Folded sections on the other pages sit flush */
+.pgf{margin-bottom:16px}
+.pgf .ccf-pad>.card,.pgf .ccf-pad>.grid>.card{box-shadow:none;border-color:var(--border)}
+.pgf .ccf-pad>.grid{margin-bottom:12px}
+.pgf .ccf-pad>*:last-child{margin-bottom:0}
+.pgf .ccf-pad>.card{padding:16px}
+
+/* One radius everywhere, including the progress tracks */
+.progress-bar,.progress-fill,.rk-track,.rk-fill,.contrib-bar,.contrib-bar i,.coll-track,.coll-track i,.wl-track,.wl-track i,.fl-track,.fl-track i,.hr-bar,.hr-bar i,.bm-bar,.bm-fill{border-radius:var(--radius)!important}
+
+/* Stat tiles: tighter, calmer, same type as the card figures */
+.stat-card .big-number{font-family:var(--num);letter-spacing:-1px}
+.stat-card .card-title{margin-bottom:8px}
+
+/* Icons that replaced emoji */
+.ib{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.note-ico{width:20px;height:20px;flex-shrink:0;color:var(--blue);stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+
+/* Tables scroll sideways inside their card instead of squashing */
+.scroll-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* Page entrance: the headline, then each block, one after another */
+.page.pg-in>*{animation:ccRise .6s var(--ease) backwards}
+.page.pg-in>*:nth-child(2){animation-delay:.08s}.page.pg-in>*:nth-child(3){animation-delay:.16s}
+.page.pg-in>*:nth-child(4){animation-delay:.24s}.page.pg-in>*:nth-child(5){animation-delay:.32s}
+.page.pg-in>*:nth-child(6){animation-delay:.4s}.page.pg-in>*:nth-child(n+7){animation-delay:.46s}
+
+/* ---------- Phone ---------- */
+@media(max-width:820px){
+  /* The tab bar sits on the bottom edge, full width, and reaches under the home indicator */
+  .mnav{left:0;right:0;bottom:0;border-radius:0;gap:4px;padding:7px 10px calc(7px + env(safe-area-inset-bottom));
+    background:rgba(22,36,28,.97);-webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px);
+    border:none;border-top:1px solid rgba(241,244,236,.1);box-shadow:0 -12px 32px -14px rgba(22,36,28,.55)}
+  .mnav-btn{position:relative;padding:8px 2px 7px;border-radius:var(--radius);color:rgba(241,244,236,.62);transition:background .25s var(--ease),color .25s var(--ease),transform .2s var(--ease)}
+  .mnav-btn.active{color:var(--ink-deep);background:var(--accent-soft);box-shadow:0 8px 20px -8px rgba(232,178,92,.65);animation:navPop .38s var(--ease)}
+  .mnav-btn.active::before{content:'';position:absolute;top:-8px;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--accent-soft);box-shadow:0 0 12px rgba(232,178,92,.9)}
+  .mnav-btn:active{transform:scale(.94)}
+  .page{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  .toast-wrap{bottom:calc(86px + env(safe-area-inset-bottom))}
+
+  /* Stat tiles: a clean two-column grid, never cut off at the edge */
+  #page-logbook .grid-auto,#page-agency .grid-auto,#page-tax .grid-auto{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;overflow:visible;margin:0 0 14px;padding:0}
+  #page-logbook .grid-auto>.stat-card,#page-agency .grid-auto>.stat-card,#page-tax .grid-auto>.stat-card{flex:none;min-width:0}
+  .grid-auto>.stat-card:last-child:nth-child(odd){grid-column:1/-1}
+  .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat-card{padding:14px}
+  .stat-card .big-number{font-size:22px}
+  .stat-card .big-label{font-size:11px}
+}
+@media(max-width:640px){
+  /* The page intro steps aside for the headline, and the actions sit in one swipeable row */
+  .page>.section-header:first-child>.section-sub{display:none}
+  .page>.section-header:first-child{margin-bottom:12px}
+  .page>.section-header:first-child>div:not(.section-sub),.page>.section-header:first-child>.pf-nav{flex-wrap:nowrap!important;overflow-x:auto;
+    scrollbar-width:none;width:calc(100% + 28px);margin:0 -14px;padding:0 14px 2px}
+  .page>.section-header:first-child>div::-webkit-scrollbar{display:none}
+  .page>.section-header:first-child .btn,.page>.section-header:first-child select{flex-shrink:0}
+  .page>.section-header:first-child>.btn{width:100%}
+  .scroll-table th,.scroll-table td{white-space:nowrap}
+  .card>table,.coll-wrap+.filter-bar+table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .grid-3.mb-16>.stat-card{padding:16px}
+  /* Pop-ups rise from the bottom as sheets */
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal,.modal.wide{max-width:none!important;width:100%;max-height:92vh;border-radius:var(--radius) var(--radius) 0 0;
+    padding:14px 16px calc(18px + env(safe-area-inset-bottom));animation:sheetUp .42s var(--ease)}
+  .modal::before{content:'';display:block;width:40px;height:4px;border-radius:var(--radius);background:var(--border-strong);margin:0 auto 14px}
+  .modal h3{font-size:18px}
+}
+@keyframes sheetUp{from{transform:translateY(48px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes navPop{0%{transform:scale(.9)}60%{transform:scale(1.04)}100%{transform:none}}
+@media(prefers-reduced-motion:reduce){.mnav-btn.active,.modal{animation:none}}
+
+.cch.say-long .cch-say{font-size:clamp(20px,2vw,26px);letter-spacing:-.6px}
+@media(max-width:640px){.cch.say-long .cch-say{font-size:18px;letter-spacing:-.4px}}
+.pf-ring .g{font-family:var(--num)!important;font-style:normal!important}
+@media(max-width:820px){
+  .topbar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  #page-overview .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #page-overview .grid-3>.card:last-child:nth-child(odd){grid-column:1/-1}
+  #page-overview .grid-3>.card .big-number{font-size:24px}
+}
+@media(max-width:640px){
+  #page-performance>.section-header:first-child>.pf-nav{flex-wrap:wrap!important;overflow:visible;width:100%;margin:0;padding:0;gap:8px}
+  #page-performance .pf-nav select{flex:1;min-width:0}
+  #page-performance .pf-nav .btn{width:100%}
+}
+#lg-inv{color:var(--purple)!important}
 </style>
 
 </head>
@@ -1856,7 +1977,8 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 
 <!-- OVERVIEW -->
 <div class="page" id="page-overview">
-  <div class="section-header"><div class="section-sub" id="ov-date"></div><button class="btn btn-primary" onclick="switchPage('performance')">📋 Monthly Performance</button></div>
+  <div class="section-header"><div class="section-sub" id="ov-date"></div><button class="btn btn-primary" onclick="switchPage('performance')">Monthly performance</button></div>
+  <div class="cch pgh" id="h-overview"></div>
   <div class="grid grid-4 mb-16">
     <div class="stat-card"><div class="card-title">Net Worth</div><div class="big-number" id="ov-nw"></div><div class="big-label" id="ov-nw-sub"></div></div>
     <div class="stat-card green"><div class="card-title">Monthly Income</div><div class="big-number green" id="ov-inc"></div><div class="big-label">All clients</div></div>
@@ -2019,6 +2141,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     </div>
   </div>
 
+  <div class="cch pgh" id="h-logbook"></div>
   <div class="total-out-bar" id="total-out-bar">
     <div class="to-heads">
       <div class="to-main">
@@ -2048,7 +2171,10 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="stat-card green"><div class="card-title">Income</div><div class="big-number green" id="lg-inc"></div></div>
     <div class="stat-card blue"><div class="card-title">On Credit Cards</div><div class="big-number" id="lg-cc" style="color:var(--blue)"></div><div class="big-label" id="lg-cc-sub"></div><button class="btn btn-secondary btn-xs mt-8" onclick="switchPage('cards')">Open cards &rarr;</button></div>
   </div>
-  <div class="grid grid-2 mb-16">
+  <section class="ccf pgf" id="f-log-types">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>This month by type</b><small>Agency costs, income, investments and fixed costs, name by name</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="grid grid-2 mb-16">
     <div class="card"><div class="card-title" style="display:flex;justify-content:space-between;align-items:center">Agency Expenses <button class="btn btn-secondary btn-xs" style="text-transform:none;letter-spacing:0" onclick="openPayeesModal()">✎ Edit list</button></div><div id="lg-pay-l"></div></div>
     <div class="card"><div class="card-title">Income This Month</div><div id="lg-inc-l"></div></div>
   </div>
@@ -2056,6 +2182,8 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="card"><div class="card-title">Investments This Month</div><div id="lg-inv-l"></div></div>
     <div class="card"><div class="card-title">Fixed Costs This Month</div><div id="lg-fix-l"></div></div>
   </div>
+  </div></div></div>
+</section>
   <div class="card mb-16"><div class="card-title">Spending vs Budget · <span id="lg-budget-status" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div><div id="lg-exp-l"></div></div>
   <div class="card">
     <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;gap:14px">
@@ -2109,6 +2237,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 <!-- NET WORTH -->
 <div class="page" id="page-networth">
   <div class="section-header"><div class="section-sub">Update weekly to track growth</div><button class="btn btn-primary" onclick="openNWModal()">Update Values</button></div>
+  <div class="cch pgh" id="h-networth"></div>
   <div class="card nw-hero mb-16">
     <div class="nwh-top">
       <div>
@@ -2127,12 +2256,18 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="chart-box tall mt-16"><canvas id="ch-nwhist"></canvas></div>
   </div>
   <div class="card mb-16"><div class="card-title">Assets Breakdown</div><div id="nw-list"></div></div>
-  <div class="card"><div class="card-title">Snapshots</div><div class="scroll-table"><table><thead><tr><th>Date</th><th class="amount">Bank</th><th class="amount">Investments</th><th class="amount">Resellables</th><th class="amount">Net Worth</th><th></th></tr></thead><tbody id="nw-tbl"></tbody></table></div></div>
+  <section class="ccf pgf" id="f-nw-snaps">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>Every snapshot</b><small>Each time you updated your values, with the total</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card"><div class="card-title">Snapshots</div><div class="scroll-table"><table><thead><tr><th>Date</th><th class="amount">Bank</th><th class="amount">Investments</th><th class="amount">Resellables</th><th class="amount">Net Worth</th><th></th></tr></thead><tbody id="nw-tbl"></tbody></table></div></div>
+  </div></div></div>
+</section>
 </div>
 
 <!-- BUDGET -->
 <div class="page" id="page-budget">
   <div class="section-header"><div class="section-sub" id="bg-income-sub"></div><button class="btn btn-primary" onclick="openBudgetModal()">Edit Budget</button></div>
+  <div class="cch pgh" id="h-budget"></div>
   <div class="grid grid-3 mb-16">
     <div class="stat-card red"><div class="card-title">Fixed Costs</div><div class="big-number red" id="bg-fix"></div><div id="bg-fix-l" class="mt-12"></div></div>
     <div class="stat-card" style="--terra:var(--amber)"><div class="card-title">Variable Costs</div><div class="big-number" id="bg-var" style="color:var(--amber)"></div><div id="bg-var-l" class="mt-12"></div></div>
@@ -2144,6 +2279,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 <!-- EMIS -->
 <div class="page" id="page-emis">
   <div class="section-header"><div class="section-sub">Every EMI and subscription, and the day each one charges. Change any of it anytime.</div><button class="btn btn-primary" onclick="openEMIAdd()">+ Add</button></div>
+  <div class="cch pgh" id="h-emis"></div>
   <div class="card mb-16" id="emi-soon-card"><div class="soon-head"><div class="card-title">Coming up</div><span class="soon-sum" id="emi-soon-sum"></span></div><div id="emi-soon"></div></div>
   <div class="card mb-16"><div class="section-header" style="margin-bottom:12px"><div class="card-title" style="margin:0">Active EMIs</div><div class="card-title" style="margin:0;color:var(--terra);text-transform:none;letter-spacing:0;font-size:12px" id="emi-total-lbl"></div></div>
     <div class="filter-bar">
@@ -2168,10 +2304,15 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="scroll-table"><table><thead><tr><th>Item</th><th class="emi-catc">Category</th><th class="amount">Monthly</th><th>Charges on</th><th>Ends</th><th>Status</th><th></th></tr></thead><tbody id="emi-tbl"></tbody></table></div>
     <div class="section-sub mt-12" id="emi-filter-foot"></div>
   </div>
-  <div class="card mb-16"><div class="card-title">Where Your EMIs Go, Most To Least</div><div class="grid grid-2" style="align-items:center"><div class="chart-box tall"><canvas id="ch-emi"></canvas></div><div id="emi-cat-rank"></div></div></div>
+  <section class="ccf pgf" id="f-emi-cats">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/></svg></span><span class="ccf-t"><b>Where your EMIs go</b><small>Grouped by category, heaviest first</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card mb-16"><div class="card-title">Where Your EMIs Go, Most To Least</div><div class="grid grid-2" style="align-items:center"><div class="chart-box tall"><canvas id="ch-emi"></canvas></div><div id="emi-cat-rank"></div></div></div>
+  </div></div></div>
+</section>
   <div class="card"><div class="card-title">Subscriptions</div><div class="scroll-table"><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th>Charges on</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div></div>
   <div class="note-card mt-16">
-    <div style="font-size:18px;line-height:1">🛡️</div>
+    <svg class="note-ico" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/></svg>
     <div>Nothing here tracks health or term insurance premiums, renewal dates, or coverage amounts. A renewal that comes up once a year is the easiest one to miss.</div>
   </div>
 </div>
@@ -2179,6 +2320,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 <!-- INVESTMENTS -->
 <div class="page" id="page-investments">
   <div class="section-header"><div class="section-sub">Edit any fund, amount, or purpose</div><button class="btn btn-primary" onclick="openInvEdit()">Edit Funds</button></div>
+  <div class="cch pgh" id="h-investments"></div>
   <div class="card mb-16">
     <div class="section-header" style="margin-bottom:12px">
       <div><div class="card-title" style="margin:0">Monthly SIPs on the 11th</div><div class="section-sub">Amount, purpose, the horizon you actually expect, and any note</div></div>
@@ -2206,7 +2348,10 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
       <div class="form-group"><label>Invested so far (₹)</label><input type="number" id="fund-investment" inputmode="numeric" placeholder="0" oninput="saveFund('investment',this.value)"></div>
     </div>
   </div>
-  <div class="card">
+  <section class="ccf pgf" id="f-inv-log">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="ccf-t"><b>SIP log, month by month</b><small>Whether each month’s SIP and travel fund actually went out</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card">
     <div class="section-header" style="margin-bottom:14px">
       <div><div class="card-title" style="margin:0">SIP Completion Log</div><div class="section-sub" id="slog-lede">Whether the monthly investment actually went out, month by month</div></div>
       <button class="btn btn-primary btn-sm" onclick="openSIPLog()">+ Log a month</button>
@@ -2226,11 +2371,14 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     </div>
     <div id="siplog-cards"></div>
   </div>
+  </div></div></div>
+</section>
 </div>
 
 <!-- SIP CALCULATOR -->
 <div class="page" id="page-calculator">
   <div class="section-header"><div class="section-sub">Project your wealth with step up compounding</div></div>
+  <div class="cch pgh" id="h-calculator"></div>
   <div class="segment mb-16" id="calc-segment" style="max-width:360px">
     <button class="active" data-ct="sip" onclick="setCalcMode('sip')">Monthly SIP</button>
     <button data-ct="lump" onclick="setCalcMode('lump')">Quarterly Lump Sum</button>
@@ -2260,7 +2408,12 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     </div>
   </div>
   <div class="card mb-16"><div class="card-title">Growth Projection</div><div class="chart-box"><canvas id="ch-calc"></canvas></div></div>
-  <div class="card"><div class="card-title">Year by Year</div><div class="scroll-table"><table><thead><tr><th>Year</th><th class="amount">Invested</th><th class="amount">Market Value</th><th class="amount">Gain</th></tr></thead><tbody id="calc-tbl"></tbody></table></div></div>
+  <section class="ccf pgf" id="f-calc-years">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>Year by year</b><small>What you put in and what it could be worth, each year</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card"><div class="card-title">Year by Year</div><div class="scroll-table"><table><thead><tr><th>Year</th><th class="amount">Invested</th><th class="amount">Market Value</th><th class="amount">Gain</th></tr></thead><tbody id="calc-tbl"></tbody></table></div></div>
+  </div></div></div>
+</section>
 </div>
 
 <!-- AGENCY -->
@@ -2273,6 +2426,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     </div>
   </div>
 
+  <div class="cch pgh" id="h-agency"></div>
   <div class="grid-auto mb-16">
     <div class="stat-card"><div class="card-title">Contracted monthly</div><div class="big-number" id="ag-rev"></div><div class="big-label" id="ag-rev-sub"></div></div>
     <div class="stat-card"><div class="card-title">Received this month</div><div class="big-number green" id="ag-recv"></div><div class="big-label" id="ag-recv-sub"></div></div>
@@ -2359,16 +2513,21 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
           <option value="unpaidFirst">Not received first</option>
         </select>
       </div>
-      <table><thead><tr><th>Client</th><th class="amount">Monthly</th><th class="pay-cell">Payment</th></tr></thead><tbody id="ag-cl-tbl"></tbody></table>
+      <div class="scroll-table"><table><thead><tr><th>Client</th><th class="amount">Monthly</th><th class="pay-cell">Payment</th></tr></thead><tbody id="ag-cl-tbl"></tbody></table></div>
       <div class="section-sub mt-12" id="ag-cl-foot"></div>
     </div>
     <div class="card"><div class="card-title">Income actually received this month</div><div id="ag-recv-list"></div></div>
   </div>
 
-  <div class="grid grid-2">
+  <section class="ccf pgf" id="f-ag-more">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6c2.4 2.6 2.4 14.2 0 16.8M12 3.6c-2.4 2.6-2.4 14.2 0 16.8"/></svg></span><span class="ccf-t"><b>Foreign money and agency costs</b><small>Remittances received and agency costs logged this month</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="grid grid-2">
     <div class="card"><div class="card-title">Foreign remittances this month</div><div id="ag-fx-list"></div></div>
     <div class="card"><div class="card-title">Logged agency expenses this month</div><div id="ag-payouts"></div></div>
   </div>
+  </div></div></div>
+</section>
 </div>
 
 <!-- TAX AND ITR -->
@@ -2381,6 +2540,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     </div>
   </div>
 
+  <div class="cch pgh" id="h-tax"></div>
   <div class="total-out-bar">
     <div class="to-heads">
       <div class="to-main"><span class="to-label">Tax owed on income so far</span><span class="to-value" id="tx-provision">&#8377;0</span></div>
@@ -2403,22 +2563,37 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="stat-card"><div class="card-title">ITR filing due</div><div class="big-number" id="tx-due" style="font-size:21px"></div><div class="big-label" id="tx-due-sub"></div></div>
   </div>
 
-  <div class="grid grid-2 mb-16">
+  <section class="ccf pgf" id="f-tax-build">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>How the tax is worked out</b><small>Each slab, the rebate, cess, and the advance tax dates</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="grid grid-2 mb-16">
     <div class="card"><div class="card-title">How this number is built</div><div id="tx-build"></div></div>
     <div class="card"><div class="card-title">Advance tax schedule</div><div id="tx-adv"></div></div>
   </div>
+  </div></div></div>
+</section>
 
-  <div class="card mb-16">
+  <section class="ccf pgf" id="f-tax-months">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="ccf-t"><b>Month by month</b><small>Receipts and tax added each month. Any month can be opened and edited</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card mb-16">
     <div class="section-header" style="margin-bottom:10px">
       <div><div class="card-title" style="margin:0">Month by month</div><div class="section-sub">Every month of the year is editable. Open any one to add or remove receipts and agency costs, including months that have already passed.</div></div>
     </div>
     <div class="scroll-table"><table><thead><tr><th>Month</th><th class="amount">Receipts</th><th class="amount">Foreign</th><th class="amount">Running receipts</th><th class="amount">Tax added</th><th class="amount">Running tax</th><th></th></tr></thead><tbody id="tx-tbl"></tbody></table></div>
   </div>
+  </div></div></div>
+</section>
 
-  <div class="card mb-16"><div class="card-title">Foreign remittances this financial year</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Source</th><th>Currency</th><th class="amount">Foreign amount</th><th class="amount">Rate</th><th class="amount">Credited</th></tr></thead><tbody id="tx-fx-tbl"></tbody></table></div></div>
+  <section class="ccf pgf" id="f-tax-fx">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6c2.4 2.6 2.4 14.2 0 16.8M12 3.6c-2.4 2.6-2.4 14.2 0 16.8"/></svg></span><span class="ccf-t"><b>Foreign remittances this year</b><small>Every inward payment, the rate and what was credited</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card mb-16"><div class="card-title">Foreign remittances this financial year</div><div class="scroll-table"><table><thead><tr><th>Date</th><th>Source</th><th>Currency</th><th class="amount">Foreign amount</th><th class="amount">Rate</th><th class="amount">Credited</th></tr></thead><tbody id="tx-fx-tbl"></tbody></table></div></div>
+  </div></div></div>
+</section>
 
   <div class="note-card">
-    <div style="font-size:18px;line-height:1">&#9878;&#65039;</div>
+    <svg class="note-ico" viewBox="0 0 24 24"><path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-2.5 6a3 3 0 005 0zM19 8l-2.5 6a3 3 0 005 0z"/></svg>
     <div>These are working estimates so you always know roughly what to hold back, not a filed return. Presumptive taxation under section 44ADA assumes gross receipts stay within the prescribed limit and that cash receipts stay small. Foreign remittances are counted as export of services, so check your LUT is live and that FIRC paperwork is filed for each inward payment. Confirm the final numbers with your CA before you pay advance tax or file.</div>
   </div>
 </div>
@@ -2427,6 +2602,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 <div class="page" id="page-flat">
   <div class="section-header"><div class="section-sub">Who owes what, and which months are still open. Just a tracker, this does not touch your net worth.</div><button class="btn btn-primary" onclick="openFlatEdit()">Edit Setup</button></div>
 
+  <div class="cch pgh" id="h-flat"></div>
   <div class="total-out-bar">
     <div class="to-heads">
       <div class="to-main"><span class="to-label">Still owed to you</span><span class="to-value" id="fl-hero-due">&#8377;0</span></div>
@@ -2466,12 +2642,18 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <span>Tap any month to flip it</span>
   </div>
 
-  <div class="card mt-12"><div class="card-title">Outstanding summary</div><div id="fl-summary"></div></div>
+  <section class="ccf pgf" id="f-fl-sum">
+  <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>Outstanding summary</b><small>Who owes what across every obligation</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
+  <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
+<div class="card mt-12"><div class="card-title">Outstanding summary</div><div id="fl-summary"></div></div>
+  </div></div></div>
+</section>
 </div>
 
 <!-- GOALS -->
 <div class="page" id="page-goals">
   <div class="section-header"><div class="section-sub">Savings goals and wishlist, with months to target based on your surplus</div></div>
+  <div class="cch pgh" id="h-goals"></div>
 
   <div class="section-header" style="margin-bottom:12px"><div class="card-title" style="margin:0">Savings goals</div><button class="btn btn-secondary btn-sm" onclick="openGoalModal()">+ Add goal</button></div>
   <div class="grid grid-3 mb-16" id="goals-list"></div>
@@ -4260,7 +4442,7 @@ function renderNetWorth(){
     } else chg.innerHTML='<span>Take another snapshot and the movement shows up here</span>';
   }
   document.getElementById('nw-list').innerHTML=items.map(x=>`<div class="summary-row"><span>${x.l}</span><span class="amount pos">${fmt(x.v)}</span></div>`).join('')+`<div class="summary-row total"><span>Total Net Worth</span><span class="amount pos">${fmt(ta)}</span></div>`;
-  document.getElementById('nw-tbl').innerHTML=NWH.length?NWH.slice().reverse().map((h,i)=>{const t=h.bank+h.investments+h.cash+h.resellables+h.lending;return`<tr><td>${new Date(h.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td><td class="amount">${fmt(h.bank)}</td><td class="amount">${fmt(h.investments)}</td><td class="amount">${fmt(h.resellables)}</td><td class="amount pos">${fmt(t)}</td><td><button class="icon-btn" onclick="NWH.splice(${NWH.length-1-i},1);S(K.nwh,NWH);renderAll()">✕</button></td></tr>`}).join(''):'<tr><td colspan="6" class="text-center" style="padding:20px;color:var(--light)">No snapshots yet. Hit Update Values.</td></tr>';
+  document.getElementById('nw-tbl').innerHTML=NWH.length?NWH.slice().reverse().map((h,i)=>{const t=h.bank+h.investments+h.cash+h.resellables+h.lending;return`<tr><td>${new Date(h.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td><td class="amount">${fmt(h.bank)}</td><td class="amount">${fmt(h.investments)}</td><td class="amount">${fmt(h.resellables)}</td><td class="amount pos">${fmt(t)}</td><td><button class="icon-btn" title="Remove this snapshot" onclick="nwRemove(${NWH.length-1-i})">✕</button></td></tr>`}).join(''):'<tr><td colspan="6" class="text-center" style="padding:20px;color:var(--light)">No snapshots yet. Hit Update Values.</td></tr>';
   if(hist.length>0){
     const cvs=document.getElementById('ch-nwhist');
     let fillStyle='rgba(62,125,116,.16)';
@@ -4283,7 +4465,7 @@ function renderBudget(){
 }
 function openBudgetModal(){
   let h='<div class="form-row"><div class="form-group"><label>Gross Monthly Income</label><input type="number" id="bg-inc-e" value="'+BG.income+'"></div></div>';
-  ['fixed','variable','savings'].forEach(t=>{const lbl=t==='fixed'?'Fixed Costs':t==='variable'?'Variable Costs':'Savings & Investments';h+=`<div class="card-title mt-16">${lbl}</div>`;BG[t].forEach((x,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${x.name}" data-b="${t}-${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${x.amount}" data-b="${t}-${i}-a"></div><button class="icon-btn" onclick="BG.${t}.splice(${i},1);S(K.bg,BG);openBudgetModal()">✕</button></div>`});h+=`<button class="btn btn-secondary btn-xs" onclick="BG.${t}.push({name:'',amount:0});openBudgetModal()">+ Add</button>`});
+  ['fixed','variable','savings'].forEach(t=>{const lbl=t==='fixed'?'Fixed Costs':t==='variable'?'Variable Costs':'Savings & Investments';h+=`<div class="card-title mt-16">${lbl}</div>`;BG[t].forEach((x,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${x.name}" data-b="${t}-${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${x.amount}" data-b="${t}-${i}-a"></div><button class="icon-btn" title="Remove" onclick="bgRemove('${t}',${i})">✕</button></div>`});h+=`<button class="btn btn-secondary btn-xs" onclick="BG.${t}.push({name:'',amount:0});openBudgetModal()">+ Add</button>`});
   document.getElementById('bg-editor').innerHTML=h;openM('m-budget');
 }
 function saveBudget(){BG.income=+document.getElementById('bg-inc-e').value||0;['fixed','variable','savings'].forEach(t=>{BG[t].forEach((x,i)=>{const n=document.querySelector(`[data-b="${t}-${i}-n"]`),a=document.querySelector(`[data-b="${t}-${i}-a"]`);if(n)x.name=n.value;if(a)x.amount=+a.value||0});BG[t]=BG[t].filter(x=>x.name.trim())});S(K.bg,BG);closeM('m-budget');renderAll()}
@@ -4364,7 +4546,7 @@ function renderEMIs(){
   const body=rows.map(({e,i,r})=>{
     const ended=r!==null&&r<=0;
     const st=ended?'<span class="tag tag-green">Done</span>':r!==null&&r<=3?'<span class="tag tag-amber">Ending Soon</span>':'<span class="tag tag-blue">Active</span>';
-    return`<tr style="${ended?'opacity:.5':''}"><td>${esc(e.name)}${srcPill(e)}</td><td class="emi-catc"><span class="tag tag-amber">${esc(e.category)}</span></td><td class="amount">${fmt(e.amount)}</td><td>${daySel('emi',i,e.day)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editEMI(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeEMI(${i})">✕</button></td></tr>`;
+    return`<tr style="${ended?'opacity:.5':''}"><td>${esc(e.name)}${srcPill(e)}</td><td class="emi-catc"><span class="tag tag-amber">${esc(e.category)}</span></td><td class="amount">${fmt(e.amount)}</td><td>${daySel('emi',i,e.day)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editEMI(${i})"><svg class="ib" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button> <button class="icon-btn" title="Remove" onclick="removeEMI(${i})">✕</button></td></tr>`;
   }).join('');
   document.getElementById('emi-tbl').innerHTML=(body||'<tr><td colspan="7" class="text-center" style="padding:24px;color:var(--txt-3)">Nothing matches this view.</td></tr>')+
     `<tr><td><strong>${whole?'Total each month (active)':'Total each month (shown, still running)'}</strong></td><td class="emi-catc"></td><td class="amount"><strong>${fmt(whole?activeTotal:shownTotal)}</strong></td><td colspan="4"></td></tr>`;
@@ -4372,7 +4554,7 @@ function renderEMIs(){
   if(ff)ff.textContent=rows.length+(rows.length===1?' item shown':' items shown')+' of '+EMIS.length+'. Your live load is '+fmt(activeTotal)+' a month across '+ae.length+(ae.length===1?' EMI.':' EMIs.');
   const onCards=ae.filter(e=>e.card).reduce((s,e)=>s+(+e.amount||0),0);
   const tl=document.getElementById('emi-total-lbl');if(tl)tl.textContent=`${fmt(activeTotal)} / month · ${ae.length} active`+(onCards?` · ${fmt(onCards)} on cards`:'');
-  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${esc(s.name)}${srcPill(s)}</td><td class="amount">${fmt(s.amount)}</td><td>${daySel('sub',i,s.day)}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editSub(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeSub(${i})">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td colspan="2"></td></tr>`;
+  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${esc(s.name)}${srcPill(s)}</td><td class="amount">${fmt(s.amount)}</td><td>${daySel('sub',i,s.day)}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editSub(${i})"><svg class="ib" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button> <button class="icon-btn" title="Remove" onclick="removeSub(${i})">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td colspan="2"></td></tr>`;
   renderSoon('emi-soon','emi-soon-sum',31,false);
   // Category ranking, heaviest first, so the leak is obvious at a glance
   const catTot={};ae.forEach(e=>{catTot[e.category]=(catTot[e.category]||0)+e.amount});
@@ -4582,10 +4764,17 @@ function addContrib(){
 }
 function removeContrib(i){
   const c=INV.contrib[i];if(!c)return;
-  if(!confirm('Remove '+(c.name||'this contribution')+'? The stored balance for it is removed too. Any goal on the Goals page stays where it is.'))return;
+  // Everything this fund held is kept aside, so Undo brings back the balance and the done ticks too
+  const bal=INV.funds[c.key],doneMap={};
+  Object.keys(INV.done||{}).forEach(m=>{if(INV.done[m]&&INV.done[m][c.key]!==undefined)doneMap[m]=INV.done[m][c.key]});
   delete INV.funds[c.key];
   Object.keys(INV.done||{}).forEach(m=>{if(INV.done[m])delete INV.done[m][c.key]});
-  INV.contrib.splice(i,1);S(K.inv,INV);renderInvestments();
+  INV.contrib.splice(i,1);S(K.inv,INV);renderAll();
+  toast('Removed '+(c.name||'contribution'),fmt(bal||0)+' stored in it. Undo brings it all back','Undo',()=>{
+    INV.contrib.splice(Math.min(i,INV.contrib.length),0,c);if(bal!==undefined)INV.funds[c.key]=bal;
+    Object.keys(doneMap).forEach(m=>{INV.done[m]=INV.done[m]||{};INV.done[m][c.key]=doneMap[m]});
+    S(K.inv,INV);renderAll();toast('Restored',c.name,null,null,2400);
+  },9000);
 }
 // Mirror a contribution into the Goals page. The goal always tracks the stored balance.
 function syncGoalFor(c,bal,createIfMissing){
@@ -4633,7 +4822,7 @@ function openInvEdit(){
     h+=`<div class="card mb-12" style="padding:14px;box-shadow:none;background:var(--surface-2)">`+
       `<div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Fund</label><input value="${esc(x.name)}" data-si="${i}-n" placeholder="Fund name"></div>`+
       `<div class="form-group" style="max-width:120px"><label>Monthly</label><input type="number" value="${x.current||0}" data-si="${i}-c"></div>`+
-      `<button class="icon-btn" title="Remove" onclick="INV.sips.splice(${i},1);S(K.inv,INV);openInvEdit()">\u2715</button></div>`+
+      `<button class="icon-btn" title="Remove" onclick="sipRemove(${i})">\u2715</button></div>`+
       `<div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Purpose</label><input value="${esc(x.why)}" data-si="${i}-w" placeholder="Why this fund"></div>`+
       `<div class="form-group" style="max-width:190px"><label>Realistic horizon</label><input value="${esc(x.horizon)}" data-si="${i}-h" placeholder="e.g. 8 to 10 years"></div></div>`+
       `<div class="form-row" style="margin-bottom:0"><div class="form-group"><label>Note</label><input value="${esc(x.note)}" data-si="${i}-t" placeholder="Anything worth remembering"></div></div>`+
@@ -4793,6 +4982,8 @@ function calcRun(){
   MC('ch-calc',{type:'line',data:{labels:yearData.map(d=>'Yr '+d.year),datasets:[{label:'Market Value',data:yearData.map(d=>d.mv),borderColor:'#3E7D74',backgroundColor:'rgba(62,125,116,.14)',fill:true,tension:.35,pointRadius:2,borderWidth:2.5},{label:'Invested',data:yearData.map(d=>d.invested),borderColor:'#5C6A5E',backgroundColor:'transparent',borderDash:[5,5],tension:.35,pointRadius:2,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}},scales:{y:{ticks:{callback:v=>fmtS(v)}}}}});
   document.getElementById('calc-tbl').innerHTML=yearData.map(d=>`<tr><td>Year ${d.year}</td><td class="amount">${fmt(d.invested)}</td><td class="amount pos">${fmt(d.mv)}</td><td class="amount" style="color:var(--green)">${fmt(d.mv-d.invested)}</td></tr>`).join('');
 }
+// The calculator's headline follows the sliders as they move
+const _calcRunBase=calcRun;calcRun=function(){_calcRunBase();safeRender(heroCalc,'calculator headline')};
 // ============ AGENCY ============
 let AG_SORT='amount',AG_FILTER='active',AG_PAY='all';
 function setAgencySort(mode){AG_SORT=mode;renderAgency();}
@@ -5023,7 +5214,7 @@ function openAgencyModal(){
     h+=`<div class="card mb-12" style="padding:14px;box-shadow:none;background:var(--surface-2)">`+
       `<div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Client</label><input value="${esc(c.name)}" data-ac="${i}-n"></div>`+
       `<div class="form-group" style="max-width:130px"><label>Monthly</label><input type="number" value="${c.amount||0}" data-ac="${i}-a"></div>`+
-      `<button class="icon-btn" title="Remove" onclick="AG.clients.splice(${i},1);S(K.ag,AG);openAgencyModal()">\u2715</button></div>`+
+      `<button class="icon-btn" title="Remove" onclick="agClientRemove(${i})">\u2715</button></div>`+
       `<div class="form-row" style="margin-bottom:0"><div class="form-group" style="max-width:150px"><label>Active client</label>`+
       `<select data-ac="${i}-s"><option value="active" ${on?'selected':''}>Yes</option><option value="pending" ${on?'':'selected'}>Not yet</option></select></div>`+
       `<div class="form-group"><label>Joined</label><input value="${esc(c.joined)}" data-ac="${i}-j" placeholder="e.g. Mar 2026"></div>`+
@@ -5186,7 +5377,7 @@ function txmAdd(){
   toast('Added to '+monthName(mn),fmt(amt)+' · '+who,'Undo',()=>{
     const i=LB.findIndex(x=>x.id===entry.id);
     if(i<0)return;
-    LB.splice(i,1);S(K.lb,LB);renderAll();renderTxmList();
+    LB.splice(i,1);LBDEL[String(entry.id)]=Date.now();S(K.lbdel,LBDEL);S(K.lb,LB);renderAll();renderTxmList();
   },7000);
 }
 
@@ -5415,7 +5606,7 @@ function renderFlat(){
 }
 function toggleMyRent(m){FLAT.myPayments[m]=!FLAT.myPayments[m];S(K.flat,FLAT);renderFlat();if(FLAT.myPayments[m])sfx('win')}
 function togglePersonPay(pi,ii,m){FLAT.people[pi].items[ii].payments[m]=!FLAT.people[pi].items[ii].payments[m];S(K.flat,FLAT);renderFlat();if(FLAT.people[pi].items[ii].payments[m])sfx('coin')}
-function openFlatEdit(){document.getElementById('fl-rent').value=FLAT.rent;document.getElementById('fl-start').value=FLAT.startMonth;document.getElementById('fl-end').value=FLAT.endMonth;let h='';FLAT.people.forEach((p,pi)=>{h+=`<div class="card mb-12" style="padding:14px"><div class="form-row"><div class="form-group"><label>Name</label><input value="${p.name}" data-fp="${pi}-n"></div><button class="btn btn-danger btn-xs" onclick="FLAT.people.splice(${pi},1);S(K.flat,FLAT);openFlatEdit()">Remove</button></div>`;p.items.forEach((item,ii)=>{h+=`<div style="padding:10px 0;border-top:1px solid var(--rule)"><div class="form-row"><div class="form-group"><label>Label</label><input value="${item.label}" data-fi="${pi}-${ii}-l"></div><div class="form-group" style="max-width:100px"><label>Amount</label><input type="number" value="${item.amount}" data-fi="${pi}-${ii}-a"></div></div><div class="form-row"><div class="form-group"><label>Start</label><input type="month" value="${item.startMonth}" data-fi="${pi}-${ii}-s"></div><div class="form-group"><label>End</label><input type="month" value="${item.endMonth}" data-fi="${pi}-${ii}-e"></div><button class="icon-btn" onclick="FLAT.people[${pi}].items.splice(${ii},1);S(K.flat,FLAT);openFlatEdit()">✕</button></div></div>`});h+=`<button class="btn btn-secondary btn-xs mt-8" onclick="FLAT.people[${pi}].items.push({label:'',amount:0,startMonth:'${cm()}',endMonth:'${cm()}',payments:{}});openFlatEdit()">+ Add Obligation</button></div>`});document.getElementById('fl-people-ed').innerHTML=h;openM('m-flat')}
+function openFlatEdit(){document.getElementById('fl-rent').value=FLAT.rent;document.getElementById('fl-start').value=FLAT.startMonth;document.getElementById('fl-end').value=FLAT.endMonth;let h='';FLAT.people.forEach((p,pi)=>{h+=`<div class="card mb-12" style="padding:14px"><div class="form-row"><div class="form-group"><label>Name</label><input value="${p.name}" data-fp="${pi}-n"></div><button class="btn btn-danger btn-xs" onclick="flRemovePerson(${pi})">Remove</button></div>`;p.items.forEach((item,ii)=>{h+=`<div style="padding:10px 0;border-top:1px solid var(--rule)"><div class="form-row"><div class="form-group"><label>Label</label><input value="${item.label}" data-fi="${pi}-${ii}-l"></div><div class="form-group" style="max-width:100px"><label>Amount</label><input type="number" value="${item.amount}" data-fi="${pi}-${ii}-a"></div></div><div class="form-row"><div class="form-group"><label>Start</label><input type="month" value="${item.startMonth}" data-fi="${pi}-${ii}-s"></div><div class="form-group"><label>End</label><input type="month" value="${item.endMonth}" data-fi="${pi}-${ii}-e"></div><button class="icon-btn" onclick="flRemoveItem(${pi},${ii})">✕</button></div></div>`});h+=`<button class="btn btn-secondary btn-xs mt-8" onclick="FLAT.people[${pi}].items.push({label:'',amount:0,startMonth:'${cm()}',endMonth:'${cm()}',payments:{}});openFlatEdit()">+ Add Obligation</button></div>`});document.getElementById('fl-people-ed').innerHTML=h;openM('m-flat')}
 function addFlatPerson(){FLAT.people.push({name:'',items:[]});openFlatEdit()}
 function saveFlat(){FLAT.rent=+document.getElementById('fl-rent').value||0;FLAT.startMonth=document.getElementById('fl-start').value;FLAT.endMonth=document.getElementById('fl-end').value;const nm=genMonths(FLAT.startMonth,FLAT.endMonth);const op={...FLAT.myPayments};FLAT.myPayments={};nm.forEach(m=>FLAT.myPayments[m]=op[m]||false);FLAT.people.forEach((p,pi)=>{const n=document.querySelector(`[data-fp="${pi}-n"]`);if(n)p.name=n.value;p.items.forEach((item,ii)=>{const l=document.querySelector(`[data-fi="${pi}-${ii}-l"]`),a=document.querySelector(`[data-fi="${pi}-${ii}-a"]`),s=document.querySelector(`[data-fi="${pi}-${ii}-s"]`),e=document.querySelector(`[data-fi="${pi}-${ii}-e"]`);if(l)item.label=l.value;if(a)item.amount=+a.value||0;const ns=s?s.value:item.startMonth,ne=e?e.value:item.endMonth;const nmo=genMonths(ns,ne);const opp={...item.payments};item.payments={};nmo.forEach(m=>item.payments[m]=opp[m]||false);item.startMonth=ns;item.endMonth=ne})});FLAT.people=FLAT.people.filter(p=>p.name.trim());S(K.flat,FLAT);closeM('m-flat');renderAll()}
 
@@ -5431,7 +5622,7 @@ function removeGoal(i){
 }
 function renderGoals(){
   const sur=surplusVal();
-  document.getElementById('goals-list').innerHTML=GOALS.length?GOALS.map((g,i)=>{const p=g.target>0?Math.min(100,pct(g.current,g.target)):0;const rem=g.target-g.current;const mn=sur>0?Math.ceil(rem/sur):null;return`<div class="goal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><strong>${esc(g.name)}</strong><div style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editGoal(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeGoal(${i})">✕</button></div></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:8px;color:var(--light)"><span>${fmt(g.current)} of ${fmt(g.target)}</span><span style="font-weight:700;color:var(--terra)">${p}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:linear-gradient(90deg,var(--terra),var(--green))"></div></div>${rem>0&&mn?`<div style="font-size:11px;color:var(--light);margin-top:6px">About ${mn} months at current surplus of ${fmt(sur)}</div>`:rem<=0?'<div style="font-size:11px;color:var(--green);margin-top:6px;font-weight:600">Goal reached!</div>':''}</div>`}).join('')
+  document.getElementById('goals-list').innerHTML=GOALS.length?GOALS.map((g,i)=>{const p=g.target>0?Math.min(100,pct(g.current,g.target)):0;const rem=g.target-g.current;const mn=sur>0?Math.ceil(rem/sur):null;return`<div class="goal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><strong>${esc(g.name)}</strong><div style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editGoal(${i})"><svg class="ib" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button> <button class="icon-btn" title="Remove" onclick="removeGoal(${i})">✕</button></div></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:8px;color:var(--light)"><span>${fmt(g.current)} of ${fmt(g.target)}</span><span style="font-weight:700;color:var(--terra)">${p}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:linear-gradient(90deg,var(--terra),var(--green))"></div></div>${rem>0&&mn?`<div style="font-size:11px;color:var(--light);margin-top:6px">About ${mn} months at current surplus of ${fmt(sur)}</div>`:rem<=0?'<div style="font-size:11px;color:var(--green);margin-top:6px;font-weight:600">Goal reached!</div>':''}</div>`}).join('')
    :'<div class="card" style="grid-column:1/-1"><div class="empty-state" style="padding:24px"><p>No goals yet. Add your land fund, GFL fund, or emergency floor.</p></div></div>';
   renderWishlist();
 }
@@ -6411,10 +6602,10 @@ function cardTile(L,st,i){
   if(due)src=st.open.every(x=>x.ov!=null)?`<span class="cct-src ok">${CC_CHECK}Matches your statement</span>`
     :`<button class="cct-src" onclick="openMatch('${cid}')">Worked out from your logbook. Check it with your bank</button>`;
   const closes=L.cur+'-'+pad2(closeDay(c,L.cur));
-  let nowSub='Becomes a bill on '+shortDate(closes);
+  let nowSub=(now.emi>0?fmt(now.logged)+' spent + '+fmt(now.emi)+' EMIs · ':'')+'Becomes a bill on '+shortDate(closes);
   if(L.credit>0)nowSub+=' · '+fmt(L.credit)+' paid ahead comes off it';
   const bank=ccBankNow(L);let bankLine='';
-  if(bank){const gap=r2(bank.amt-now.logged);bankLine=`<span class="cct-gap${Math.abs(gap)<1?' ok':''}">${Math.abs(gap)<1?CC_CHECK:CC_WARN}<span>${esc(ccBankTxt(bank,now.logged))}</span></span>`}
+  if(bank){const gap=r2(bank.amt-now.logged);bankLine=`<span class="cct-gap${Math.abs(gap)<1?' ok':''}">${Math.abs(gap)<1?CC_CHECK:CC_WARN}<span>${esc(ccBankTxt(bank,now.logged))}${now.emi>0&&Math.abs(gap)<1?' The '+fmt(now.emi)+' of EMIs is added when the bill is made.':''}</span></span>`}
   const dates=(c.stmt>=1?'Bill made on the '+ordinal(c.stmt):'Calendar months')+(c.due>=1?', due on the '+ordinal(c.due):'');
   return `<article class="cct st-${st.k}${CC_ENTER?' in':''}${CC_FX&&CC_FX.card===c.id?' just-paid':''}" data-cc="${cid}" style="--i:${i}">
     <div class="cct-top">
@@ -7187,6 +7378,274 @@ ${sec('agency','Agency','Retainers and costs.',agHtml)}
 ${sec('logbook','Every logbook entry','Newest first, grouped by month. '+LB.length+' entries in total.',logHtml)}
 <footer>Made by your finance tracker. This is a copy for reading and printing. To move your data to another device, use the backup file instead.</footer>
 </div></body></html>`;
+}
+
+// ============ PAGE HEADLINES (v15) ============
+// Every page opens the way Credit Cards does: one plain sentence that answers the page's main
+// question, in the page's status colour, with a dark panel for the one date or number that
+// matters most. They only read data, never write it.
+const PG_ON={};
+function pgEnter(pageId){
+  const p=document.getElementById(pageId);const on=!!(p&&p.classList.contains('active'));
+  const enter=on&&!PG_ON[pageId];PG_ON[pageId]=on;
+  if(enter&&p&&pageId!=='page-cards'&&!ccReduced()){p.classList.remove('pg-in');void p.offsetWidth;p.classList.add('pg-in');clearTimeout(p._pgT);p._pgT=setTimeout(()=>p.classList.remove('pg-in'),1600)}
+  return on;
+}
+const M$=v=>`<b class="amt">${ccMoney(v)}</b>`;
+function dayWord(n){return n<0?(-n)+(n===-1?' day late':' days late'):n===0?'Today':n===1?'Tomorrow':'In '+n+' days'}
+function pgHero(id,o){
+  const el=document.getElementById(id);if(!el)return;
+  const long=String(o.say).replace(/<[^>]+>/g,'').length>90;
+  el.className=`cch pgh st-${o.tone||'grey'}${o.panel?'':' no-panel'}${long?' say-long':''}`;
+  el.innerHTML=`<div class="cch-main"><div class="cch-top"><span class="cch-orb">${o.tone==='green'?CC_CHECK:'<i></i>'}</span><p class="cch-say">${o.say}</p></div>${o.sub?`<p class="cch-sub">${o.sub}</p>`:''}${o.acts?`<div class="cch-acts">${o.acts}</div>`:''}</div>${o.panel||''}`;
+}
+function pgBigDate(d){const x=new Date(d+'T00:00');return `<div class="cpd-date"><b>${x.getDate()}</b><span>${x.toLocaleDateString('en-IN',{month:'short'})}<small>${x.toLocaleDateString('en-IN',{weekday:'long'})}</small></span></div>`}
+function pgLine(p,la,lb){return `<div class="cpd-line" style="--p:${(Math.max(0,Math.min(1,+p||0))*100).toFixed(1)}%"><i></i><em></em></div><div class="cpd-ends"><span>${esc(la||'')}</span><span>${esc(lb||'')}</span></div>`}
+function pgDatePanel(o){
+  let line='';
+  if(o.from&&o.to){const span=Math.max(1,daysBetween(o.from,o.to));line=pgLine(daysBetween(o.from,td())/span,o.la,o.lb)}
+  return `<aside class="cpd ${o.cls||''}"><span class="cpd-k">${esc(o.k)}</span>${pgBigDate(o.date)}<div class="cpd-left"><i></i>${esc(o.left)}</div>${line}${o.rows?`<div class="cpd-rows">${o.rows}</div>`:''}${o.tot?`<div class="cpd-tot">${o.tot}</div>`:''}</aside>`;
+}
+function pgNumPanel(o){
+  return `<aside class="cpd cpd-num ${o.cls||''}"><span class="cpd-k">${esc(o.k)}</span><div class="cpd-big">${o.big}</div>${o.left?`<div class="cpd-left"><i></i>${esc(o.left)}</div>`:''}${o.p!=null?pgLine(o.p,o.la,o.lb):''}${o.tot?`<div class="cpd-tot">${o.tot}</div>`:''}</aside>`;
+}
+
+// ---- Home: what you are worth, how the month is going, and what is due next ----
+function pgUpNext(days){
+  const out=[];
+  activeCards().forEach(c=>{const L=cardLedger(c),st=ccStatus(L);if((st.k==='red'||st.k==='amber')&&st.due)out.push({date:st.due,name:c.name+' bill',amt:L.dueNow})});
+  upcomingCharges().items.forEach(x=>{if(x.days<=days)out.push({date:x.date,name:x.name,amt:x.amt})});
+  return out.sort((a,b)=>a.date.localeCompare(b.date)||b.amt-a.amt);
+}
+function heroHome(){
+  const s=monthStats(cm()),nw=nwTotal(NW);
+  const hist=(Array.isArray(NWH)?NWH:[]).filter(h=>h&&h.date).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const prev=hist.length>=2?hist[hist.length-2]:null,diff=prev?r2(nw-nwTotal(prev)):null;
+  let say=`You’re worth ${M$(nw)}`;
+  if(diff!=null&&Math.abs(diff)>=1)say+=`, <span class="${diff>=0?'up':'down'}">${diff>=0?'up':'down'} ${fmt(Math.abs(diff))}</span> since ${esc(shortDate(prev.date))}`;
+  say+='.';
+  const due=activeCards().map(c=>({c,L:cardLedger(c)})).map(x=>({...x,st:ccStatus(x.L)})).filter(x=>x.st.k==='red'||x.st.k==='amber');
+  const owe=r2(due.reduce((t,x)=>t+x.L.dueNow,0));
+  let sub=`This month so far: ${fmt(s.inc)} in, ${fmt(s.out)} spent${s.invEff?', '+fmt(s.invEff)+' invested':''}.`;
+  if(owe>0){const d=due.map(x=>x.st.due).filter(Boolean).sort()[0];sub+=` Card bills: ${fmt(owe)}${d?' by '+esc(shortDate(d)):''}.`}
+  const tone=due.some(x=>x.st.k==='red')?'red':owe>0?'amber':'green';
+  const next=pgUpNext(10);
+  let panel;
+  if(next.length){
+    const f=next[0],n=daysBetween(td(),f.date);
+    const rows=next.slice(1,4).map(x=>`<div class="cpd-row"><span>${esc(shortDate(x.date))}</span><span>${esc(x.name)}</span><b>${fmt(x.amt)}</b></div>`).join('');
+    panel=pgDatePanel({k:'Up next',date:f.date,left:dayWord(n)+' · '+f.name+' '+fmt(f.amt),rows});
+  }else panel=pgNumPanel({k:'Up next',big:'Nothing due',left:'No bills or charges in the next 10 days',cls:'is-clear'});
+  const acts=`<button class="btn btn-primary" onclick="goLogbook()">+ Log a spend</button>`+(owe>0?`<button class="btn btn-ghost" onclick="switchPage('cards')">See card bills</button>`:'');
+  pgHero('h-overview',{tone,say,sub,acts,panel});
+}
+// ---- Logbook: how much went out, and how much is left ----
+function heroLog(){
+  const fm=selectedLogMonth(),f=LB.filter(e=>e&&e.date&&e.date.startsWith(fm));
+  const sum=t=>r2(f.filter(e=>e.type===t).reduce((a,e)=>a+(+e.amount||0),0));
+  const exp=sum('expense'),fix=sum('fixed'),agy=sum('payout'),inv=sum('investment'),inc=sum('income');
+  const out=r2(exp+fix+agy+inv),left=r2(inc-out),isCur=fm===cm(),mn=monthName(fm).split(' ')[0];
+  let say,tone;
+  if(!f.length){say=`Nothing logged for ${esc(mn)} yet.`;tone='grey'}
+  else{
+    say=`${M$(out)} went out ${isCur?'this month':'in '+esc(mn)}`;
+    if(inc<=0)say+='. Nothing has come in yet.';
+    else if(left>=0)say+=`, and <b class="amt good">${ccMoney(left)}</b> is left.`;
+    else say+=`. That is <span class="when">${fmt(-left)} more</span> than came in.`;
+    tone=left<0?'red':(inc>0&&out>inc*.9?'amber':'green');
+  }
+  const sub=f.length?`Personal ${fmt(exp)} · Fixed ${fmt(fix)} · Agency ${fmt(agy)} · Invested ${fmt(inv)} · Income ${fmt(inc)}`:'Log a spend above and this fills in.';
+  const d=new Date(),dim=dimYM(fm);
+  const panel=f.length?pgNumPanel({k:'Left '+(isCur?'this month':'in '+mn),big:`<span class="${left<0?'neg':'pos'}">${esc(fmtSign(left))}</span>`,
+    left:isCur?'Day '+d.getDate()+' of '+dim:'Month closed',p:inc>0?out/inc:null,la:inc>0?pct(out,inc)+'% of income spent':'',lb:inc>0?fmt(inc)+' in':''}):'';
+  pgHero('h-logbook',{tone,say,sub,panel});
+}
+// ---- Budget: does the plan add up, and how is this month tracking against it ----
+function heroBudget(){
+  const ft=BG.fixed.reduce((a,x)=>a+(+x.amount||0),0),vt=BG.variable.reduce((a,x)=>a+(+x.amount||0),0),st=BG.savings.reduce((a,x)=>a+(+x.amount||0),0);
+  const sur=r2(BG.income-ft-vt-st),spent=monthStats(cm()).exp,bud=totalCatBudget();
+  let say=sur>=0?`Your plan leaves ${M$(sur)} spare every month.`:`Your plan spends <span class="when">${fmt(-sur)}</span> more than you earn.`;
+  if(bud>0&&spent>bud)say+=` This month’s spending is <span class="when">${fmt(spent-bud)} over</span> budget.`;
+  const sub=`Of ${fmt(BG.income)} coming in: ${fmt(ft)} fixed, ${fmt(vt)} to spend, ${fmt(st)} saved and invested. This month so far: ${fmt(spent)} of the ${fmt(bud)} spending budget.`;
+  const tone=sur<0||spent>bud?'red':spent>bud*.9?'amber':'green';
+  const d=new Date();
+  const panel=bud>0?pgNumPanel({k:'Left to spend this month',big:`<span class="${bud-spent<0?'neg':''}">${esc(fmtSign(bud-spent))}</span>`,left:'Day '+d.getDate()+' of '+dimYM(cm())+', '+pct(spent,bud)+'% used',p:spent/bud,la:'Spent '+fmt(spent),lb:'Budget '+fmt(bud)}):'';
+  pgHero('h-budget',{tone,say,sub,panel});
+}
+// ---- Net worth: the total, which way it moved, and how fresh the numbers are ----
+function heroNW(){
+  const parts=[['bank balances',NW.bank],['investments',NW.investments],['cash',NW.cash],['resellables',NW.resellables],['money lent out',NW.lending]].map(p=>[p[0],+p[1]||0]);
+  const ta=parts.reduce((a,p)=>a+p[1],0);
+  const hist=(Array.isArray(NWH)?NWH:[]).filter(h=>h&&h.date).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const prev=hist.length>=2?hist[hist.length-2]:null,diff=prev?r2(ta-nwTotal(prev)):null;
+  let say=`You’re worth ${M$(ta)}`;
+  if(diff!=null&&Math.abs(diff)>=1)say+=`, <span class="${diff>=0?'up':'down'}">${diff>=0?'up':'down'} ${fmt(Math.abs(diff))}</span> since ${esc(shortDate(prev.date))}.`;else say+='.';
+  const top=parts.slice().sort((a,b)=>b[1]-a[1])[0];
+  const sub=ta>0?`Most of it is in ${top[0]}: ${fmt(top[1])}, ${pct(top[1],ta)}% of the total.`:'Add your balances to see your net worth.';
+  const tone=diff==null?'grey':diff>=0?'green':'red';
+  const upd=NW.updatedAt?String(NW.updatedAt).slice(0,10):(hist.length?hist[hist.length-1].date:null);
+  let panel='';
+  if(upd&&/^\d{4}-\d{2}-\d{2}$/.test(upd)){const n=daysBetween(upd,td());panel=pgDatePanel({k:'Last updated',date:upd,left:n<=0?'Today':n===1?'Yesterday':n+' days ago'+(n>7?' · time for a fresh one':'')})}
+  pgHero('h-networth',{tone,say,sub,panel});
+}
+// ---- EMIs: what leaves every month, and what charges next ----
+function heroEMI(){
+  const live=EMIS.filter(e=>e&&!(mRem(e.end)!==null&&mRem(e.end)<=0)),subs=SUBS.filter(Boolean);
+  const monthly=r2(live.reduce((a,e)=>a+(+e.amount||0),0)+subs.reduce((a,x)=>a+(+x.amount||0),0));
+  const onCards=r2(live.filter(e=>e.card).reduce((a,e)=>a+(+e.amount||0),0)+subs.filter(x=>x.card).reduce((a,x)=>a+(+x.amount||0),0));
+  const say=`${M$(monthly)} leaves every month for ${live.length} ${live.length===1?'EMI':'EMIs'} and ${subs.length} ${subs.length===1?'subscription':'subscriptions'}.`;
+  const ending=live.filter(e=>isMonthStr(e.end)).sort((a,b)=>a.end.localeCompare(b.end))[0];
+  let sub=onCards>0?`${fmt(onCards)} of it goes on your credit cards, the rest leaves your bank.`:'All of it leaves your bank directly.';
+  if(ending)sub+=` Next to finish: ${esc(ending.name)} after ${esc(monthName(ending.end))}, freeing ${fmt(ending.amount)} a month.`;
+  const up=upcomingCharges(),f=up.items[0];
+  let tone='grey',panel;
+  if(f){
+    tone=f.days<=1?'red':f.days<=5?'amber':'green';
+    panel=pgDatePanel({k:'Next charge',date:f.date,left:dayWord(f.days)+' · '+f.name,tot:`${ccNum('emi-next',f.amt)} <span>${f.card?'on '+esc(cardLabel(f.card)):'from your bank'}</span>`});
+  }else panel='';
+  pgHero('h-emis',{tone,say,sub,panel});
+}
+// ---- Investments: what goes in each month, and whether this month's went out ----
+function heroInv(){
+  const sips=(INV.sips||[]).filter(Boolean),tot=r2(sips.reduce((a,x)=>a+(+x.current||0),0));
+  const m=cm(),mn=monthName(m).split(' ')[0],sl=SL.find(x=>x&&x.month===m),done=!!(sl&&sl.sip==='done');
+  const day=new Date().getDate();
+  const say=tot>0?`${M$(tot)} goes into ${sips.length} ${sips.length===1?'SIP':'SIPs'} every month, on the 11th.`:'No SIPs set up yet.';
+  let sub=done?`${esc(mn)}’s SIP is marked done.`:day>11?`${esc(mn)}’s SIP is not marked done yet.`:`This month’s goes out on 11 ${esc(monthName(m).split(' ')[0].slice(0,3))}.`;
+  const funds=(INV.contrib||[]).map(c=>`${esc(c.name||'Fund')} ${fmt(contribBal(c.key))}${c.target?' of '+fmt(c.target):''}`);
+  if(funds.length)sub+=' Funds: '+funds.join(', ')+'.';
+  const tone=!tot?'grey':done?'green':day>11?'red':'amber';
+  const nextYm=(done||day>11)?ymAdd(m,1):m,next=nextYm+'-11';
+  const panel=tot>0?pgDatePanel({k:'Next SIP',date:next,left:dayWord(daysBetween(td(),next)),tot:`${ccNum('inv-next',tot)} <span>across ${sips.length} ${sips.length===1?'fund':'funds'}</span>`}):'';
+  const acts=!done&&tot>0?`<button class="btn btn-primary" onclick="openSIPLog()">Log this month’s SIP</button>`:'';
+  pgHero('h-investments',{tone,say,sub,acts,panel});
+}
+// ---- SIP calculator: the projection in one sentence, updated as you move the sliders ----
+function heroCalc(){
+  const sip=CALC_MODE==='sip',g=id=>document.getElementById(id);if(!g('c-sip-amt'))return;
+  const amt=+(sip?g('c-sip-amt'):g('c-lump-amt')).value||0,step=+(sip?g('c-step'):g('c-lstep')).value||0,ret=+(sip?g('c-ret'):g('c-lret')).value||0,yrs=+(sip?g('c-yr'):g('c-lyr')).value||0;
+  // Worked out here with the same rule the calculator uses, so it is right even before that page is opened
+  const per=sip?12:4,rPer=ret/100/per;let mvV=0,invV=0,cur=amt;
+  for(let k=1;k<=yrs*per;k++){if(k>1&&(k-1)%per===0)cur*=1+step/100;mvV=(mvV+cur)*(1+rPer);invV+=cur}
+  const mv=fmtS(mvV),inv=fmtS(invV),gain=fmtS(mvV-invV);
+  const say=`Putting in ${M$(amt)} ${sip?'a month':'every quarter'}${step?', raised '+step+'% a year,':''} could grow to <b class="amt good">${esc(mv)}</b> in ${yrs} ${yrs===1?'year':'years'}.`;
+  const sub=`That is ${esc(inv)} of your own money and ${esc(gain)} of growth, at ${ret}% a year. Markets move, so treat this as a guide, not a promise.`;
+  pgHero('h-calculator',{tone:'green',say,sub});
+}
+// ---- Agency: which retainers are in, which are not, and what is left after costs ----
+function heroAgency(){
+  const m=agMonth(),mn=monthName(m).split(' ')[0],contracted=contractedRevenue();
+  const logged={};receivedIn(m).forEach(e=>{const k=String(e.who||'').trim().toLowerCase();if(k)logged[k]=(logged[k]||0)+(+e.amount||0)});
+  const inFor=c=>isClientPaid(c,m)?(+c.amount||0):Math.min(+c.amount||0,logged[String(c.name||'').trim().toLowerCase()]||0);
+  const active=AG.clients.filter(isActiveClient),paid=active.filter(c=>inFor(c)>0),pending=active.filter(c=>!(inFor(c)>0));
+  const got=r2(active.reduce((a,c)=>a+inFor(c),0)),costs=sumAmt(agencyCostsIn(m)),net=r2(revenueBasisFor(m)-costs);
+  let say,tone;
+  if(!active.length){say='Add your clients to track retainers.';tone='grey'}
+  else if(pending.length){say=`${M$(got)} of ${M$(contracted)} in retainers has come in for ${esc(mn)}.`;tone='amber';
+    const names=pending.map(c=>esc(c.name)+' '+fmt(c.amount));
+    say+=` Still to come: ${pending.length>3?names.slice(0,2).join(', ')+' and '+(pending.length-2)+' more':andList(names)}.`}
+  else{say=`Every retainer for ${esc(mn)} is in: ${M$(got)}.`;tone='green'}
+  let sub=`Agency costs ${fmt(costs)} this month, leaving ${fmtSign(net)}.`;
+  try{const bd=fyBreakdown(currentFY());sub+=` Tax to set aside this year so far: ${fmt(bd.tax.total)}.`}catch(e){}
+  const panel=contracted>0?pgNumPanel({k:'Collected in '+mn,big:pct(got,contracted)+'%',left:fmt(Math.max(0,contracted-got))+' still to come',p:got/contracted,la:paid.length+' of '+active.length+' paid',lb:fmt(contracted)}):'';
+  pgHero('h-agency',{tone,say,sub,panel});
+}
+// ---- Tax: how much to set aside, how much is parked, and when to file ----
+function heroTax(){
+  const fy=activeFY(),b=fyBreakdown(fy),parked=+(TAX.parked[fy]||0),gap=r2(Math.max(0,b.tax.total-parked));
+  let say,tone;
+  if(b.receipts<=0){say=`No income logged for FY ${esc(fyLabel(fy))} yet.`;tone='grey'}
+  else if(b.tax.total<=0){say=`No tax is due on this year’s income so far.`;tone='green'}
+  else if(gap>0){say=`Set aside ${M$(gap)} more for tax.`;tone='amber';say+=` You owe about ${fmt(b.tax.total)} on this year’s income so far, and ${fmt(parked)} is parked.`}
+  else{say=`Your tax is covered: ${M$(parked)} is parked against about ${fmt(b.tax.total)} owed.`;tone='green'}
+  const eff=b.receipts>0?(b.tax.total/b.receipts*100).toFixed(1):'0.0';
+  const sub=b.receipts>0?`${fmt(b.receipts)} received in FY ${esc(fyLabel(fy))}${b.fxTotal?', '+pct(b.fxTotal,b.receipts)+'% of it from abroad':''}. Effective rate ${eff}%. Yours to keep: ${fmt(b.receipts-b.tax.total)}.`:'Log income and the tax provision builds itself.';
+  const due=(fy+1)+'-07-31',n=daysBetween(td(),due);
+  if(b.receipts>0&&n>=0&&n<=30)tone='red';
+  const panel=pgDatePanel({k:'ITR due',date:due,left:n>=0?(n===0?'Today':n+' days to go'):'Filing window has passed',from:fy+'-04-01',to:due,la:'Year began 1 Apr',lb:'File by 31 Jul'});
+  pgHero('h-tax',{tone,say,sub,panel});
+}
+// ---- Flat and lending: who owes you right now, and when your rent is due ----
+function heroFlat(){
+  const now=cm(),owed=[];let overdue=0,later=0;
+  (FLAT.people||[]).forEach(p=>{let a=0;(p.items||[]).forEach(it=>{const amt=+it.amount||0;genMonths(it.startMonth,it.endMonth).forEach(m=>{if(it.payments&&it.payments[m])return;if(m<now){a+=amt;overdue+=amt}else if(m===now)a+=amt;else later+=amt})});if(a>0)owed.push({name:p.name||'Someone',a})});
+  const total=r2(owed.reduce((t,x)=>t+x.a,0));
+  const say=total>0?`${M$(total)} is owed to you right now: ${andList(owed.sort((x,y)=>y.a-x.a).map(x=>esc(x.name)+' '+fmt(x.a)))}.`:'Everyone is paid up to date.';
+  const rent=+FLAT.rent||0,terms=genMonths(FLAT.startMonth,FLAT.endMonth),inTerm=terms.indexOf(now)>=0,paidNow=!!(FLAT.myPayments&&FLAT.myPayments[now]);
+  let sub=inTerm?`Your rent of ${fmt(rent)} for ${esc(monthName(now).split(' ')[0])} is ${paidNow?'paid':'not marked paid yet'}.`:'';
+  if(later>0)sub+=` ${fmt(later)} more is still to come over the rest of the terms.`;
+  const tone=overdue>0?'red':total>0?'amber':'green';
+  let panel='';
+  if(inTerm||terms.some(m=>m>now)){
+    const ym=paidNow?ymAdd(now,1):now;
+    if(terms.indexOf(ym)>=0){const d=ym+'-'+pad2(Math.min(22,dimYM(ym)));panel=pgDatePanel({k:'Your rent',date:d,left:paidNow?'This month is paid · next '+dayWord(daysBetween(td(),d)).toLowerCase():dayWord(daysBetween(td(),d))+(daysBetween(td(),d)<0?' · mark it paid when it goes':''),tot:`${ccNum('fl-rent',rent)} <span>on the 22nd</span>`})}
+  }
+  pgHero('h-flat',{tone,say,sub:sub.trim(),panel});
+}
+// ---- Goals: how far along, and how long the nearest one takes ----
+function heroGoals(){
+  const sur=surplusVal(),gs=GOALS.filter(Boolean);
+  const T=r2(gs.reduce((a,g)=>a+(+g.target||0),0)),C=r2(gs.reduce((a,g)=>a+(+g.current||0),0));
+  let say;
+  if(!gs.length)say='Add a goal and you will see how long it takes.';
+  else{
+    say=`You’ve saved ${M$(C)} of ${M$(T)} across ${gs.length} ${gs.length===1?'goal':'goals'}.`;
+    const near=gs.filter(g=>(+g.target||0)>(+g.current||0)).sort((a,b)=>(a.target-a.current)-(b.target-b.current))[0];
+    if(near&&sur>0)say+=` At ${fmt(sur)} spare a month, ${esc(near.name)} is done in about ${Math.ceil((near.target-near.current)/sur)} ${Math.ceil((near.target-near.current)/sur)===1?'month':'months'}.`;
+  }
+  const open=WISH.filter(w=>w&&['bought','dropped'].indexOf(wishStatus(w))<0);
+  const first=open.slice().sort((a,b)=>(+a.priority||99)-(+b.priority||99))[0];
+  const sub=open.length?`Wishlist: ${open.length} open ${open.length===1?'item':'items'} worth ${fmt(open.reduce((a,w)=>a+(+w.price||0),0))}.${first?' First up: '+esc(first.name)+(+first.price>0?' at '+fmt(first.price):'')+'.':''}`:'Your wishlist is empty.';
+  const panel=T>0?pgNumPanel({k:'Saved so far',big:pct(C,T)+'%',left:fmt(Math.max(0,T-C))+' still to go',p:C/T,la:fmt(C),lb:fmt(T),cls:'is-clear'}):'';
+  pgHero('h-goals',{tone:gs.length?'green':'grey',say,sub,panel});
+}
+function renderHeroes(){
+  ['page-overview','page-logbook','page-budget','page-networth','page-emis','page-investments','page-calculator','page-agency','page-tax','page-flat','page-goals','page-performance'].forEach(pgEnter);
+  safeRender(heroHome,'home hero');safeRender(heroLog,'logbook hero');safeRender(heroBudget,'budget hero');safeRender(heroNW,'net worth hero');
+  safeRender(heroEMI,'emi hero');safeRender(heroInv,'investments hero');safeRender(heroCalc,'calculator hero');safeRender(heroAgency,'agency hero');
+  safeRender(heroTax,'tax hero');safeRender(heroFlat,'flat hero');safeRender(heroGoals,'goals hero');
+}
+
+// ---- Collapsible sections on every page. Open state lasts for the visit ----
+function pgFold(btn){
+  const sec=btn.closest('.ccf');if(!sec)return;
+  const open=!sec.classList.contains('open');
+  sec.classList.toggle('open',open);btn.setAttribute('aria-expanded',open?'true':'false');
+  const w=sec.querySelector('.ccf-wrap');if(w){if(open)w.removeAttribute('inert');else w.setAttribute('inert','')}
+  sfx(open?'open':'close');
+  if(open)setTimeout(()=>{Object.values(CI).forEach(c=>{try{if(c&&c.canvas&&sec.contains(c.canvas))c.resize()}catch(e){}})},540);
+}
+
+// ---- Undo for edits that used to save straight away with no way back ----
+function nwRemove(idx){
+  const rec=NWH[idx];if(!rec)return;
+  NWH.splice(idx,1);S(K.nwh,NWH);renderAll();
+  toast('Snapshot removed',niceDate(String(rec.date).slice(0,10))+' · '+fmt(nwTotal(rec)),'Undo',()=>{NWH.splice(Math.min(idx,NWH.length),0,rec);S(K.nwh,NWH);renderAll();toast('Snapshot restored',null,null,null,2400)},8000);
+}
+function bgRemove(t,i){
+  const list=BG[t];if(!Array.isArray(list)||!list[i])return;
+  const rec=list[i];list.splice(i,1);S(K.bg,BG);openBudgetModal();renderAll();
+  toast('Removed '+(rec.name||'line'),fmt(rec.amount)+' a month','Undo',()=>{BG[t].splice(Math.min(i,BG[t].length),0,rec);S(K.bg,BG);if(document.getElementById('m-budget').classList.contains('open'))openBudgetModal();renderAll()},8000);
+}
+function sipRemove(i){
+  const rec=INV.sips[i];if(!rec)return;
+  INV.sips.splice(i,1);S(K.inv,INV);openInvEdit();renderAll();
+  toast('Removed '+(rec.name||'SIP'),fmt(rec.current||0)+' a month','Undo',()=>{INV.sips.splice(Math.min(i,INV.sips.length),0,rec);S(K.inv,INV);if(document.getElementById('m-inv').classList.contains('open'))openInvEdit();renderAll()},8000);
+}
+function agClientRemove(i){
+  const rec=AG.clients[i];if(!rec)return;
+  AG.clients.splice(i,1);S(K.ag,AG);openAgencyModal();renderAll();
+  toast('Removed '+(rec.name||'client'),fmt(rec.amount||0)+' a month. Past payment ticks are kept','Undo',()=>{AG.clients.splice(Math.min(i,AG.clients.length),0,rec);S(K.ag,AG);if(document.getElementById('m-agency').classList.contains('open'))openAgencyModal();renderAll()},8000);
+}
+function flRemovePerson(pi){
+  const rec=FLAT.people[pi];if(!rec)return;
+  FLAT.people.splice(pi,1);S(K.flat,FLAT);openFlatEdit();renderAll();
+  toast('Removed '+(rec.name||'person'),'Every month they paid goes with them until you undo','Undo',()=>{FLAT.people.splice(Math.min(pi,FLAT.people.length),0,rec);S(K.flat,FLAT);if(document.getElementById('m-flat').classList.contains('open'))openFlatEdit();renderAll()},9000);
+}
+function flRemoveItem(pi,ii){
+  const p=FLAT.people[pi];if(!p||!p.items[ii])return;
+  const rec=p.items[ii],name=p.name;p.items.splice(ii,1);S(K.flat,FLAT);openFlatEdit();renderAll();
+  toast('Removed '+(rec.label||'obligation'),fmt(rec.amount||0)+' a month','Undo',()=>{const q=FLAT.people.find(x=>x===p)||FLAT.people.find(x=>x.name===name);if(!q)return;q.items.splice(Math.min(ii,q.items.length),0,rec);S(K.flat,FLAT);if(document.getElementById('m-flat').classList.contains('open'))openFlatEdit();renderAll()},9000);
 }
 
 // ============ WHEN THINGS CHARGE ============
@@ -8266,6 +8725,7 @@ function renderAll(){
   safeRender(renderCards,'cards');
   safeRender(renderPerformance,'performance');
   safeRender(paintLogPayWith,'paywith');
+  safeRender(renderHeroes,'headlines');
 }
 // Chart defaults follow the app palette and appearance
 if(window.Chart){
