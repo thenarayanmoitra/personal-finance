@@ -1329,6 +1329,463 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 .mnav-btn span{white-space:nowrap}
 @media(max-width:380px){.mnav-btn{font-size:9.5px}.mnav-btn svg{width:21px;height:21px}}
 
+
+/* ==================================================================
+   v12 LAYER  ·  Credit Cards, simplified
+   What to pay, by when, and whether it is paid. Presentation only:
+   every figure still comes from the same card ledger. Follows the
+   field guide: one 4px radius, one easing curve, no looping motion.
+   ================================================================== */
+:root{--ease:cubic-bezier(.22,.8,.24,1)}
+/* Status colours: red due in 5 days or less, amber later, green paid, grey no bill */
+.st-red{--st:var(--red);--st-dot:var(--red-vivid);--st-soft:var(--red-soft);--st-face:#F6A78E;--pd-glow:rgba(224,129,101,.5)}
+.st-amber{--st:var(--amber);--st-dot:var(--gold);--st-soft:var(--amber-soft);--st-face:#F2C378;--pd-glow:rgba(232,178,92,.45)}
+.st-green{--st:var(--green);--st-dot:var(--green);--st-soft:var(--green-soft);--st-face:#8BE0AB;--pd-glow:rgba(91,201,138,.4)}
+.st-grey{--st:var(--txt-3);--st-dot:var(--txt-3);--st-soft:var(--surface-3);--st-face:rgba(241,244,236,.6);--pd-glow:rgba(241,244,236,.18)}
+.cc-tick{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.cc-tick path{stroke-dasharray:24;stroke-dashoffset:0}
+.cc-warn{stroke-width:2.2}
+.cc-warn path{stroke-dasharray:none}
+.rs{font-weight:500;opacity:.5;margin-right:.03em}
+.btn-ghost{background:transparent;color:var(--txt);box-shadow:inset 0 0 0 1px var(--txt)}
+.btn-ghost:hover{background:var(--fill);color:var(--fill-text);box-shadow:inset 0 0 0 1px var(--fill)}
+
+/* ---------- Statements waiting to be matched ---------- */
+.ccpre{position:relative;overflow:hidden;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px;padding:18px 20px 18px 22px;
+  border-radius:var(--radius);color:var(--paper);background:linear-gradient(120deg,var(--ink-deep),var(--ink-deep-2));
+  box-shadow:0 18px 40px -24px rgba(22,36,28,.8)}
+.ccpre::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.ccpre::after{content:'';position:absolute;right:-80px;top:-120px;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,178,92,.28),transparent 65%);pointer-events:none}
+.ccpre-txt{flex:1;min-width:min(100%,280px);position:relative;z-index:1}
+.ccpre-txt b{display:block;font-family:var(--num);font-size:18px;font-weight:600;letter-spacing:-.3px}
+.ccpre-txt span{display:block;font-size:13px;line-height:1.55;opacity:.8;margin-top:3px}
+.ccpre-act{display:flex;gap:8px;align-items:center;position:relative;z-index:1;flex-wrap:wrap}
+.ccpre-go{background:var(--accent-soft);color:var(--ink-deep);font-weight:700}
+.ccpre-go:hover{background:var(--paper);color:var(--ink-deep)}
+.ccpre-later{background:transparent;color:var(--paper);opacity:.72;box-shadow:none;padding:11px 12px}
+.ccpre-later:hover{opacity:1;background:rgba(241,244,236,.08)}
+
+/* ---------- The plain sentence, with the pay day beside it ---------- */
+.cch{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;box-shadow:0 1px 2px rgba(22,36,28,.05),0 10px 30px -18px rgba(22,36,28,.25)}
+.cch::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--st-dot,var(--st));transition:background .4s var(--ease);z-index:2}
+.cch-main{position:relative;padding:24px 26px 20px 30px;display:flex;flex-direction:column;justify-content:center;gap:10px;min-width:0}
+.cch-main::after{content:'';position:absolute;left:-120px;bottom:-200px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,var(--st-soft),transparent 68%);pointer-events:none}
+.cch-top{position:relative;z-index:1;display:flex;align-items:flex-start;gap:16px}
+.cch-orb{position:relative;width:44px;height:44px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:var(--st-soft);color:var(--st);margin-top:2px}
+.cch-orb i{width:12px;height:12px;border-radius:50%;background:var(--st-dot,var(--st))}
+.cch-orb .cc-tick{width:22px;height:22px}
+.st-red .cch-orb::after{content:'';position:absolute;inset:0;border-radius:var(--radius);box-shadow:0 0 0 2px var(--st-dot);animation:ccPulse 2s var(--ease) 3}
+.cch-say{flex:1;min-width:0;font-family:var(--num);font-size:clamp(22px,2.4vw,31px);font-weight:500;letter-spacing:-.9px;
+  line-height:1.24;color:var(--txt);text-wrap:balance}
+.cch-say b{font-weight:700}
+.cch-say .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cch-say .when{color:var(--st);font-weight:700;white-space:nowrap}
+.cch-say .late{color:var(--txt-2);font-weight:500}
+.cch-say .rest{color:var(--txt-3);font-weight:500}
+.cch-sub{position:relative;z-index:1;padding-left:60px;font-size:13.5px;color:var(--txt-2);line-height:1.5}
+.cch-sub b{font-family:var(--num);font-weight:700;color:var(--txt);letter-spacing:-.2px}
+.cch-acts{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;padding-left:60px;margin-top:4px}
+.cch-btn .cc-tick,.cct-pay .cc-tick{width:15px;height:15px}
+.cch.just-clear .cch-orb{animation:ccPop .6s var(--ease)}
+.cch.just-clear .cc-tick path,.cct.just-paid .cct-due .cc-tick path{animation:ccDraw .6s .15s var(--ease) both}
+/* The dark pay day panel */
+.cpd{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;gap:10px;padding:20px 22px 18px;
+  color:var(--paper);background:linear-gradient(160deg,var(--ink-deep-2),var(--ink-deep) 70%);border-left:1px solid rgba(241,244,236,.06)}
+.cpd::before{content:'';position:absolute;right:-70px;top:-90px;width:260px;height:260px;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,var(--pd-glow),transparent 66%);transition:background .5s var(--ease)}
+.cpd.is-clear{--pd-glow:rgba(91,201,138,.32)}
+.cpd-k{font-family:var(--label);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent-soft)}
+.cpd-date{display:flex;align-items:flex-end;gap:10px;line-height:1}
+.cpd-date b{font-family:var(--num);font-size:54px;font-weight:600;letter-spacing:-2.5px;line-height:.9}
+.cpd-date span{font-family:var(--num);font-size:17px;font-weight:600;letter-spacing:-.3px;padding-bottom:3px}
+.cpd-date small{display:block;font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:0;opacity:.66;margin-top:3px}
+.cpd-left{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
+.cpd-left i{width:8px;height:8px;border-radius:50%;background:var(--st-face);box-shadow:0 0 12px var(--st-face)}
+.cpd.is-clear .cpd-left i{background:#8BE0AB;box-shadow:0 0 12px #8BE0AB}
+.cpd-line{position:relative;height:6px;border-radius:var(--radius);background:rgba(241,244,236,.14);margin-top:4px}
+.cpd-line i{position:absolute;left:0;top:0;bottom:0;width:var(--p);border-radius:var(--radius);background:linear-gradient(90deg,rgba(241,244,236,.35),var(--st-face))}
+.cpd.is-clear .cpd-line i{background:linear-gradient(90deg,rgba(241,244,236,.35),#8BE0AB)}
+.cpd-line em{position:absolute;top:50%;left:var(--p);width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--paper);
+  box-shadow:0 0 0 4px rgba(241,244,236,.18)}
+.cpd-ends{display:flex;justify-content:space-between;gap:10px;font-size:11px;font-weight:600;opacity:.66}
+.cpd-tot{margin-top:auto;padding-top:8px;border-top:1px solid rgba(241,244,236,.12);font-family:var(--num);font-size:21px;font-weight:600;letter-spacing:-.5px}
+.cpd-tot span{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0;opacity:.7}
+.cpd-miss{font-size:13px;line-height:1.5;opacity:.85}
+.cpd-btn{background:var(--accent-soft);color:var(--ink-deep);align-self:flex-start;padding:9px 16px;font-weight:700}
+@media(max-width:760px){
+  .cch{grid-template-columns:1fr}
+  .cpd{border-left:none;border-top:1px solid rgba(241,244,236,.06)}
+}
+@media(max-width:640px){
+  .cch-main{padding:18px 16px 16px 20px}
+  .cch-top{gap:12px}
+  .cch-orb{width:34px;height:34px}
+  .cch-orb i{width:10px;height:10px}
+  .cch-say{font-size:21px;letter-spacing:-.6px}
+  .cch-sub,.cch-acts{padding-left:0}
+  .cch-acts .btn{flex:1}
+  .cpd{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;row-gap:6px;padding:16px 18px}
+  .cpd-k{grid-column:1/-1}
+  .cpd-date{grid-column:1;grid-row:2/span 2;align-self:center}
+  .cpd-date b{font-size:46px}
+  .cpd-left{grid-column:2;grid-row:2;align-self:end}
+  .cpd-tot{grid-column:2;grid-row:3;margin:0;padding:0;border:none;font-size:18px;align-self:start}
+  .cpd-line{grid-column:1/-1;grid-row:4;margin-top:8px}
+  .cpd-ends{grid-column:1/-1;grid-row:5}
+}
+
+/* ---------- Due date prompt ---------- */
+.ccs{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;
+  background:linear-gradient(120deg,var(--amber-soft),transparent 62%),var(--surface);box-shadow:0 1px 2px rgba(22,36,28,.05)}
+.ccs-head{display:flex;gap:14px;align-items:flex-start}
+.ccs-ico{width:42px;height:42px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:var(--fill);color:var(--fill-text);box-shadow:0 6px 16px -6px rgba(22,36,28,.5)}
+.ccs-ico svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ccs-txt{min-width:0}
+.ccs-txt b{display:block;font-size:15.5px;font-weight:750;letter-spacing:-.2px;color:var(--txt);line-height:1.35}
+.ccs-txt span{display:block;font-size:13px;color:var(--txt-2);line-height:1.55;margin-top:3px;max-width:78ch}
+.ccs-rows{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.ccs-row{display:grid;grid-template-columns:minmax(96px,150px) minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;
+  transition:opacity .3s var(--ease),transform .34s var(--ease)}
+.ccs-row.out{opacity:0;transform:translateX(18px)}
+.ccs-card{display:flex;align-items:center;gap:9px;font-weight:750;font-size:14px;color:var(--txt);padding-bottom:11px;min-width:0}
+.ccs-card i{width:30px;height:20px;border-radius:var(--radius);flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.ccs-f label{margin-bottom:5px}
+.ccs-f select{padding:10px 34px 10px 12px;font-size:13.5px}
+.ccs-f.need select,.form-group.need select{border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft);animation:ccShake .42s var(--ease)}
+.ccs-save{padding:11px 22px}
+@media(max-width:700px){
+  .ccs{padding:16px 14px}
+  .ccs-row{grid-template-columns:1fr 1fr;gap:10px}
+  .ccs-card{grid-column:1/-1;padding-bottom:0}
+  .ccs-save{grid-column:1/-1}
+}
+
+/* ---------- Card tiles: which card, what to pay, by when, in one line ---------- */
+.cct-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr))}
+.cct{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:0 1px 2px rgba(22,36,28,.05),0 12px 30px -20px rgba(22,36,28,.35);
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .3s var(--ease)}
+.cct::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--st-dot,var(--st));z-index:1}
+@media(hover:hover){.cct:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(22,36,28,.06),0 22px 44px -22px rgba(22,36,28,.45)}}
+.cct-top{display:flex;align-items:center;gap:16px;padding:18px 18px 16px 22px;background:linear-gradient(100deg,var(--st-soft),transparent 60%)}
+.cct-id{flex:1;min-width:0;display:flex;align-items:center;gap:14px;background:none;border:none;box-shadow:none;padding:4px;margin:-4px;
+  text-align:left;white-space:normal;color:inherit;font-weight:inherit;border-radius:var(--radius);cursor:pointer}
+.cct-id:hover .cct-idt b{text-decoration:underline;text-decoration-color:var(--border-strong);text-underline-offset:4px}
+.cct-id:active{transform:none}
+.cct-mini{position:relative;width:62px;height:41px;border-radius:var(--radius);flex-shrink:0;overflow:hidden;
+  background:linear-gradient(150deg,var(--c1),var(--c2));box-shadow:0 8px 16px -10px rgba(22,36,28,.7),inset 0 0 0 1px rgba(255,255,255,.12)}
+.cct-mini::after{content:'';position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,rgba(255,255,255,.22),transparent 55%)}
+.cct-mini .cc-emv{position:absolute;left:9px;top:12px;width:14px;height:11px;border-radius:2px;display:block;background:linear-gradient(135deg,#E9CC8A,#B98E42 55%,#E2C07A)}
+.cct-mini .mini-net{position:absolute;right:6px;bottom:5px;z-index:1;line-height:1}
+.cct-mini .net-visa{color:#fff;font-size:9.5px}
+.cct-mini .net-mc i{width:10px;height:10px}
+.cct-mini .net-rupay,.cct-mini .net-amex{color:#fff;font-size:7.5px}
+.cct-idt{min-width:0;display:flex;flex-direction:column;gap:2px}
+.cct-idt b{font-family:var(--num);font-size:19px;font-weight:700;letter-spacing:-.4px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cct-idt small{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt-3);font-weight:600;white-space:nowrap}
+.cct-idt .l4{font-family:var(--num);letter-spacing:.08em}
+.cct-idt .l4.none{font-family:var(--sans);letter-spacing:0;font-size:11.5px;color:var(--blue)}
+.cct-idt em{font-style:normal;font-size:11.5px;color:var(--txt-3);font-weight:550}
+.net{display:inline-flex;align-items:center;line-height:1;flex-shrink:0}
+.net-visa{font-family:var(--num);font-style:italic;font-weight:800;font-size:12px;letter-spacing:.03em;color:#1A1F71}
+.net-mc{display:inline-flex}
+.net-mc i{width:13px;height:13px;border-radius:50%;background:#EB001B;display:inline-block}
+.net-mc i+i{background:#F79E1B;margin-left:-5px;mix-blend-mode:multiply}
+.net-rupay,.net-amex{font-family:var(--num);font-weight:800;font-size:10px;letter-spacing:.04em;color:var(--txt-2)}
+@media(prefers-color-scheme:dark){.cct-idt .net-visa{color:#C9D2FF}.cct-idt .net-mc i+i{mix-blend-mode:screen}}
+.cct-act{display:flex;flex-direction:column;align-items:stretch;gap:6px;flex-shrink:0;min-width:188px}
+.cct-act .k{font-family:var(--label);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt-3);font-weight:700;text-align:center}
+.cct-paybtn{gap:8px;padding:13px 18px;font-size:15px;font-weight:700;background:var(--fill);color:var(--fill-text);
+  box-shadow:0 10px 20px -12px rgba(22,36,28,.8);transition:background .2s var(--ease),transform .2s var(--ease),box-shadow .2s var(--ease)}
+.cct-paybtn:hover{background:var(--fill-hover);transform:translateY(-1px)}
+.cct-paybtn .cc-tick{width:16px;height:16px}
+.cct-paybtn .rs{opacity:.7}
+.cct-paid{gap:8px;padding:12px 18px;font-size:15px;font-weight:700;background:var(--green-soft);color:var(--green);box-shadow:inset 0 0 0 1px rgba(62,142,92,.3)}
+.cct-paid:hover{background:var(--green-soft);box-shadow:inset 0 0 0 1px var(--green)}
+.cct-paid .cc-tick{width:17px;height:17px}
+.cct-paid.is-none{background:var(--surface-2);color:var(--txt-3);box-shadow:inset 0 0 0 1px var(--border)}
+.cct-cap{font-family:var(--label);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--st);text-align:center;line-height:1.35}
+.st-green .cct-cap,.st-grey .cct-cap{color:var(--txt-3)}
+.cct-notes{padding:0 18px 12px 22px;display:flex;flex-direction:column;gap:8px}
+.cct-top+.cct-notes{padding-top:2px}
+.cct-src{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:transparent;border:none;box-shadow:none;padding:0;
+  font-size:12px;font-weight:650;color:var(--blue);white-space:normal;text-align:left;cursor:pointer;text-decoration:underline;
+  text-decoration-color:rgba(138,84,16,.35);text-underline-offset:3px}
+.cct-src:hover{text-decoration-color:currentColor}
+.cct-src.ok{color:var(--green);text-decoration:none;cursor:default}
+.cct-src .cc-tick{width:13px;height:13px}
+.cct-gap{display:flex;gap:7px;align-items:flex-start;font-size:12px;line-height:1.45;font-weight:600;color:var(--blue);
+  background:var(--amber-soft);border-radius:var(--radius);padding:8px 10px}
+.cct-gap.ok{color:var(--green);background:var(--green-soft)}
+.cct-gap .cc-tick{width:14px;height:14px;margin-top:1px}
+.cct-month{display:flex;align-items:center;gap:12px;margin:0 18px 14px 22px;padding:12px 14px;border-radius:var(--radius);background:var(--surface-2);
+  border:1px solid var(--border);box-shadow:none;color:var(--txt);text-align:left;white-space:normal;font-weight:inherit;cursor:pointer;
+  transition:border-color .2s var(--ease),background .2s var(--ease)}
+.cct-month:hover{border-color:var(--border-strong);background:var(--surface-3)}
+.cct-month:active{transform:scale(.995)}
+.cm-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cm-l .k{font-family:var(--label);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);font-weight:700}
+.cm-l .s{font-size:12px;color:var(--txt-3);font-weight:600}
+.cm-v{font-family:var(--num);font-size:21px;font-weight:650;letter-spacing:-.6px;white-space:nowrap}
+.cm-go{font-size:22px;color:var(--txt-3);line-height:1;transition:transform .2s var(--ease)}
+.cct-month:hover .cm-go{transform:translateX(3px)}
+.cct-month+.cct-notes{margin-top:-4px}
+.cct-foot{display:flex;gap:2px;flex-wrap:wrap;padding:6px 8px 6px 12px;border-top:1px solid var(--border);background:var(--surface-2);margin-top:auto}
+.cct-link{display:inline-flex;align-items:center;gap:7px;background:transparent;border:none;box-shadow:none;padding:8px 10px;
+  font-size:12px;font-weight:700;color:var(--txt-2);border-radius:var(--radius)}
+.cct-link:hover{background:var(--surface-3);color:var(--txt)}
+.cct-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.cct-new{grid-column:1/-1;min-height:0;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:4px 12px;padding:12px 16px;text-align:left}
+.cct-new b{font-size:13.5px}
+.cct-new span:not(.cct-plus){color:var(--txt-3)}
+.cct-plus{width:30px;height:30px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:500;
+  background:var(--surface-3);color:var(--txt-2);transition:transform .35s var(--ease),background .2s var(--ease)}
+.cct-new:hover .cct-plus{transform:rotate(90deg);background:var(--blue-soft);color:var(--blue)}
+.cct.just-paid{animation:ccPaid 1.3s var(--ease)}
+.cct.just-paid .cct-act{animation:ccPop .6s var(--ease)}
+@media(max-width:560px){
+  .cct-grid{grid-template-columns:1fr}
+  .cct-top{flex-wrap:wrap;gap:14px;padding:16px 14px 14px 18px}
+  .cct-act{width:100%;min-width:0}
+  .cct-act .k{display:none}
+  .cct-paybtn,.cct-paid{padding:14px;font-size:16px}
+  .cct-notes{padding:0 14px 12px 18px}
+  .cct-month{margin:0 14px 14px 18px}
+  .cct-foot{justify-content:space-between;padding:4px 6px 4px 10px}
+  .cct-link{padding:9px 7px;font-size:11.5px}
+}
+/* The statements chart, always in view */
+.cc-chartcard .chart-box{height:260px}
+@media(max-width:640px){.cc-chartcard .chart-box{height:230px}}
+/* Export sheet */
+.xp-opt{display:flex;gap:16px;align-items:flex-start;padding:16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;background:var(--surface)}
+.xp-opt.lead{background:linear-gradient(120deg,var(--ink-deep),var(--ink-deep-2));color:var(--paper);border-color:transparent}
+.xp-ico{width:42px;height:42px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--blue)}
+.xp-opt.lead .xp-ico{background:rgba(232,178,92,.16);color:var(--accent-soft)}
+.xp-ico svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.xp-b{flex:1;min-width:0}
+.xp-b b{display:block;font-family:var(--num);font-size:16px;font-weight:600;letter-spacing:-.2px}
+.xp-b p{font-size:12.5px;line-height:1.55;color:var(--txt-2);margin-top:3px}
+.xp-opt.lead .xp-b p{color:rgba(241,244,236,.78)}
+.xp-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.xp-opt.lead .btn-primary{background:var(--accent-soft);color:var(--ink-deep)}
+.xp-opt.lead .btn-primary:hover{background:var(--paper)}
+
+/* ---------- Coming up: EMIs and subscriptions about to charge ---------- */
+.soon-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.soon-head .card-title{margin:0}
+.soon-sum{font-size:12.5px;color:var(--txt-2);font-weight:600}
+.soon-sum b{font-family:var(--num);color:var(--txt);font-weight:700}
+.soon-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.soon-chip{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:none;color:var(--txt);text-align:left;white-space:normal;font-weight:inherit;min-width:0;
+  transition:border-color .2s var(--ease),transform .3s var(--ease),background .2s var(--ease)}
+.soon-chip:hover{border-color:var(--border-strong);transform:translateY(-2px)}
+.soon-chip .sd{width:44px;height:48px;flex-shrink:0;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--surface);border:1px solid var(--border);line-height:1}
+.soon-chip .sd b{font-family:var(--num);font-size:19px;font-weight:700;letter-spacing:-.5px}
+.soon-chip .sd small{font-family:var(--label);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;font-weight:700}
+.soon-chip .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.soon-chip .sn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.soon-chip .ss{font-size:11.5px;color:var(--txt-2);font-weight:600}
+.soon-chip .sa{font-family:var(--num);font-size:14.5px;font-weight:700;letter-spacing:-.3px;white-space:nowrap}
+.soon-chip.u-now{background:var(--red-soft);border-color:rgba(177,74,46,.28)}
+.soon-chip.u-now .sd{background:var(--red-vivid);border-color:transparent;color:#fff}
+.soon-chip.u-now .sd small{color:rgba(255,255,255,.85)}
+.soon-chip.u-now .ss{color:var(--red);font-weight:700}
+.soon-chip.u-soon{background:var(--amber-soft);border-color:rgba(138,84,16,.22)}
+.soon-chip.u-soon .sd{background:var(--fill);border-color:transparent;color:var(--fill-text)}
+.soon-chip.u-soon .sd small{color:var(--accent-soft)}
+.soon-chip.u-soon .ss{color:var(--blue);font-weight:700}
+.soon-empty{font-size:12.5px;color:var(--txt-3);padding:4px 0}
+.soon-miss{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:var(--radius);
+  background:var(--amber-soft);color:var(--blue);font-size:12.5px;font-weight:600;line-height:1.45}
+.soon-miss span{flex:1;min-width:200px}
+.soon-miss .cc-tick{width:15px;height:15px}
+.soon-link{background:var(--fill);color:var(--fill-text);padding:7px 13px;font-size:12px;font-weight:700}
+.cc-soon{margin-top:16px}
+@media(max-width:640px){
+  .soon-row{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none}
+  .soon-row::-webkit-scrollbar{display:none}
+  .soon-chip{flex:0 0 78%;scroll-snap-align:start}
+}
+/* The charge day, right in the EMI and subscription tables */
+@media(max-width:640px){
+  .emi-catc{display:none}
+  #page-emis th,#page-emis td{padding:10px 8px}
+  /* The answer comes first on a phone: the page intro steps aside and the actions sit in one row */
+  #page-cards>.section-header>.section-sub{display:none}
+  #page-cards>.section-header{margin-bottom:12px}
+  #page-cards>.section-header>div{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;width:calc(100% + 28px);margin:0 -14px;padding:0 14px 2px}
+  #page-cards>.section-header>div::-webkit-scrollbar{display:none}
+  #page-cards>.section-header .btn{padding:9px 13px;font-size:12.5px;flex-shrink:0}
+}
+.day-cell{display:flex;flex-direction:column;gap:3px;min-width:104px}
+.day-cell small{font-size:10.5px;color:var(--txt-3);font-weight:600;white-space:nowrap}
+.day-sel{width:auto;min-width:104px;padding:6px 28px 6px 10px;font-size:12.5px;font-weight:650;background-color:var(--surface-2);background-position:right 9px center}
+.day-sel.empty{border-style:dashed;border-color:var(--gold);color:var(--blue)}
+.cce-miss{color:var(--blue);font-weight:700}
+
+/* ---------- Match your bank ---------- */
+.ccx-card{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;background:var(--surface)}
+.ccx-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(120deg,var(--c1),var(--c2));color:#F1F4EC;flex-wrap:wrap}
+.ccx-head b{font-family:var(--num);font-size:17px;font-weight:700;letter-spacing:-.3px}
+.ccx-tag{margin-left:auto;font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--radius);background:rgba(8,14,10,.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.ccx-in{padding:14px 16px 16px}
+.ccx-dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.ccx-dates select,.ccx-dates input{padding:10px 12px;font-size:13.5px}
+.ccx-hint{font-size:12px;color:var(--txt-2);line-height:1.5;margin:-4px 0 12px}
+.ccx-rows{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ccx-row{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(110px,1fr) auto 30px;gap:10px;align-items:center;padding:9px 10px 9px 12px;
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.ccx-row:last-child{border-bottom:none}
+.ccx-row.is-due{background:var(--amber-soft)}
+.ccx-m b{display:block;font-size:13.5px;font-weight:750}
+.ccx-m small{display:block;font-size:11px;color:var(--txt-3);font-weight:600;margin-top:1px}
+.ccx-amt{position:relative}
+.ccx-amt .rs{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none}
+.ccx-amt input{padding:8px 10px 8px 24px;font-size:14px;font-weight:700;font-family:var(--num)}
+.ccx-seg{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:2px;gap:2px}
+.ccx-seg button{padding:6px 10px;font-size:11.5px;font-weight:700;background:transparent;color:var(--txt-2);box-shadow:none;border-radius:var(--radius)}
+.ccx-seg button.on.paid{background:var(--green);color:#fff}
+.ccx-seg button.on.due{background:var(--fill);color:var(--fill-text)}
+.ccx-x{width:30px;height:30px;font-size:11px;background:transparent}
+.ccx-note{grid-column:1/-1;font-size:11.5px;line-height:1.45;color:var(--blue);font-weight:600;display:flex;gap:7px;align-items:flex-start}
+.ccx-note label{display:flex;gap:7px;align-items:flex-start;text-transform:none;letter-spacing:0;font-size:11.5px;color:var(--txt);font-weight:600;margin:0;cursor:pointer}
+.ccx-note input{width:auto;margin-top:1px;accent-color:var(--ink-deep);-webkit-appearance:checkbox;appearance:auto}
+.ccx-more{margin-top:10px}
+.ccx-res{margin-top:12px;padding:11px 13px;border-radius:var(--radius);background:var(--surface-2);font-size:12.5px;line-height:1.55;color:var(--txt-2)}
+.ccx-res b{color:var(--txt)}
+.ccx-res .bad{display:block;margin-top:6px;color:var(--red);font-weight:650}
+.ccx-res .good{color:var(--green);font-weight:700}
+@media(max-width:640px){
+  .ccx-dates{grid-template-columns:1fr 1fr}
+  .ccx-dates .form-group:last-child{grid-column:1/-1}
+  .ccx-row{grid-template-columns:minmax(0,1fr) 30px;row-gap:8px}
+  .ccx-m{grid-column:1}.ccx-x{grid-column:2;grid-row:1}
+  .ccx-amt,.ccx-seg{grid-column:1/-1}
+  .ccx-seg button{flex:1;padding:8px}
+}
+
+/* ---------- Insights ---------- */
+.cc-ins{margin-bottom:0}
+.cc-ins .ins-t{font-size:13.5px}
+
+/* ---------- Collapsible sections ---------- */
+.ccf-stack{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.ccf{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;scroll-margin-top:84px;
+  box-shadow:0 1px 2px rgba(22,36,28,.05);transition:box-shadow .35s var(--ease),border-color .35s var(--ease)}
+.ccf.open{box-shadow:0 2px 6px rgba(22,36,28,.05),0 16px 36px -24px rgba(22,36,28,.4);border-color:var(--border-strong)}
+.ccf-head{width:100%;display:flex;align-items:center;gap:14px;padding:15px 18px;background:transparent;border:none;border-radius:0;
+  box-shadow:none;color:var(--txt);text-align:left;white-space:normal;font-weight:inherit;cursor:pointer;transition:background .18s var(--ease)}
+.ccf-head:hover{background:var(--surface-2)}
+.ccf-head:active{transform:none}
+.ccf-head:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.ccf-ico{width:36px;height:36px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);color:var(--blue);transition:background .3s var(--ease),color .3s var(--ease)}
+.ccf.open .ccf-ico{background:var(--fill);color:var(--fill-text)}
+.ccf-ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ccf-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ccf-t b{font-size:15px;font-weight:750;letter-spacing:-.2px}
+.ccf-t small{font-size:12px;color:var(--txt-3);font-weight:550;line-height:1.4}
+.ccf-chev{width:30px;height:30px;border-radius:var(--radius);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);color:var(--txt-2);transition:transform .5s var(--ease),background .2s var(--ease)}
+.ccf-chev svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ccf.open .ccf-chev{transform:rotate(180deg);background:var(--surface-3)}
+.ccf-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
+.ccf.open .ccf-wrap{grid-template-rows:1fr}
+.ccf-in{min-height:0;overflow:hidden}
+.ccf-pad{padding:4px 18px 18px;border-top:1px solid transparent;opacity:0;transform:translateY(-8px);
+  transition:opacity .25s var(--ease),transform .45s var(--ease),border-color .3s var(--ease)}
+.ccf.open .ccf-pad{opacity:1;transform:none;border-top-color:var(--border);padding-top:16px;transition-delay:.06s}
+
+/* Past bills */
+.ccp-chart{margin-bottom:18px}
+.ccp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px}
+.ccp{min-width:0;border-radius:var(--radius);transition:box-shadow .5s var(--ease);scroll-margin-top:84px}
+.ccp.flash{animation:ccFlash 1.6s var(--ease)}
+.ccp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.ccp-head b{font-size:14.5px;font-weight:750}
+.ccp-sw{width:26px;height:17px;border-radius:var(--radius);flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.ccp-usual{margin-left:auto;font-size:12px;color:var(--txt-2);font-weight:600;background:var(--surface-2);border:1px solid var(--border);
+  padding:4px 10px;border-radius:var(--radius)}
+.ccp-usual b{font-family:var(--num);font-size:12.5px;color:var(--txt);margin-left:3px}
+.ccp-empty{font-size:12.5px;color:var(--txt-3);background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);padding:16px 14px;line-height:1.5}
+.ccp-add{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 0;text-transform:none;letter-spacing:0;font-size:12px;
+  font-weight:600;color:var(--txt-3)}
+.ccp-add span{flex:1;min-width:180px}
+.ccp-add input{width:auto;min-width:160px;padding:7px 10px;font-size:12.5px;background:var(--surface-2)}
+.ccf .cy-row{transition:background .16s var(--ease),padding-left .2s var(--ease)}
+.ccf .cy-row:hover{padding-left:16px}
+@media(max-width:520px){
+  .ccf .cy-b::before,.ccf .cy-p::before{display:block;font-family:var(--label);font-size:9px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--txt-3);margin-bottom:2px}
+  .ccf .cy-b::before{content:'Bill'}
+  .ccf .cy-p::before{content:'Paid'}
+  .ccf .cy-row:hover{padding-left:12px}
+}
+
+/* Where card money went */
+.ccc-lede{font-size:12.5px;color:var(--txt-2);margin:0 0 4px}
+.ccc-lede b{font-family:var(--num);color:var(--txt)}
+.ccc-row{cursor:pointer;border-radius:var(--radius);padding-left:6px;padding-right:6px;margin:0 -6px;transition:background .16s var(--ease)}
+.ccc-row:hover{background:var(--surface-2)}
+.ccc-row:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.ccc-row .rk-fill{transition:width .9s var(--ease)}
+.ccc-go{font-size:20px;color:var(--txt-3);padding-left:4px;transition:transform .2s var(--ease),color .2s var(--ease)}
+.ccc-row:hover .ccc-go{transform:translateX(3px);color:var(--txt)}
+.ccc-rest{font-size:12px;color:var(--txt-3);padding:12px 2px 0}
+.cce-row{cursor:pointer;align-items:center;border-radius:var(--radius);transition:background .16s var(--ease)}
+.cce-row:hover{background:var(--surface-2)}
+
+/* Confetti for a cleared bill */
+.cc-confetti{position:fixed;inset:0;pointer-events:none;z-index:500;overflow:hidden}
+.cc-confetti i{position:absolute;width:8px;height:11px;border-radius:2px;will-change:transform,opacity}
+
+/* ---------- Phone: the tab bar floats as a dark dock ---------- */
+@media(max-width:820px){
+  .mnav{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:6px;gap:2px;border-radius:var(--radius);
+    background:rgba(22,36,28,.94);-webkit-backdrop-filter:saturate(160%) blur(16px);backdrop-filter:saturate(160%) blur(16px);
+    border:1px solid rgba(241,244,236,.1);box-shadow:0 16px 36px -12px rgba(22,36,28,.6)}
+  .mnav-btn{color:rgba(241,244,236,.66);padding:8px 2px 6px;transition:background .25s var(--ease),color .25s var(--ease)}
+  .mnav-btn.active{color:var(--ink-deep);background:var(--accent-soft)}
+  .mnav-btn.active svg{stroke-width:2.1}
+  .mnav-btn:active{background:rgba(241,244,236,.1)}
+  .mnav-btn.active:active{background:var(--accent-soft)}
+  .page{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+  .toast-wrap{bottom:calc(92px + env(safe-area-inset-bottom))}
+}
+
+/* ---------- Entrance: only when you arrive on the page, never on a background refresh ---------- */
+.ccpre.in,.ccs.in{animation:ccRise .6s var(--ease) backwards}
+.cch.in .cch-top{animation:ccRise .6s var(--ease) backwards}
+.cch.in .cch-sub,.cch.in .cch-acts{animation:ccRise .6s .12s var(--ease) backwards}
+.cch.in .cpd{animation:ccFade .7s .24s var(--ease) backwards}
+.cch.in .cpd-line i{animation:ccGrow 1s .5s var(--ease) backwards}
+.cch.in .cpd-line em{animation:ccFade .4s 1.2s var(--ease) backwards}
+.cct.in,.cct-new.in{animation:ccRise .7s var(--ease) backwards;animation-delay:calc(var(--i) * 120ms + 300ms)}
+
+@keyframes ccRise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes ccFade{from{opacity:0}to{opacity:1}}
+@keyframes ccGrow{from{width:0}}
+@keyframes ccPop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+@keyframes ccDraw{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+@keyframes ccPulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+@keyframes ccBlink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ccSweep{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+@keyframes ccShake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+@keyframes ccPaid{0%{box-shadow:0 0 0 0 rgba(62,142,92,0)}18%{box-shadow:0 0 0 5px rgba(62,142,92,.4),0 18px 40px -18px rgba(62,142,92,.6)}100%{box-shadow:0 1px 2px rgba(22,36,28,.05),0 12px 30px -20px rgba(22,36,28,.35)}}
+@keyframes ccFlash{0%,100%{box-shadow:0 0 0 0 transparent}25%{box-shadow:0 0 0 4px var(--ring)}}
+@media(prefers-reduced-motion:reduce){
+  .cct,.cct:hover,.soon-chip:hover{transform:none}
+  .st-red .cch-orb::after,.st-red .cct-bar::after,.st-red .cct-st i{animation:none}
+}
 </style>
 
 </head>
@@ -1389,6 +1846,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
   </button>
   <h1 id="page-title">Logbook</h1>
   <div class="actions">
+    <button class="ghost-btn" onclick="openExport()" title="A report to read or print, spreadsheets, or the backup file"><svg viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4"/><path d="M9 13h6M9 16.5h6"/></svg><span>Export</span></button>
     <button class="ghost-btn" onclick="exportAll()" title="Download a full backup file of everything"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 20h16"/></svg><span>Backup</span></button>
     <button class="ghost-btn" onclick="document.getElementById('import-file').click()" title="Restore everything from a backup file"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M4 20h16"/></svg><span>Restore</span></button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importAll(event)">
@@ -1464,22 +1922,47 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 <!-- CREDIT CARDS -->
 <div class="page" id="page-cards">
   <div class="section-header">
-    <div class="section-sub">What each card owes right now, what you have paid, and where the money went. Charges come from the logbook and EMIs set to a card add themselves every month.</div>
+    <div class="section-sub">What to pay, by when, and whether it is paid. Card spends come from the logbook, and EMIs set to a card add themselves every month.</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-secondary" onclick="openImport()">Import statement</button>
+      <button class="btn btn-secondary" onclick="openMatch()">Match your bank</button>
       <button class="btn btn-primary" onclick="openCardsManager()">Edit cards</button>
     </div>
   </div>
-  <div class="total-out-bar" id="cc-hero"></div>
+  <div id="cc-setup"></div>
+  <div class="cch" id="cc-hero" aria-live="polite"></div>
   <div id="cc-notice"></div>
-  <div class="crd-grid" id="cc-cards"></div>
-  <div class="grid grid-2 mb-16">
-    <div class="card"><div class="card-title">Insights</div><div class="ins-list" id="cc-insights"></div></div>
-    <div class="card"><div class="card-title">Card bills, cycle by cycle</div><div class="chart-box"><canvas id="ch-cards"></canvas></div><div class="section-sub mt-8" id="cc-chart-foot"></div></div>
-  </div>
-  <div class="grid grid-2">
-    <div class="card"><div class="card-title">Where card money went &middot; <span id="cc-cat-lbl" style="text-transform:none;letter-spacing:0;font-weight:500"></span></div><div id="cc-cats"></div></div>
-    <div class="card"><div class="card-title">On your cards every month</div><div id="cc-recurring"></div></div>
+  <div class="crd-grid cct-grid" id="cc-cards"></div>
+  <div class="card cc-chartcard mt-16" id="cc-chart"><div class="soon-head"><div class="card-title">Your statements, month by month</div><span class="soon-sum" id="cc-chart-sum"></span></div><div class="chart-box"><canvas id="ch-cards"></canvas></div><div class="section-sub mt-8" id="cc-chart-foot"></div></div>
+  <div class="card cc-soon" id="cc-soon"><div class="soon-head"><div class="card-title">Coming up in the next 10 days</div><span class="soon-sum" id="cc-soon-sum"></span></div><div id="cc-soon-list"></div></div>
+  <div class="card cc-ins mt-16" id="cc-ins-card"><div class="card-title">Insights</div><div class="ins-list" id="cc-insights"></div></div>
+  <div class="ccf-stack">
+    <section class="ccf" id="ccf-past">
+      <button type="button" class="ccf-head" onclick="ccFold('past')" aria-expanded="false" aria-controls="ccf-past-in">
+        <span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span>
+        <span class="ccf-t"><b>Past bills</b><small id="ccf-past-hint">Every bill and payment, month by month</small></span>
+        <span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span>
+      </button>
+      <div class="ccf-wrap" inert><div class="ccf-in" id="ccf-past-in"><div class="ccf-pad">
+        <div class="ccp-grid" id="cc-past"></div>
+      </div></div></div>
+    </section>
+    <section class="ccf" id="ccf-cats">
+      <button type="button" class="ccf-head" onclick="ccFold('cats')" aria-expanded="false" aria-controls="ccf-cats-in">
+        <span class="ccf-ico"><svg viewBox="0 0 24 24"><path d="M5.6 8h12.8l1 12.6H4.6z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg></span>
+        <span class="ccf-t"><b>Where card money went</b><small id="ccf-cats-hint">Your top 3 this month</small></span>
+        <span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span>
+      </button>
+      <div class="ccf-wrap" inert><div class="ccf-in" id="ccf-cats-in"><div class="ccf-pad"><div id="cc-cats"></div></div></div></div>
+    </section>
+    <section class="ccf" id="ccf-emis">
+      <button type="button" class="ccf-head" onclick="ccFold('emis')" aria-expanded="false" aria-controls="ccf-emis-in">
+        <span class="ccf-ico"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0113.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 01-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg></span>
+        <span class="ccf-t"><b>On your cards every month</b><small id="ccf-emis-hint">EMIs and subscriptions billed to a card</small></span>
+        <span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span>
+      </button>
+      <div class="ccf-wrap" inert><div class="ccf-in" id="ccf-emis-in"><div class="ccf-pad"><div id="cc-recurring"></div></div></div></div>
+    </section>
   </div>
 </div>
 
@@ -1660,7 +2143,8 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 
 <!-- EMIS -->
 <div class="page" id="page-emis">
-  <div class="section-header"><div class="section-sub">Every EMI and subscription. Tap edit to change any value anytime</div><button class="btn btn-primary" onclick="openEMIAdd()">+ Add</button></div>
+  <div class="section-header"><div class="section-sub">Every EMI and subscription, and the day each one charges. Change any of it anytime.</div><button class="btn btn-primary" onclick="openEMIAdd()">+ Add</button></div>
+  <div class="card mb-16" id="emi-soon-card"><div class="soon-head"><div class="card-title">Coming up</div><span class="soon-sum" id="emi-soon-sum"></span></div><div id="emi-soon"></div></div>
   <div class="card mb-16"><div class="section-header" style="margin-bottom:12px"><div class="card-title" style="margin:0">Active EMIs</div><div class="card-title" style="margin:0;color:var(--terra);text-transform:none;letter-spacing:0;font-size:12px" id="emi-total-lbl"></div></div>
     <div class="filter-bar">
       <div class="filter-pills" id="emi-filter">
@@ -1681,11 +2165,11 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
         <option value="category">By category</option>
       </select>
     </div>
-    <div class="scroll-table"><table><thead><tr><th>Item</th><th>Category</th><th class="amount">Monthly</th><th>Ends</th><th>Status</th><th></th></tr></thead><tbody id="emi-tbl"></tbody></table></div>
+    <div class="scroll-table"><table><thead><tr><th>Item</th><th class="emi-catc">Category</th><th class="amount">Monthly</th><th>Charges on</th><th>Ends</th><th>Status</th><th></th></tr></thead><tbody id="emi-tbl"></tbody></table></div>
     <div class="section-sub mt-12" id="emi-filter-foot"></div>
   </div>
   <div class="card mb-16"><div class="card-title">Where Your EMIs Go, Most To Least</div><div class="grid grid-2" style="align-items:center"><div class="chart-box tall"><canvas id="ch-emi"></canvas></div><div id="emi-cat-rank"></div></div></div>
-  <div class="card"><div class="card-title">Subscriptions</div><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div>
+  <div class="card"><div class="card-title">Subscriptions</div><div class="scroll-table"><table><thead><tr><th>Service</th><th class="amount">Monthly</th><th>Charges on</th><th></th></tr></thead><tbody id="sub-tbl"></tbody></table></div></div>
   <div class="note-card mt-16">
     <div style="font-size:18px;line-height:1">🛡️</div>
     <div>Nothing here tracks health or term insurance premiums, renewal dates, or coverage amounts. A renewal that comes up once a year is the easiest one to miss.</div>
@@ -2085,6 +2569,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
   <div class="form-row"><div class="form-group"><label>Type</label><select id="emi-type" onchange="emiTypeChanged()"><option value="emi">EMI</option><option value="sub">Subscription</option></select></div>
     <div class="form-group"><label>Category</label><select id="emi-cat"><option>Furniture</option><option>Personal</option><option>Vehicle</option><option>Tech</option><option>Service</option></select></div></div>
   <div class="form-row"><div class="form-group"><label>Monthly Amount (₹)</label><input type="number" id="emi-amt" inputmode="numeric" oninput="emiCardNote()"></div><div class="form-group" id="emi-end-wrap"><label>End Date</label><input type="month" id="emi-end" onchange="emiCardNote()"></div></div>
+  <div class="form-row"><div class="form-group"><label>Charges on</label><select id="emi-day"></select></div></div>
   <div class="form-row">
     <div class="form-group"><label>Paid from</label><select id="emi-card" onchange="emiCardChanged()"></select></div>
     <div class="form-group" id="emi-since-wrap" style="display:none;max-width:200px"><label>On this card since</label><input type="month" id="emi-since" onchange="emiCardNote()"></div>
@@ -2129,7 +2614,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 </div></div>
 
 <div class="modal-overlay" id="m-notes"><div class="modal"><h3 id="np-title">Quick notes</h3>
-  <p class="np-hint" id="np-sub">These fill the note field with one tap, so you never type the same thing twice. They are only notes — nothing here changes your budget, your categories or anything you have already logged.</p>
+  <p class="np-hint" id="np-sub">These fill the note field with one tap, so you never type the same thing twice. They are only notes. Nothing here changes your budget, your categories or anything you have already logged.</p>
   <div id="np-ed"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
     <button class="btn btn-secondary btn-sm" onclick="addNotePreset()">+ Add quick note</button>
@@ -2276,7 +2761,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
   </div>
   <div class="alloc" id="ccp-alloc"></div>
   <div class="form-row"><div class="form-group"><label>Note (optional)</label><input type="text" id="ccp-note" placeholder="Autopay, UPI ref, anything worth keeping"></div></div>
-  <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="ccpSave()">Record payment</button><button class="btn btn-secondary" onclick="closeM('m-ccpay')">Cancel</button></div>
+  <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="ccpSave()">&#10003; Mark as paid</button><button class="btn btn-secondary" onclick="closeM('m-ccpay')">Cancel</button></div>
 </div></div>
 
 <div class="modal-overlay" id="m-ccmonth"><div class="modal" style="max-width:660px"><h3 id="ccm-title">Bill</h3>
@@ -2287,7 +2772,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
     <div class="form-group"><label>Bill amount (₹)</label><input type="number" id="ccm-bill" inputmode="decimal" style="font-size:17px;font-weight:700" oninput="ccmPaint()"></div>
   </div>
   <div class="np-hint" id="ccm-bill-hint" style="margin:0 0 16px"></div>
-  <div class="card-title">Payments toward this bill</div>
+  <div class="card-title" id="ccm-pays-title">Payments toward this bill</div>
   <div class="pay-rows" id="ccm-pays"></div>
   <button class="btn btn-secondary btn-sm mb-12" onclick="ccmAddPay()">+ Add a payment</button>
   <div class="alloc" id="ccm-result"></div>
@@ -2295,7 +2780,7 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
 </div></div>
 
 <div class="modal-overlay" id="m-cards"><div class="modal" style="max-width:660px"><h3>Your credit cards</h3>
-  <p class="np-hint" style="margin:-8px 0 16px">Everything here can be changed at any time, and renaming a card never touches its history. The statement day is when a bill closes and the due day drives the reminders. Leave either blank and bills follow calendar months.</p>
+  <p class="np-hint" style="margin:-8px 0 16px">Everything here can be changed at any time, and renaming a card never touches its past bills. The statement date is the day each month your bill is made. The due date is the last day to pay it, and it drives the colours and reminders on the Credit Cards page. Leave the statement date blank and bills follow calendar months.</p>
   <div id="cm-list"></div>
   <button class="btn btn-secondary btn-sm mb-12" onclick="cmAdd()">+ Add a card</button>
   <div id="cm-arch"></div>
@@ -2314,6 +2799,26 @@ td.pay-cell{white-space:nowrap;text-align:right;width:1%}
   <div class="srch-quick" id="cca-bulk" style="margin:0 0 12px"></div>
   <div class="mini-list" id="cca-list" style="max-height:52vh"></div>
   <div class="form-row mt-12" style="margin-bottom:0"><button class="btn btn-secondary" onclick="closeM('m-ccassign')">Done</button></div>
+</div></div>
+
+<div class="modal-overlay" id="m-export"><div class="modal" style="max-width:600px"><h3>Export</h3>
+  <p class="np-hint" style="margin:-8px 0 16px">Exporting only makes a copy. Nothing in the app changes.</p>
+  <div class="xp-opt lead"><span class="xp-ico"><svg viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4"/><path d="M9 13h6M9 16.5h6"/></svg></span><div class="xp-b"><b>Report</b><p>Everything in one clean page: cards and every statement, month by month totals, EMIs and when they charge, budget, net worth, investments, goals, and every logbook entry. Opens in any browser. Print it or save it as a PDF.</p><div class="xp-acts"><button class="btn btn-primary btn-sm" onclick="exportReport()">Download report</button></div></div></div>
+  <div class="xp-opt"><span class="xp-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4v16"/></svg></span><div class="xp-b"><b>Spreadsheets</b><p>Every logbook entry, or every card statement, as a file for Excel, Numbers or Google Sheets.</p><div class="xp-acts"><button class="btn btn-secondary btn-sm" onclick="exportLogbookAll()">Whole logbook</button><button class="btn btn-secondary btn-sm" onclick="exportStatementsCSV()">Card statements</button></div></div></div>
+  <div class="xp-opt"><span class="xp-ico"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 20h16"/></svg></span><div class="xp-b"><b>Backup file</b><p>The full copy that restores everything on any device. Keep one somewhere safe. It is not meant for reading.</p><div class="xp-acts"><button class="btn btn-secondary btn-sm" onclick="exportAll()">Download backup</button></div></div></div>
+  <div class="form-row mt-12" style="margin-bottom:0"><button class="btn btn-secondary" onclick="closeM('m-export')">Close</button></div>
+</div></div>
+
+<div class="modal-overlay" id="m-ccmatch"><div class="modal wide" style="max-width:780px"><h3>Match your bank</h3>
+  <p class="np-hint" style="margin:-8px 0 16px">Type what your bank app shows. Statement amounts replace what the tracker worked out from your logbook, and the logbook itself is never touched. A backup is saved first, and you can undo right after.</p>
+  <div id="ccx-body"></div>
+  <div class="form-row mt-12" style="margin-bottom:0"><button class="btn btn-primary" id="ccx-go" onclick="matchApply()">Apply to my cards</button><button class="btn btn-secondary" onclick="closeM('m-ccmatch')">Cancel</button></div>
+</div></div>
+
+<div class="modal-overlay" id="m-cclist"><div class="modal" style="max-width:560px"><h3 id="ccl-title">Card spends</h3>
+  <p class="np-hint" id="ccl-sub" style="margin:-10px 0 14px"></p>
+  <div class="mini-list" id="ccl-list" style="max-height:56vh"></div>
+  <div class="form-row" style="margin-bottom:0"><button class="btn btn-secondary" onclick="closeM('m-cclist')">Done</button></div>
 </div></div>
 
 <div class="modal-overlay" id="m-import"><div class="modal wide"><h3 id="imp-title">Import a statement</h3>
@@ -3859,15 +4364,16 @@ function renderEMIs(){
   const body=rows.map(({e,i,r})=>{
     const ended=r!==null&&r<=0;
     const st=ended?'<span class="tag tag-green">Done</span>':r!==null&&r<=3?'<span class="tag tag-amber">Ending Soon</span>':'<span class="tag tag-blue">Active</span>';
-    return`<tr style="${ended?'opacity:.5':''}"><td>${esc(e.name)}${srcPill(e)}</td><td><span class="tag tag-amber">${esc(e.category)}</span></td><td class="amount">${fmt(e.amount)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editEMI(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeEMI(${i})">✕</button></td></tr>`;
+    return`<tr style="${ended?'opacity:.5':''}"><td>${esc(e.name)}${srcPill(e)}</td><td class="emi-catc"><span class="tag tag-amber">${esc(e.category)}</span></td><td class="amount">${fmt(e.amount)}</td><td>${daySel('emi',i,e.day)}</td><td>${e.end||'Ongoing'}</td><td>${r!==null?(ended?'Done':r+' mo left'):''} ${st}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editEMI(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeEMI(${i})">✕</button></td></tr>`;
   }).join('');
-  document.getElementById('emi-tbl').innerHTML=(body||'<tr><td colspan="6" class="text-center" style="padding:24px;color:var(--txt-3)">Nothing matches this view.</td></tr>')+
-    `<tr><td colspan="2"><strong>${whole?'Total each month (active)':'Total each month (shown, still running)'}</strong></td><td class="amount"><strong>${fmt(whole?activeTotal:shownTotal)}</strong></td><td colspan="3"></td></tr>`;
+  document.getElementById('emi-tbl').innerHTML=(body||'<tr><td colspan="7" class="text-center" style="padding:24px;color:var(--txt-3)">Nothing matches this view.</td></tr>')+
+    `<tr><td><strong>${whole?'Total each month (active)':'Total each month (shown, still running)'}</strong></td><td class="emi-catc"></td><td class="amount"><strong>${fmt(whole?activeTotal:shownTotal)}</strong></td><td colspan="4"></td></tr>`;
   const ff=document.getElementById('emi-filter-foot');
   if(ff)ff.textContent=rows.length+(rows.length===1?' item shown':' items shown')+' of '+EMIS.length+'. Your live load is '+fmt(activeTotal)+' a month across '+ae.length+(ae.length===1?' EMI.':' EMIs.');
   const onCards=ae.filter(e=>e.card).reduce((s,e)=>s+(+e.amount||0),0);
   const tl=document.getElementById('emi-total-lbl');if(tl)tl.textContent=`${fmt(activeTotal)} / month · ${ae.length} active`+(onCards?` · ${fmt(onCards)} on cards`:'');
-  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${esc(s.name)}${srcPill(s)}</td><td class="amount">${fmt(s.amount)}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editSub(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeSub(${i})">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td></td></tr>`;
+  document.getElementById('sub-tbl').innerHTML=SUBS.map((s,i)=>`<tr><td>${esc(s.name)}${srcPill(s)}</td><td class="amount">${fmt(s.amount)}</td><td>${daySel('sub',i,s.day)}</td><td style="white-space:nowrap"><button class="icon-btn" title="Edit" onclick="editSub(${i})">✏️</button> <button class="icon-btn" title="Remove" onclick="removeSub(${i})">✕</button></td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="amount"><strong>${fmt(SUBS.reduce((s,x)=>s+x.amount,0))}</strong></td><td colspan="2"></td></tr>`;
+  renderSoon('emi-soon','emi-soon-sum',31,false);
   // Category ranking, heaviest first, so the leak is obvious at a glance
   const catTot={};ae.forEach(e=>{catTot[e.category]=(catTot[e.category]||0)+e.amount});
   const ranked=Object.entries(catTot).sort((a,b)=>b[1]-a[1]);
@@ -3931,7 +4437,7 @@ function openEMIAdd(){
   document.getElementById('emi-amt').value='';
   document.getElementById('emi-end').value='';
   document.getElementById('emi-since').value='';
-  paintEmiCardSel('');emiTypeChanged();
+  paintEmiDay(0);paintEmiCardSel('');emiTypeChanged();
   openM('m-emi');
 }
 function editEMI(i){
@@ -3944,7 +4450,7 @@ function editEMI(i){
   document.getElementById('emi-amt').value=e.amount;
   document.getElementById('emi-end').value=e.end||'';
   document.getElementById('emi-since').value=isMonthStr(e.cardSince)?e.cardSince:'';
-  paintEmiCardSel(e.card||'');emiTypeChanged();
+  paintEmiDay(e.day);paintEmiCardSel(e.card||'');emiTypeChanged();
   openM('m-emi');
 }
 function editSub(i){
@@ -3957,7 +4463,7 @@ function editSub(i){
   document.getElementById('emi-amt').value=s.amount;
   document.getElementById('emi-end').value='';
   document.getElementById('emi-since').value=isMonthStr(s.cardSince)?s.cardSince:'';
-  paintEmiCardSel(s.card||'');emiTypeChanged();
+  paintEmiDay(s.day);paintEmiCardSel(s.card||'');emiTypeChanged();
   openM('m-emi');
 }
 // Keeps every field the record already had, and moves it across when the type changes.
@@ -3970,11 +4476,12 @@ function saveEMI(){
   const end=document.getElementById('emi-end').value||null;
   let card=document.getElementById('emi-card').value;if(card==='__manage')card='';
   const since=card?(document.getElementById('emi-since').value||cm()):'';
+  const day=clampDay(document.getElementById('emi-day').value);
   if(!name){document.getElementById('emi-name').focus();toast('Give it a name first',null,null,null,2600);return}
   if(!amt){document.getElementById('emi-amt').focus();toast('Enter the monthly amount',null,null,null,2600);return}
   const wasSub=idx.startsWith('s'),pos=wasSub?+idx.slice(1):+idx;
   const prev=idx==='-1'?null:(wasSub?SUBS[pos]:EMIS[pos]);
-  const link=o=>{if(card){o.card=card;o.cardSince=since}else{delete o.card;delete o.cardSince}return o};
+  const link=o=>{if(card){o.card=card;o.cardSince=since}else{delete o.card;delete o.cardSince}if(day)o.day=day;else delete o.day;return o};
   if(type==='emi'){
     const rec=link({...(prev||{}),name,category:cat,amount:amt,end});
     if(prev&&wasSub){SUBS.splice(pos,1);S(K.sub,SUBS);EMIS.push(rec)}
@@ -5314,8 +5821,8 @@ function payWithHint(sel){
   if(!sel)return 'Bank, UPI or cash';
   if(sel==='?')return 'A credit card, but which one was never set';
   const c=cardById(sel);if(!c)return 'Credit card';
-  const L=cardLedger(c);
-  return `Adds to your <b>${esc(c.name)}</b> bill &middot; ${fmt(Math.max(0,L.toPay))} to pay so far`;
+  const n=ccNow(cardLedger(c));
+  return `Adds to this month on <b>${esc(c.name)}</b> &middot; ${fmt(n.spend)} spent so far`;
 }
 
 // ============ SOUNDS ============
@@ -5345,10 +5852,14 @@ function sfx(kind){
       note(1318.5,0,.11,'triangle',.55);note(1975.5,.085,.42,'sine',.6);note(3951,.085,.16,'sine',.07);
     }else if(kind==='goal'){ // longer fanfare
       [523.25,659.25,783.99,1046.5].forEach((f,i)=>note(f,i*.09,.34,'triangle',.62));note(1318.5,.36,.7,'sine',.7);note(2093,.36,.3,'sine',.1);
+    }else if(kind==='open'){ // soft rising tap, a section opening
+      note(659.25,0,.1,'sine',.3);note(987.77,.05,.16,'sine',.24);
+    }else if(kind==='close'){ // the same tap, falling
+      note(987.77,0,.08,'sine',.22);note(659.25,.045,.13,'sine',.2);
     }else{ // soft confirm
       note(880,0,.16,'sine',.45);note(1174.66,.06,.3,'sine',.4);
     }
-    if(navigator.vibrate)try{navigator.vibrate(kind==='goal'?[14,50,14,50,24]:kind==='win'?[12,40,18]:12)}catch(e){}
+    if(navigator.vibrate)try{navigator.vibrate(kind==='goal'?[14,50,14,50,24]:kind==='win'?[12,40,18]:(kind==='open'||kind==='close')?6:12)}catch(e){}
   }catch(e){}
 }
 function paintSoundBtn(){
@@ -5531,18 +6042,18 @@ function cycleStatus(cy,today){
     if(cy.bill<=0&&cy.paid<=0)return {k:'hist-empty',t:'No record',cls:'tag-slate'};
     if(cy.paid>=cy.bill&&cy.bill>0)return {k:'hist-paid',t:'Paid',cls:'tag-green'};
     if(cy.bill<=0)return {k:'hist-paid',t:'Paid',cls:'tag-green'};
-    return {k:'hist-short',t:cy.paid>0?'Part paid':'Not recorded',cls:'tag-slate'};
+    return {k:'hist-short',t:cy.paid>0?'Part paid':'No payment logged',cls:'tag-slate'};
   }
   if(cy.isCur){
     if(cy.bill<=0&&cy.paid<=0)return {k:'empty',t:'Nothing yet',cls:'tag-slate'};
     if(cy.left<=0)return {k:'covered',t:'Paid so far',cls:'tag-green'};
-    return {k:'building',t:'This cycle',cls:'tag-blue'};
+    return {k:'building',t:'This month',cls:'tag-blue'};
   }
   if(cy.bill<=0)return cy.paid>0?{k:'ahead',t:'Paid ahead',cls:'tag-green'}:{k:'nobill',t:'No bill',cls:'tag-slate'};
   if(cy.left<=0){const late=cy.due&&cy.ps.some(p=>p.date>cy.due);return late?{k:'paid-late',t:'Paid late',cls:'tag-amber'}:{k:'paid',t:'Paid',cls:'tag-green'}}
   if(cy.paid>0||cy.carryIn>0)return {k:'part',t:'Part paid',cls:'tag-amber'};
   if(cy.due&&cy.due<today)return {k:'overdue',t:'Overdue',cls:'tag-red'};
-  return {k:'due',t:cy.due?'Due '+shortDate(cy.due):'To pay',cls:'tag-amber'};
+  return {k:'due',t:cy.due?'Due '+shortDate(cy.due):'Bill to pay',cls:'tag-amber'};
 }
 function cardLedger(c){
   const today=td(),cur=cycleOf(c,today);
@@ -5603,210 +6114,1143 @@ function cycleSpan(c,ym){
 }
 function legacyCardEntries(){return LB.filter(e=>e&&e.cc&&!e.card&&e.type!=='income'&&e.type!=='investment')}
 function cardPayId(){return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+// Every bill waiting to be paid, across all cards
+function ccDueAll(){return r2(activeCards().reduce((s,c)=>s+cardLedger(c).dueNow,0))}
 
 // ---- Page ----
-let CC_SHOWALL={};
+// The page answers three questions, in this order: what do I pay, by when, and is it paid.
+// Every figure still comes from cardLedger, nothing here stores anything new. "This month"
+// is a card's open bill cycle, and every percentage on the page is a share of one total:
+// this month's card spending.
+let CC_SHOWALL={},CC_WAS_ON=false,CC_ENTER=false,CC_FX=null,CC_POOL=null,CC_CHART_ANIM=false;
+const CC_NUMS={},CC_FOLD={past:false,cats:false,emis:false},CCS_DRAFT={};
+function ccReduced(){try{return window.matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}}
+function ccPageOn(){const p=document.getElementById('page-cards');return !!(p&&p.classList.contains('active'))}
+function ordinal(n){n=+n||0;const v=n%100;return n+((v>=11&&v<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'))}
+function ccGrad(c){const col=cardColor(c);return `linear-gradient(150deg,${col[0]},${col[1]})`}
+const CC_CHECK='<svg viewBox="0 0 24 24" class="cc-tick"><path d="M5 12.5l4.2 4.2L19 7"/></svg>';
+
+// Everything on a card that is not billed yet: the open cycle, plus anything dated after it
+function ccNow(L){
+  let cs=L.cycles.filter(x=>!x.closed);
+  if(!cs.length)cs=[L.mk(L.cur,true)];
+  const cur=cs.find(x=>x.isCur)||cs[0];
+  return {cur,ch:[].concat(...cs.map(x=>x.ch)),recs:[].concat(...cs.map(x=>x.recs)),
+    logged:r2(cs.reduce((s,x)=>s+x.logged,0)),emi:r2(cs.reduce((s,x)=>s+x.emi,0)),spend:r2(cs.reduce((s,x)=>s+x.spend,0))};
+}
+// This month's card spending across every card, split by category. The one total behind every percentage.
+function ccPool(Ls){
+  const cats={};let total=0,emi=0;const all=[];
+  Ls.forEach(L=>{
+    const n=ccNow(L);total+=n.spend;emi+=n.emi;
+    n.ch.forEach(e=>{const k='c:'+(e.who||'Other');(cats[k]=cats[k]||{name:e.who||'Other',amt:0,items:[]});cats[k].amt+=(+e.amount||0);cats[k].items.push({e,c:L.card});all.push({e,c:L.card})});
+  });
+  if(emi>0)cats['emi']={name:'EMIs and subscriptions',amt:emi,items:[],emi:true};
+  const rows=Object.values(cats).map(r=>({...r,amt:r2(r.amt)})).filter(r=>r.amt>0).sort((a,b)=>b.amt-a.amt);
+  return {total:r2(total),emi:r2(emi),rows,all};
+}
+// Red: due in 5 days or less. Amber: due later. Green: the last bill is paid. Grey: no bill.
+function ccStatus(L){
+  const today=td();
+  const open=L.cycles.filter(x=>x.closed&&x.left>0);
+  if(L.dueNow>0&&open.length){
+    const due=open.map(x=>x.due).filter(Boolean).sort()[0]||null;
+    if(!due)return {k:'amber',t:'Bill to pay',due:null,days:null,open};
+    const n=daysBetween(today,due);
+    const t=n<0?'Overdue by '+(-n)+(n===-1?' day':' days'):n===0?'Due today':n===1?'Due tomorrow':'Due in '+n+' days';
+    return {k:n<=5?'red':'amber',t,due,days:n,open};
+  }
+  const closed=L.cycles.filter(x=>x.closed);
+  const last=closed.length?closed[closed.length-1]:null;
+  if(last&&last.bill>0)return {k:'green',t:'Paid',last,open:[]};
+  return {k:'grey',t:'No bill',last,open:[]};
+}
+function ccDueTxt(st){
+  if(!st.due)return 'No due date saved yet';
+  const n=st.days;
+  if(n<0)return 'Was due '+shortDate(st.due)+' · '+(-n)+(n===-1?' day':' days')+' late';
+  if(n===0)return 'Due today, '+shortDate(st.due);
+  if(n===1)return 'Due tomorrow, '+shortDate(st.due);
+  return 'Due '+shortDate(st.due)+' · in '+n+' days';
+}
+// A number that counts to its new value. Keyed, so a re-render only moves what changed.
+// The rupee sign sits a little quieter than the figure, so the eye lands on the amount.
+function ccMoney(v){return '<span class="rs">₹</span>'+Math.round(Math.abs(+v||0)).toLocaleString('en-IN')}
+function ccNum(key,v,cls){return `<span class="${cls||''}" data-cn="${esc(key)}" data-to="${r2(v)}">${ccMoney(v)}</span>`}
+function ccCount(root){
+  const anim=!ccReduced(),seen={};
+  root.querySelectorAll('[data-cn]').forEach(el=>{seen[el.dataset.cn]=1});
+  // A number that left the page starts from zero when it comes back, never from a stale value
+  Object.keys(CC_NUMS).forEach(k=>{if(!seen[k])delete CC_NUMS[k]});
+  root.querySelectorAll('[data-cn]').forEach(el=>{
+    const k=el.dataset.cn,to=+el.dataset.to||0,had=Object.prototype.hasOwnProperty.call(CC_NUMS,k),from=had?CC_NUMS[k]:0;
+    CC_NUMS[k]=to;
+    // A money figure always shows its real value first. It only moves when it changes (a payment,
+    // an edit), and the motion starts on the next frame, so a paused screen never shows a wrong number.
+    if(!anim||!had||from===to)return;
+    let t0=0;
+    const step=now=>{if(!el.isConnected)return;if(!t0)t0=now;const p=Math.min(1,(now-t0)/700),e=1-Math.pow(1-p,4);el.innerHTML=ccMoney(from+(to-from)*e);if(p<1)requestAnimationFrame(step);else el.innerHTML=ccMoney(to)};
+    requestAnimationFrame(step);
+  });
+}
 function renderCards(){
   const host=document.getElementById('cc-cards');if(!host)return;
+  const on=ccPageOn();
+  CC_ENTER=on&&!CC_WAS_ON;CC_WAS_ON=on;
+  if(!on)Object.keys(CC_NUMS).forEach(k=>{delete CC_NUMS[k]});
   const cards=activeCards();
   const Ls=cards.map(cardLedger);
-  renderCardsHero(Ls);
+  const sts=Ls.map(ccStatus);
+  const pool=ccPool(Ls);CC_POOL=pool;
+  renderCardSetup(cards);
+  renderCardsHero(Ls,sts,pool);
   // Older entries marked "credit card" before cards had names
   const legacy=legacyCardEntries();
   const note=document.getElementById('cc-notice');
   if(note)note.innerHTML=legacy.length&&cards.length?`<div class="budget-banner amber" style="cursor:pointer" onclick="openAssign()"><span class="icon">&#128179;</span><div style="flex:1"><b>${legacy.length} older ${legacy.length===1?'entry says':'entries say'} &ldquo;credit card&rdquo; without saying which one</b> (${fmt(legacy.reduce((s,e)=>s+(+e.amount||0),0))}). Tap to assign them to HDFC, SBI or another card so they land on the right bill.</div><span style="font-weight:700;white-space:nowrap">Assign &rarr;</span></div>`:'';
-  host.innerHTML=Ls.map(cardTile).join('')+`<button class="crd-new" onclick="openCardsManager(true)"><b>+ Add a card</b><span>Another bank, a new card, anything with a bill</span></button>`;
-  renderCardInsights(Ls);
-  renderCardChart(Ls);
-  renderCardCats(Ls);
+  host.innerHTML=Ls.map((L,i)=>cardTile(L,sts[i],i)).join('')+
+    `<button class="crd-new cct-new${CC_ENTER?' in':''}" style="--i:${Ls.length}" onclick="openCardsManager(true)"><span class="cct-plus">+</span><b>Add a card</b><span>Another bank, a new card, anything with a bill</span></button>`;
+  const soon=renderSoon('cc-soon-list','cc-soon-sum',10,true),sc=document.getElementById('cc-soon');
+  if(sc)sc.style.display=(soon.items.some(x=>x.days<=10)||soon.missing.length)?'':'none';
+  renderCardInsights(Ls,pool);
+  renderCardPast(Ls);
+  renderCardCats(pool);
   renderCardRecurring(cards);
+  ['past','cats','emis'].forEach(ccPaintFold);
+  if(on){renderCardChart(Ls,CC_ENTER||CC_CHART_ANIM);CC_CHART_ANIM=false}
+  if(on){
+    ccCount(document.getElementById('page-cards'));
+    if(CC_FX){const fx=CC_FX;CC_FX=null;requestAnimationFrame(()=>ccCelebrate(fx))}
+  }else CC_FX=null;
 }
-function renderCardsHero(Ls){
-  const el=document.getElementById('cc-hero');if(!el)return;
-  const toPay=r2(Ls.reduce((s,L)=>s+Math.max(0,L.toPay),0));
-  const dueNow=r2(Ls.reduce((s,L)=>s+L.dueNow,0));
-  const building=r2(Ls.reduce((s,L)=>s+Math.max(0,L.building-L.credit),0));
-  const lm=ymAdd(cm(),-1),tm=cm();
-  const live=CARDS.pays.filter(p=>!p.del);
-  const paidLast=r2(live.filter(p=>p.date.startsWith(lm)).reduce((s,p)=>s+p.amount,0));
-  const paidThis=r2(live.filter(p=>p.date.startsWith(tm)).reduce((s,p)=>s+p.amount,0));
-  const emiMo=r2(Ls.reduce((s,L)=>s+recurringIn(L.rec,L.cur).reduce((a,r)=>a+r.amount,0),0));
-  // Nearest date money is actually due
-  let next=null;
-  Ls.forEach(L=>L.cycles.forEach(cy=>{if(cy.left>0&&cy.due&&(!cy.isCur||cy.due>=td())){if(!next||cy.due<next.d)next={d:cy.due,c:L.card.name,a:cy.left}}}));
-  el.innerHTML=`<div class="to-heads">
-      <div class="to-main"><span class="to-label">To pay across cards</span><span class="to-value">${fmt(toPay)}</span></div>
-      <div class="to-main"><span class="to-label">Paid ${esc(monShort(lm))}</span><span class="to-value left">${fmt(paidLast)}</span></div>
-    </div>
-    <div class="to-break">
-      ${Ls.map(L=>`<div class="to-chip"><span class="k">${esc(L.card.name)}</span><span class="v">${fmt(Math.max(0,L.toPay))}</span></div>`).join('')}
-      <div class="to-chip"><span class="k">Billed and due</span><span class="v">${fmt(dueNow)}</span></div>
-      <div class="to-chip"><span class="k">This cycle so far</span><span class="v">${fmt(building)}</span></div>
-      <div class="to-chip"><span class="k">EMIs on cards</span><span class="v">${fmt(emiMo)}/mo</span></div>
-      <div class="to-chip"><span class="k">${next?'Next due':'Paid in '+esc(monShort(tm))}</span><span class="v inc">${next?esc(shortDate(next.d))+' · '+esc(next.c):fmt(paidThis)}</span></div>
+
+// ---- Until every card has a due date, ask for it right at the top ----
+function renderCardSetup(cards){
+  const el=document.getElementById('cc-setup');if(!el)return;
+  // Statements waiting to be matched come first. They set the dates as well, so the date prompt waits.
+  const pre=ccPresetPending();
+  if(pre){
+    const due=pre.cards.map(p=>{const r=p.rows.find(x=>!x.paid);return r?`${esc(p.card.name)} ${fmt(r.amt)}`:''}).filter(Boolean);
+    const past=pre.cards.reduce((s,p)=>s+p.rows.filter(x=>x.paid).length,0);
+    el.innerHTML=`<div class="ccpre${CC_ENTER?' in':''}">
+      <div class="ccpre-txt"><b>Your ${esc(pre.label)} are ready to add</b>
+      <span>${due.length?due.join(' and ')+' still to pay, ':''}plus ${past} past bills marked paid. Check the numbers, then apply them in one tap. A backup is saved first.</span></div>
+      <div class="ccpre-act"><button class="btn ccpre-go" onclick="openMatch()">Review and apply</button><button class="ccpre-later" onclick="CC_PRESET_HIDE=true;renderCards()">Not now</button></div>
     </div>`;
-}
-function cardTile(L){
-  const c=L.card,col=cardColor(c),today=td();
-  const curCy=L.cycles.find(x=>x.isCur)||L.mk(L.cur,true);
-  const closed=L.cycles.filter(x=>x.closed);
-  const lastClosed=closed.length?closed[closed.length-1]:null;
-  const open=closed.filter(x=>x.left>0);
-  const toPay=Math.max(0,L.toPay);
-  let s1='';
-  if(open.length){
-    const o=open[0],over=o.due&&o.due<today;
-    s1=`<span class="${over?'hot':''}"><b>${fmt(L.dueNow)}</b> ${open.length>1?'across '+open.length+' bills':'on the '+esc(monShort(o.ym))+' bill'}${o.due?(over?' · was due '+esc(shortDate(o.due)):' · due '+esc(shortDate(o.due))+', '+daysLeftTxt(o.due)):''}</span>`;
-  }else if(lastClosed&&lastClosed.bill>0){
-    const lp=lastClosed.ps.length?lastClosed.ps[lastClosed.ps.length-1]:null;
-    s1=`<span class="ok">&#10003; ${esc(monShort(lastClosed.ym))} bill cleared</span>${lp?' · '+fmt(lastClosed.paid)+' on '+esc(shortDate(lp.date)):''}`;
-  }else s1='No bill due right now';
-  const closes=L.cur+'-'+pad2(closeDay(c,L.cur));
-  let s2=`${esc(monShort(L.cur))} so far <b>${fmt(Math.max(0,curCy.left))}</b> · bill closes ${esc(shortDate(closes))}`;
-  if(L.credit>0)s2+=` · <span class="ok">${fmt(L.credit)} paid ahead</span>`;
-  const util=c.limit>0?Math.min(100,Math.round(toPay/c.limit*100)):null;
-  const avg3=(()=>{const b=closed.filter(x=>x.bill>0).slice(-3);return b.length?r2(b.reduce((s,x)=>s+x.bill,0)/b.length):0})();
-  const allPays=cardPays(c).slice().sort((a,b)=>b.date.localeCompare(a.date)||(b.u||0)-(a.u||0));
-  let lastPay=allPays[0]?{...allPays[0]}:null;
-  if(lastPay&&lastPay.grp)lastPay.amount=r2(allPays.filter(p=>p.grp===lastPay.grp).reduce((s,p)=>s+p.amount,0));
-  const rows=cardRows(L,CC_SHOWALL[c.id]?12:6);
-  return `<div class="crd">
-    <div class="crd-face" style="--c1:${col[0]};--c2:${col[1]}">
-      <div class="crd-top"><span class="crd-name">${esc(c.name)}</span>${c.last4?`<span class="crd-l4">&bull;&bull;&bull;&bull; ${esc(c.last4)}</span>`:''}<button class="crd-ed" onclick="openCardsManager(false,'${esc(c.id)}')">Edit</button></div>
-      <div class="crd-k">To pay now</div>
-      <div class="crd-v ${toPay<=0?'zero':''}">${fmt(toPay)}</div>
-      <div class="crd-s">${s1}</div>
-      <div class="crd-s" style="margin-top:3px">${s2}</div>
-      ${util!==null?`<div class="crd-util"><div class="crd-util-track"><i class="${util>=50?'hot':''}" style="width:${util}%"></i></div><div class="crd-util-k"><span>${util}% of your ${fmtS(c.limit)} limit</span><span>${fmtS(Math.max(0,c.limit-toPay))} free</span></div></div>`:''}
+    return;
+  }
+  const need=cards.filter(c=>!(c.due>=1));
+  if(!need.length){el.innerHTML='';return}
+  const opts=(sel,none)=>`<option value="0">${none}</option>`+Array.from({length:31},(_,i)=>`<option value="${i+1}"${+sel===i+1?' selected':''}>${ordinal(i+1)} of the month${i===30?' (or last day)':''}</option>`).join('');
+  el.innerHTML=`<div class="ccs${CC_ENTER?' in':''}">
+    <div class="ccs-head">
+      <span class="ccs-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M12 13.2v3.6M10.2 15h3.6"/></svg></span>
+      <div class="ccs-txt"><b>Add ${need.length===1?'the statement date and due date for '+esc(need[0].name):'each card’s statement date and due date'}</b>
+      <span>The due date is the last day to pay a bill. It decides every date, reminder and colour on this page. The statement date is the day each month the bill is made. Both are printed on your card statement and shown in your bank app.</span></div>
     </div>
-    <div class="crd-body">
-      <div class="crd-split">
-        <div class="crd-pill"><div class="k">This cycle</div><div class="v">${fmt(curCy.spend)}</div><div class="s">${curCy.ch.length} charge${curCy.ch.length===1?'':'s'}${curCy.emi?' + EMIs '+fmtS(curCy.emi):''}</div></div>
-        <div class="crd-pill"><div class="k">Last bill</div><div class="v">${lastClosed?fmt(lastClosed.bill):'—'}</div><div class="s">${lastClosed?esc(lastClosed.status.t)+' · '+esc(monShort(lastClosed.ym)):'Nothing billed yet'}</div></div>
-        <div class="crd-pill"><div class="k">Typical bill</div><div class="v">${avg3?fmt(avg3):'—'}</div><div class="s">${avg3?'Average of recent bills':'Builds up over time'}</div></div>
-      </div>
-      <div class="crd-act">
-        <button class="btn btn-primary" onclick="openPay('${esc(c.id)}')">${toPay>0?'&#10003; Mark paid':'Record a payment'}</button>
-        <button class="btn btn-secondary" onclick="openCycle('${esc(c.id)}','${L.cur}')">This cycle</button>
-      </div>
-      <div class="crd-last">${lastPay?'Last paid '+fmt(lastPay.amount)+' on '+esc(niceDate(lastPay.date))+(lastPay.note?' · '+esc(lastPay.note):''):'No payment recorded yet. When you pay this card, tap Mark paid and the bill starts again from zero.'}${isCalendarCard(c)?' · Bills follow calendar months':''}</div>
-      <div>
-        <div class="cy-head mb-8"><div class="card-title">Bills, newest first</div><span class="section-sub" style="font-size:11px">Tap any month to edit it</span></div>
-        <div class="cy-list">
-          <div class="cy-cols"><span>Month</span><span>Bill</span><span>Paid</span><span>Status</span></div>
-          ${rows.map(cy=>cycleRow(c,cy)).join('')}
-          <button class="cy-more" onclick="CC_SHOWALL['${esc(c.id)}']=!CC_SHOWALL['${esc(c.id)}'];renderCards()">${CC_SHOWALL[c.id]?'Show fewer':'Show the last 12 months'}</button>
-        </div>
-      </div>
-    </div>
+    <div class="ccs-rows">${need.map(c=>{
+      const d=CCS_DRAFT[c.id]||{s:c.stmt||0,d:c.due||0};
+      return `<div class="ccs-row" data-ccs="${esc(c.id)}">
+        <span class="ccs-card"><i style="background:${ccGrad(c)}"></i>${esc(c.name)}</span>
+        <div class="ccs-f"><label for="ccs-s-${esc(c.id)}">Statement date</label><select id="ccs-s-${esc(c.id)}" onchange="ccsDraft('${esc(c.id)}')">${opts(d.s,'Not sure, use calendar months')}</select></div>
+        <div class="ccs-f"><label for="ccs-d-${esc(c.id)}">Due date</label><select id="ccs-d-${esc(c.id)}" onchange="ccsDraft('${esc(c.id)}')">${opts(d.d,'Choose a day')}</select></div>
+        <button class="btn btn-primary ccs-save" onclick="ccSaveDays('${esc(c.id)}')">Save</button>
+      </div>`}).join('')}</div>
   </div>`;
 }
+function ccsDraft(id){
+  const s=document.getElementById('ccs-s-'+id),d=document.getElementById('ccs-d-'+id);
+  CCS_DRAFT[id]={s:s?+s.value||0:0,d:d?+d.value||0:0};
+  if(d&&+d.value)d.closest('.ccs-f').classList.remove('need');
+}
+function ccSaveDays(id){
+  const c=cardById(id);if(!c)return;
+  const sEl=document.getElementById('ccs-s-'+id),dEl=document.getElementById('ccs-d-'+id);
+  const s=clampDay(sEl&&sEl.value),d=clampDay(dEl&&dEl.value);
+  if(!d){
+    if(dEl){const f=dEl.closest('.ccs-f');f.classList.remove('need');void f.offsetWidth;f.classList.add('need');dEl.focus()}
+    toast('Pick the due date first','It is the last day to pay, printed on your statement',null,null,3400);return;
+  }
+  const was={stmt:c.stmt,due:c.due};
+  c.stmt=s;c.due=d;c.u=Date.now();
+  S(K.cards,CARDS);delete CCS_DRAFT[id];
+  sfx('save');
+  const allSet=activeCards().every(x=>x.due>=1);
+  const done=()=>{
+    renderAll();
+    toast(c.name+' dates saved',(s?'Bill made on the '+ordinal(s)+', ':'')+'due on the '+ordinal(d)+' of each month','Undo',()=>{
+      const cc=cardById(id);if(!cc)return;
+      cc.stmt=was.stmt;cc.due=was.due;cc.u=Date.now();S(K.cards,CARDS);renderAll();
+      toast('Dates put back',null,null,null,2200);
+    },8000);
+    if(allSet)setTimeout(()=>sfx('coin'),260);
+  };
+  const row=document.querySelector(`.ccs-row[data-ccs="${id}"]`);
+  if(row&&!ccReduced()){row.classList.add('out');setTimeout(done,340)}else done();
+}
+
+// ---- The one plain sentence at the top, with the pay day beside it ----
+function andList(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1]}
+function renderCardsHero(Ls,sts,pool){
+  const el=document.getElementById('cc-hero');if(!el)return;
+  if(!Ls.length){
+    el.className='cch st-grey'+(CC_ENTER?' in':'');
+    el.innerHTML=`<div class="cch-main"><div class="cch-top"><span class="cch-orb"><i></i></span><p class="cch-say">Add a card to see what to pay and when.</p></div><div class="cch-acts"><button class="btn btn-primary" onclick="openCardsManager(true)">+ Add a card</button></div></div>`;
+    return;
+  }
+  const due=Ls.map((L,i)=>({L,st:sts[i]})).filter(x=>x.st.k==='red'||x.st.k==='amber')
+    .sort((a,b)=>(a.st.due||'9999').localeCompare(b.st.due||'9999'));
+  const worst=due.some(x=>x.st.k==='red')?'red':due.length?'amber':'green';
+  const M=(k,v)=>`<b class="amt">${ccNum(k,v)}</b>`;
+  let say,btns='';
+  if(due.length){
+    const groups=[];
+    due.forEach(x=>{const k=x.st.due||'';let g=groups.find(y=>y.k===k);if(!g)groups.push(g={k,st:x.st,items:[]});g.items.push(x)});
+    const when=st=>!st.due?'':st.days<0?` <span class="when">now</span> <span class="late">(it was due ${esc(shortDate(st.due))})</span>`:st.days===0?` <span class="when">today</span>`:` by <span class="when">${esc(shortDate(st.due))}</span>`;
+    const one=x=>`${M('hero-'+x.L.card.id,x.L.dueNow)} to <b>${esc(x.L.card.name)}</b>`;
+    if(groups.length===1&&groups[0].items.length>1){
+      const g=groups[0];
+      say=`Pay ${M('hero-all',g.items.reduce((s,x)=>s+x.L.dueNow,0))}${when(g.st)}: ${andList(g.items.map(one))}.`;
+    }else say='Pay '+andList(groups.map(g=>andList(g.items.map(one))+when(g.st)))+'.';
+    say+=' <span class="rest">Nothing else is due.</span>';
+    btns=due.slice(0,3).map((x,i)=>`<button class="btn ${i?'btn-ghost':'btn-primary'} cch-btn" onclick="openPay('${esc(x.L.card.id)}')">${CC_CHECK}${due.length>1?'Mark '+esc(x.L.card.name)+' paid':'Mark paid'}</button>`).join('');
+  }else say='You’re all clear.';
+  const spent=pool.total;
+  el.className=`cch st-${worst}${CC_ENTER?' in':''}${CC_FX&&CC_FX.clear?' just-clear':''}`;
+  el.innerHTML=`<div class="cch-main">
+      <div class="cch-top"><span class="cch-orb">${worst==='green'?CC_CHECK:'<i></i>'}</span><p class="cch-say">${say}</p></div>
+      <p class="cch-sub">${spent>0?`Spent on cards this month so far <b>${ccNum('hero-spent',spent)}</b>. This becomes next month’s bill.`:'Nothing spent on cards this month yet.'}</p>
+      ${btns?`<div class="cch-acts">${btns}</div>`:''}
+    </div>
+    ${ccPayDay(Ls,sts,due)}`;
+}
+// The dark panel: the next date that matters, how far away it is, and where today sits between
+// the day the bill was made and the day it has to be paid.
+function ccPayDay(Ls,sts,due){
+  const today=td();
+  const bigDate=d=>{const x=new Date(d+'T00:00');return `<div class="cpd-date"><b>${x.getDate()}</b><span>${x.toLocaleDateString('en-IN',{month:'short'})}<small>${x.toLocaleDateString('en-IN',{weekday:'long'})}</small></span></div>`};
+  const line=(from,to,lbA,lbB)=>{
+    const span=Math.max(1,daysBetween(from,to)),p=Math.max(0,Math.min(1,daysBetween(from,today)/span));
+    return `<div class="cpd-line" style="--p:${(p*100).toFixed(1)}%"><i></i><em></em></div><div class="cpd-ends"><span>${esc(lbA)}</span><span>${esc(lbB)}</span></div>`;
+  };
+  if(due.length){
+    const first=due[0],d=first.st.due;
+    if(!d)return `<aside class="cpd"><span class="cpd-k">Pay day</span><p class="cpd-miss">No due date saved for ${esc(first.L.card.name)} yet.</p><button class="btn cpd-btn" onclick="openMatch()">Add it</button></aside>`;
+    const same=due.filter(x=>x.st.due===d),tot=r2(same.reduce((s,x)=>s+x.L.dueNow,0)),n=first.st.days;
+    const made=first.st.open[0].win.end;
+    const left=n<0?(-n)+(n===-1?' day late':' days late'):n===0?'Pay today':n===1?'Tomorrow':n+' days to go';
+    return `<aside class="cpd"><span class="cpd-k">Pay day</span>${bigDate(d)}
+      <div class="cpd-left"><i></i>${esc(left)}</div>
+      ${line(made,d,'Bill made '+shortDate(made),'Pay by '+shortDate(d))}
+      <div class="cpd-tot">${ccNum('pd-tot',tot)} <span>${same.length>1?'across '+same.length+' cards':'to '+esc(first.L.card.name)}</span></div>
+    </aside>`;
+  }
+  // Nothing to pay: show the next bill being made
+  let next=null;
+  Ls.forEach(L=>{const close=L.cur+'-'+pad2(closeDay(L.card,L.cur));if(!next||close<next.close)next={L,close,start:cycleWindow(L.card,L.cur).start}});
+  if(!next)return '';
+  const n=daysBetween(today,next.close);
+  return `<aside class="cpd is-clear"><span class="cpd-k">Next bill</span>${bigDate(next.close)}
+    <div class="cpd-left"><i></i>${n<=0?'Made today':n===1?'Made tomorrow':'Made in '+n+' days'}</div>
+    ${line(next.start,next.close,'Started '+shortDate(next.start),esc(next.L.card.name)+' bill '+shortDate(next.close))}
+    <div class="cpd-tot">${ccNum('pd-next',ccNow(next.L).spend)} <span>on ${esc(next.L.card.name)} so far</span></div>
+  </aside>`;
+}
+
+// ---- One card, read in one line: which card, what to pay, by when ----
+// What the bank said was unbilled, while that figure still belongs to the open month
+function ccBankNow(L){
+  const c=L.card;if(c.bankUnbilled==null||!isFinite(+c.bankUnbilled)||typeof c.bankUnbilledOn!=='string')return null;
+  if(c.bankUnbilledOn<cycleWindow(c,L.cur).start)return null;
+  return {amt:r2(c.bankUnbilled),on:c.bankUnbilledOn};
+}
+// One sentence comparing the bank's unbilled figure with what the logbook has for this month
+function ccBankTxt(bank,logged){
+  const gap=r2(bank.amt-logged),on=shortDate(bank.on);
+  if(Math.abs(gap)<1)return `Matches the ${fmt(bank.amt)} your bank showed on ${on}.`;
+  if(gap>0)return `Your bank showed ${fmt(bank.amt)} unbilled on ${on}. ${fmt(gap)} of it is not in your logbook yet.`;
+  return `You have logged ${fmt(logged)}, ${fmt(-gap)} more than the ${fmt(bank.amt)} your bank showed on ${on}. A spend may be on the wrong card or month, or the bank has not posted it yet.`;
+}
+// Card networks, drawn plainly so each card is recognisable at a glance
+const CC_NETS={visa:'Visa',mastercard:'Mastercard',rupay:'RuPay',amex:'American Express',diners:'Diners Club'};
+function ccNetMark(n){
+  if(n==='visa')return '<span class="net net-visa" aria-label="Visa">VISA</span>';
+  if(n==='mastercard')return '<span class="net net-mc" aria-label="Mastercard"><i></i><i></i></span>';
+  if(n==='rupay')return '<span class="net net-rupay" aria-label="RuPay">RuPay</span>';
+  if(n==='amex')return '<span class="net net-amex" aria-label="American Express">AMEX</span>';
+  if(n==='diners')return '<span class="net net-amex" aria-label="Diners Club">DINERS</span>';
+  return '';
+}
+function ccDueCap(st){
+  if(!st.due)return 'No due date saved';
+  const n=st.days,d=shortDate(st.due);
+  if(n<0)return 'Overdue by '+(-n)+(n===-1?' day':' days');
+  if(n===0)return 'Due today';
+  if(n===1)return 'Due tomorrow · '+d;
+  return 'Due in '+n+' days · '+d;
+}
+function cardTile(L,st,i){
+  const c=L.card,now=ccNow(L),cid=esc(c.id),due=st.k==='red'||st.k==='amber';
+  const openYm=due?st.open[0].ym:(st.last?st.last.ym:ymAdd(L.cur,-1));
+  let act;
+  if(due){
+    act=`<span class="k">Bill to pay</span>
+      <button class="btn cct-paybtn" onclick="openPay('${cid}')" aria-label="Mark ${fmt(L.dueNow)} paid on ${esc(c.name)}">${CC_CHECK}<span>Mark ${ccNum('due-'+c.id,L.dueNow)} paid</span></button>
+      <span class="cct-cap">${esc(ccDueCap(st))}${st.open.length>1?' · '+st.open.length+' bills':''}</span>`;
+  }else if(st.k==='green'){
+    const last=st.last,lp=last.ps.length?last.ps[last.ps.length-1]:null;
+    act=`<span class="k">Bill to pay</span>
+      <button class="cct-paid" onclick="openCycle('${cid}','${last.ym}')" title="Open the ${esc(monthName(last.ym))} bill">${CC_CHECK}Paid</button>
+      <span class="cct-cap">${esc(monShort(last.ym))} bill ${fmt(last.bill)}${lp?' · paid '+esc(shortDate(lp.date)):''}</span>`;
+  }else{
+    act=`<span class="k">Bill to pay</span>
+      <button class="cct-paid is-none" onclick="openCycle('${cid}','${openYm}')">${ccMoney(0)}</button>
+      <span class="cct-cap">Nothing billed for ${esc(monthName(openYm).split(' ')[0])}</span>`;
+  }
+  let src='';
+  if(due)src=st.open.every(x=>x.ov!=null)?`<span class="cct-src ok">${CC_CHECK}Matches your statement</span>`
+    :`<button class="cct-src" onclick="openMatch('${cid}')">Worked out from your logbook. Check it with your bank</button>`;
+  const closes=L.cur+'-'+pad2(closeDay(c,L.cur));
+  let nowSub='Becomes a bill on '+shortDate(closes);
+  if(L.credit>0)nowSub+=' · '+fmt(L.credit)+' paid ahead comes off it';
+  const bank=ccBankNow(L);let bankLine='';
+  if(bank){const gap=r2(bank.amt-now.logged);bankLine=`<span class="cct-gap${Math.abs(gap)<1?' ok':''}">${Math.abs(gap)<1?CC_CHECK:CC_WARN}<span>${esc(ccBankTxt(bank,now.logged))}</span></span>`}
+  const dates=(c.stmt>=1?'Bill made on the '+ordinal(c.stmt):'Calendar months')+(c.due>=1?', due on the '+ordinal(c.due):'');
+  return `<article class="cct st-${st.k}${CC_ENTER?' in':''}${CC_FX&&CC_FX.card===c.id?' just-paid':''}" data-cc="${cid}" style="--i:${i}">
+    <div class="cct-top">
+      <button type="button" class="cct-id" onclick="openCycle('${cid}','${openYm}')" title="Open this bill">
+        <span class="cct-mini" style="--c1:${cardColor(c)[0]};--c2:${cardColor(c)[1]}"><i class="cc-emv"></i>${c.network?`<span class="mini-net">${ccNetMark(c.network)}</span>`:''}</span>
+        <span class="cct-idt"><b>${esc(c.name)}</b><small>${c.network?ccNetMark(c.network):''}${c.last4?`<span class="l4">•••• ${esc(c.last4)}</span>`:`<span class="l4 none">Add the last 4 digits</span>`}</small><em>${esc(dates)}</em></span>
+      </button>
+      <div class="cct-act">${act}</div>
+    </div>
+    ${src?`<div class="cct-notes">${src}</div>`:''}
+    <button type="button" class="cct-month" onclick="openCycle('${cid}','${L.cur}')" title="See this month’s spends and change any of them">
+      <span class="cm-l"><span class="k">This month so far, not billed yet</span><span class="s">${esc(nowSub)}</span></span>
+      <span class="cm-v">${ccNum('now-'+c.id,now.spend)}</span><span class="cm-go" aria-hidden="true">&rsaquo;</span>
+    </button>
+    ${bankLine?`<div class="cct-notes">${bankLine}</div>`:''}
+    <div class="cct-foot">
+      <button class="cct-link" onclick="ccOpenPast('${cid}')"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg>Past bills</button>
+      <button class="cct-link" onclick="openMatch('${cid}')"><svg viewBox="0 0 24 24"><path d="M4 12.5l4.5 4.5L20 6"/></svg>Match your bank</button>
+      ${due?'':`<button class="cct-link" onclick="openPay('${cid}')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Record a payment</button>`}
+      <button class="cct-link" onclick="openCardsManager(false,'${cid}')"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Edit card</button>
+    </div>
+  </article>`;
+}
+
+// ---- Past bills: only months that have something in them, never an empty row ----
+function ccPastRows(L){
+  const out=[];
+  for(let ym=ymAdd(L.cur,-1),g=0;g<36;ym=ymAdd(ym,-1),g++){
+    const tracked=ym>=L.since;
+    const cy=tracked?(L.cycles.find(x=>x.ym===ym)||L.mk(ym,true)):L.mk(ym,false);
+    if(cy.paid>0||cy.ov!=null||(tracked?cy.bill>0:cy.ch.length>0))out.push(cy);
+  }
+  return out;
+}
+function ccUsual(rows){const b=rows.filter(x=>x.bill>0).slice(0,3);return b.length?r2(b.reduce((s,x)=>s+x.bill,0)/b.length):0}
 function cycleRow(c,cy){
-  const billTxt=cy.bill>0?fmt(cy.bill):(cy.tracked?fmt(0):'—');
-  const sub=cy.ov!=null?'from statement':(cy.emi?'incl. EMIs '+fmtS(cy.emi):(cy.ch.length?cy.ch.length+' charge'+(cy.ch.length===1?'':'s'):''));
+  const billTxt=cy.bill>0?fmt(cy.bill):fmt(0);
+  const sub=cy.ov!=null?'from statement':(cy.emi?'incl. EMIs '+fmtS(cy.emi):(cy.ch.length?cy.ch.length+' spend'+(cy.ch.length===1?'':'s'):''));
   const paidSub=cy.ps.length?shortDate(cy.ps[cy.ps.length-1].date):(cy.carryIn>0&&cy.tracked?'covered by earlier':'');
-  return `<div class="cy-row ${cy.isCur?'is-now':''} ${cy.tracked?'':'is-hist'}" role="button" tabindex="0" onclick="openCycle('${esc(c.id)}','${cy.ym}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCycle('${esc(c.id)}','${cy.ym}')}" title="${esc(cycleSpan(c,cy.ym))}">
-    <div class="cy-m">${esc(monShort(cy.ym))} ${esc(cy.ym.slice(0,4))}<small>${cy.isCur?'Now':cy.tracked?(cy.due?'Due '+esc(shortDate(cy.due)):'Bill'):'History'}</small></div>
+  return `<div class="cy-row ${cy.tracked?'':'is-hist'}" role="button" tabindex="0" onclick="openCycle('${esc(c.id)}','${cy.ym}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCycle('${esc(c.id)}','${cy.ym}')}" title="${esc(cycleSpan(c,cy.ym))} · tap to change">
+    <div class="cy-m">${esc(monShort(cy.ym))} ${esc(cy.ym.slice(0,4))}${cy.due?`<small>Due ${esc(shortDate(cy.due))}</small>`:''}</div>
     <div class="cy-n cy-b ${cy.bill>0?'':'muted'}">${billTxt}${sub?`<small>${esc(sub)}</small>`:''}</div>
-    <div class="cy-n cy-p ${cy.paid>0?'':'muted'}">${cy.paid>0?fmt(cy.paid):'—'}${paidSub?`<small>${esc(paidSub)}</small>`:''}</div>
+    <div class="cy-n cy-p ${cy.paid>0?'':'muted'}">${cy.paid>0?fmt(cy.paid):'Not yet'}${paidSub?`<small>${esc(paidSub)}</small>`:''}</div>
     <div class="cy-st"><span class="tag ${cy.status.cls}">${esc(cy.status.t)}</span></div>
   </div>`;
 }
+function renderCardPast(Ls){
+  const el=document.getElementById('cc-past'),hint=document.getElementById('ccf-past-hint');if(!el)return;
+  let last=null;
+  el.innerHTML=Ls.length?Ls.map(L=>{
+    const c=L.card,cid=esc(c.id),rows=ccPastRows(L),usual=ccUsual(rows);
+    if(rows[0]&&(!last||rows[0].ym>last.ym))last={ym:rows[0].ym,bill:rows[0].bill,c};
+    const show=CC_SHOWALL[c.id]?rows:rows.slice(0,6);
+    return `<div class="ccp" id="ccp-${cid}">
+      <div class="ccp-head"><span class="ccp-sw" style="background:${ccGrad(c)}"></span><b>${esc(c.name)}</b>${usual?`<span class="ccp-usual">Usual bill <b>${fmt(usual)}</b></span>`:''}</div>
+      ${rows.length?`<div class="cy-list">
+        <div class="cy-cols"><span>Month</span><span>Bill</span><span>Paid</span><span>Status</span></div>
+        ${show.map(cy=>cycleRow(c,cy)).join('')}
+        ${rows.length>6?`<button class="cy-more" onclick="CC_SHOWALL['${cid}']=!CC_SHOWALL['${cid}'];renderCards()">${CC_SHOWALL[c.id]?'Show fewer':'Show all '+rows.length+' months'}</button>`:''}
+      </div>`:`<div class="ccp-empty">No past bills yet. This month’s spending becomes the first one on ${esc(shortDate(L.cur+'-'+pad2(closeDay(c,L.cur))))}.</div>`}
+      <label class="ccp-add"><span>Missing a month? Pick it to add its bill or a payment</span><input type="month" max="${ymAdd(L.cur,-1)}" aria-label="Open another ${esc(c.name)} month" onchange="if(isMonthStr(this.value)){const v=this.value;this.value='';openCycle('${cid}',v)}"></label>
+    </div>`;
+  }).join(''):'<div class="mini-empty">Add a card to see its bills here.</div>';
+  if(hint)hint.textContent=last?`Last bill: ${last.c.name} ${monShort(last.ym)}, ${fmt(last.bill)}. Tap any month to change it.`:'Every bill and payment, month by month';
+}
 
-// ---- Insights ----
+
+// ---- Insights: the two most useful lines. Any percentage is a share of this month's card spending ----
 function insRow(tone,icon,html){return `<div class="ins"><div class="ins-ico ${tone}">${svgIco(icon)}</div><div class="ins-t">${html}</div></div>`}
-function renderCardInsights(Ls){
+function renderCardInsights(Ls,pool){
   const el=document.getElementById('cc-insights');if(!el)return;
-  const out=[],today=td();
+  const out=[],today=td(),T=pool.total;
   if(!Ls.length){el.innerHTML='<div class="mini-empty">Add a card to see insights.</div>';return}
-  // Due soon or overdue
-  Ls.forEach(L=>L.cycles.filter(x=>x.closed&&x.left>0).forEach(cy=>{
-    if(cy.due&&cy.due<today)out.push({w:100,h:insRow('bad','bolt',`<b>${esc(L.card.name)} ${esc(monShort(cy.ym))} bill is overdue</b> by ${-daysBetween(today,cy.due)} days. ${fmt(cy.left)} is still open. Late fees and interest start quickly on cards, so clear this first.`)});
-    else if(cy.due&&daysBetween(today,cy.due)<=7)out.push({w:90,h:insRow('warn','bolt',`<b>${fmt(cy.left)} due on ${esc(L.card.name)} ${daysLeftTxt(cy.due)}</b> (${esc(shortDate(cy.due))}). <a onclick="openPay('${esc(L.card.id)}')">Mark it paid</a> once it goes out.`)});
-  }));
-  // Pace this cycle against the usual bill
+  const share=v=>pct(v,T)+'% of this month’s '+fmt(T)+' on cards';
+  // The bank saw spends the logbook has not
+  Ls.forEach(L=>{const b=ccBankNow(L);if(!b)return;const gap=r2(b.amt-ccNow(L).logged);
+    if(gap>=1)out.push({w:88,h:insRow('warn','spark',`<b>${fmt(gap)} of ${esc(L.card.name)} spending is not in your logbook yet.</b> Your bank showed ${fmt(b.amt)} unbilled on ${esc(shortDate(b.on))}. Log those spends so this month’s numbers are right.`)})});
+  // Paid late or only partly: the one habit that costs real money
   Ls.forEach(L=>{
-    const c=L.card,cy=L.cycles.find(x=>x.isCur);if(!cy)return;
-    const w=cycleWindow(c,L.cur),days=daysBetween(w.start,w.end)+1,gone=Math.min(days,Math.max(1,daysBetween(w.start,today)+1));
-    const closed=L.cycles.filter(x=>x.closed&&x.bill>0).slice(-3);
-    if(!closed.length||gone<5)return;
-    const avg=closed.reduce((s,x)=>s+x.bill,0)/closed.length;
-    const proj=r2(cy.logged/gone*days+cy.emi);
-    const diff=avg?Math.round((proj-avg)/avg*100):0;
-    if(diff>=15)out.push({w:70+Math.min(20,diff/5),h:insRow('warn','trend',`<b>${esc(c.name)} is on pace for ${fmt(proj)}</b> this cycle, ${diff}% above your usual ${fmt(avg)}. ${days-gone} days left to pull it back.`)});
-    else if(diff<=-15)out.push({w:45,h:insRow('good','trend',`<b>${esc(c.name)} is running ${-diff}% lighter</b> than usual. On pace for ${fmt(proj)} against a typical ${fmt(avg)}.`)});
+    const judged=L.cycles.filter(x=>x.closed&&x.bill>0&&!(x.left>0&&(!x.due||x.due>=today))).slice(-6);
+    if(judged.length<2)return;
+    const miss=judged.filter(x=>x.left>0||x.status.k==='paid-late').length;
+    if(miss)out.push({w:90,h:insRow('warn','heart',`<b>${esc(L.card.name)}: ${miss} of your last ${judged.length} bills ${miss===1?'was':'were'} paid late or only in part.</b> Paying the full bill by the due date avoids interest and late fees.`)});
+    else out.push({w:18,h:insRow('good','heart',`<b>${esc(L.card.name)}: your last ${judged.length} bills were all paid in full and on time.</b> No interest paid. Keep that streak.`)});
   });
-  // Utilisation
-  Ls.forEach(L=>{const c=L.card;if(!(c.limit>0))return;const u=Math.round(Math.max(0,L.toPay)/c.limit*100);
-    if(u>=30)out.push({w:60+u/5,h:insRow(u>=50?'bad':'warn','heart',`<b>${esc(c.name)} is at ${u}% of its limit.</b> Keeping it under 30% helps your credit score. Paying ${fmt(Math.max(0,L.toPay)-c.limit*0.3)} before the statement date gets you there.`)});
+  // Heading for a bigger bill than usual
+  Ls.forEach(L=>{
+    const c=L.card,n=ccNow(L),cy=n.cur;
+    const w=cycleWindow(c,cy.ym),days=daysBetween(w.start,w.end)+1,gone=Math.min(days,Math.max(1,daysBetween(w.start,today)+1));
+    const usual=ccUsual(ccPastRows(L).filter(x=>x.tracked));
+    if(!usual||gone<5)return;
+    const proj=r2(cy.logged/gone*days+cy.emi),diff=proj-usual,rnd=v=>Math.round(v/100)*100;
+    if(diff>=Math.max(1000,usual*.15))out.push({w:80,h:insRow('warn','trend',`<b>${esc(c.name)} is heading for about ${fmt(rnd(proj))} this month</b>, around ${fmt(rnd(diff))} more than your usual bill of ${fmt(usual)}. ${days-gone} days left to slow down.`)});
+    else if(-diff>=Math.max(1000,usual*.15))out.push({w:28,h:insRow('good','trend',`<b>${esc(c.name)} is heading for a lighter bill</b>: about ${fmt(rnd(proj))} this month against your usual ${fmt(usual)}.`)});
   });
-  // EMIs on the cards and when they drop off
-  const rec=[];Ls.forEach(L=>recurringIn(L.rec,L.cur).forEach(r=>rec.push({...r,card:L.card.name})));
-  if(rec.length){
-    const emiTot=rec.reduce((s,r)=>s+r.amount,0);
-    const billsNow=Ls.reduce((s,L)=>{const cy=L.cycles.find(x=>x.isCur);return s+(cy?cy.spend:0)},0);
-    const ending=rec.filter(r=>r.end).sort((a,b)=>a.end.localeCompare(b.end));
-    let t=`<b>${fmt(emiTot)} a month of your card bills is fixed EMIs and subscriptions</b>${billsNow>0?' ('+pct(emiTot,billsNow)+'% of this cycle so far)':''}.`;
-    if(ending.length){const n=ending[0];t+=` Next to finish: ${esc(n.name)} on ${esc(n.card)} after ${esc(monthName(n.end))}, freeing ${fmt(n.amount)} a month.`}
-    out.push({w:40,h:insRow('info','pin',t)});
+  // Using a lot of the limit
+  Ls.forEach(L=>{const c=L.card;if(!(c.limit>0))return;const owed=Math.max(0,L.toPay);
+    if(owed>=c.limit*.3)out.push({w:70,h:insRow(owed>=c.limit*.5?'bad':'warn','heart',`<b>${esc(c.name)} is using ${fmt(owed)} of its ${fmt(c.limit)} limit.</b> Keeping it under ${fmt(c.limit*.3)} helps your credit score, so paying early is worth it.`)});
+  });
+  // Where the money went, as a share of this month's total
+  const top=pool.rows[0];
+  if(top&&T>0&&!top.emi)out.push({w:50,h:insRow('info','bag',`<b>${esc(top.name)} is your biggest card spend this month</b>: ${fmt(top.amt)}, ${share(top.amt)}.`)});
+  let big=null;pool.all.forEach(x=>{if(!big||x.e.amount>big.e.amount)big=x});
+  if(big&&T>0&&big.e.amount>=T*.25&&!(top&&!top.emi&&top.items.length===1&&top.items[0].e===big.e))out.push({w:45,h:insRow('warn','spark',`<b>One spend is ${pct(big.e.amount,T)}% of this month’s card spending</b>: ${fmt(big.e.amount)} on ${esc(big.c.name)} for ${esc(big.e.note||big.e.who)} (${esc(shortDate(big.e.date))}).`)});
+  if(pool.emi>0&&T>0){
+    const rec=[];Ls.forEach(L=>ccNow(L).recs.forEach(r=>rec.push({...r,card:L.card.name})));
+    const ending=rec.filter(r=>r.end).sort((a,b)=>a.end.localeCompare(b.end))[0];
+    out.push({w:top&&top.emi?52:40,h:insRow('info','pin',`<b>${fmt(pool.emi)} of it is EMIs and subscriptions</b>, ${share(pool.emi)}. They come back every month.${ending?` Next to finish: ${esc(ending.name)} on ${esc(ending.card)} after ${esc(monthName(ending.end))}, freeing ${fmt(ending.amount)} a month.`:''}`)});
   }
-  // Biggest category on cards this cycle
-  const cat={};let catTot=0;
-  Ls.forEach(L=>{const cy=L.cycles.find(x=>x.isCur);if(cy)cy.ch.forEach(e=>{cat[e.who]=(cat[e.who]||0)+(+e.amount||0);catTot+=(+e.amount||0)})});
-  const topCat=Object.entries(cat).sort((a,b)=>b[1]-a[1])[0];
-  if(topCat&&catTot>0)out.push({w:35,h:insRow('info','bag',`<b>${esc(topCat[0])} is your biggest card category this cycle</b>: ${fmt(topCat[1])}, ${pct(topCat[1],catTot)}% of everything charged.`)});
-  // Largest single charge this cycle
-  let big=null;Ls.forEach(L=>{const cy=L.cycles.find(x=>x.isCur);if(cy)cy.ch.forEach(e=>{if(!big||e.amount>big.e.amount)big={e,c:L.card.name}})});
-  if(big&&catTot>0&&big.e.amount>=catTot*0.25)out.push({w:30,h:insRow('warn','spark',`<b>One charge is ${pct(big.e.amount,catTot)}% of this cycle</b>: ${fmt(big.e.amount)} on ${esc(big.c)} for ${esc(big.e.note||big.e.who)} (${esc(shortDate(big.e.date))}).`)});
-  // Card bills against income last month
-  const lm=ymAdd(cm(),-1);
-  const incLM=LB.filter(e=>e.type==='income'&&e.date.startsWith(lm)).reduce((s,e)=>s+e.amount,0);
-  const billLM=Ls.reduce((s,L)=>{const cy=L.cycles.find(x=>x.ym===lm)||L.mk(lm,false);return s+cy.bill},0);
-  if(incLM>0&&billLM>0){const p=pct(billLM,incLM);out.push({w:p>40?55:25,h:insRow(p>40?'warn':'good','wallet',`<b>Card bills for ${esc(monShort(lm))} came to ${p}% of what you earned</b> that month (${fmt(billLM)} against ${fmt(incLM)} in).${p>40?' Worth watching, the healthy zone is under a third.':''}`)})}
-  // Payment record
-  Ls.forEach(L=>{const done=L.cycles.filter(x=>x.closed&&x.bill>0);if(done.length<2)return;const full=done.filter(x=>x.left<=0&&x.status.k!=='paid-late').length;
-    if(full===done.length)out.push({w:20,h:insRow('good','heart',`<b>${esc(L.card.name)}: paid in full and on time ${full} of ${done.length} bills.</b> No interest paid. Keep that streak.`)});
-    else out.push({w:50,h:insRow('warn','heart',`<b>${esc(L.card.name)}: ${full} of ${done.length} bills cleared in full on time.</b> Any balance carried on a card costs around 40% a year.`)});
-  });
-  // Card spend share of all spending this month
-  const tm=cm(),spendAll=LB.filter(e=>(e.type==='expense'||e.type==='fixed'||e.type==='payout')&&e.date.startsWith(tm)).reduce((s,e)=>s+e.amount,0);
-  const onCard=cardChargesInMonth(tm).total;
-  if(spendAll>0&&onCard>0)out.push({w:15,h:insRow('info','wallet',`<b>${pct(onCard,spendAll)}% of what you logged this month went on a card</b> (${fmt(onCard)} of ${fmt(spendAll)}).`)});
-  if(Ls.some(L=>!L.card.due))out.push({w:5,h:insRow('info','pin',`Add each card's statement and due day under <a onclick="openCardsManager()">Edit cards</a> to get exact cycles and due-date reminders.`)});
-  el.innerHTML=out.length?out.sort((a,b)=>b.w-a.w).slice(0,7).map(x=>x.h).join(''):'<div class="mini-empty">Log a few card charges and insights appear here.</div>';
+  if(out.length<2)out.push({w:1,h:insRow('info','spark','<b>Every amount on this page can be changed.</b> Tap a bill, this month’s spending or any past month to see what is in it and fix anything.')});
+  el.innerHTML=out.sort((a,b)=>b.w-a.w).slice(0,2).map(x=>x.h).join('');
 }
-function renderCardChart(Ls){
-  const foot=document.getElementById('cc-chart-foot');
-  const months=[];let ym=cm();for(let i=0;i<6;i++){months.unshift(ym);ym=ymAdd(ym,-1)}
-  const sets=Ls.map((L,i)=>{const col=cardColor(L.card)[0];return {label:L.card.name,data:months.map(m=>{const cy=m>=L.since?(L.cycles.find(x=>x.ym===m)||null):L.mk(m,false);return cy?cy.bill:0}),backgroundColor:col,borderRadius:3,stack:'b',maxBarThickness:46}});
-  const paid=months.map(m=>r2(Ls.reduce((s,L)=>s+CARDS.pays.filter(p=>!p.del&&p.card===L.card.id&&p.cycle===m).reduce((a,p)=>a+p.amount,0),0)));
-  sets.push({type:'line',label:'Paid',data:paid,borderColor:'#3E8E5C',backgroundColor:'#3E8E5C',pointRadius:3,borderWidth:2,tension:.3,stack:'p'});
-  MC('ch-cards',{type:'bar',data:{labels:months.map(monYY),datasets:sets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{callback:v=>fmtS(v)},grid:{color:'rgba(75,90,78,.14)'}}}}});
-  const tot=sets.slice(0,-1).reduce((s,d)=>s+d.data.reduce((a,b)=>a+b,0),0);
-  const closedN=months.length-1;
-  if(foot)foot.textContent=tot>0?'Bars are each cycle’s bill, the line is what was paid toward it. Six-month average bill across cards: '+fmt(sets.slice(0,-1).reduce((s,d)=>s+d.data.slice(0,closedN).reduce((a,b)=>a+b,0),0)/closedN)+'.':'Bills and payments fill this in as they come.';
+
+// ---- Where card money went: the top 3, as shares of this month's total ----
+function renderCardCats(pool){
+  const el=document.getElementById('cc-cats'),hint=document.getElementById('ccf-cats-hint');if(!el)return;
+  const T=pool.total,rows=pool.rows.slice(0,3),rest=pool.rows.slice(3),max=rows.length?rows[0].amt:0;
+  if(hint)hint.textContent=T>0?`Top ${rows.length} of the ${fmt(T)} spent on cards this month`:'Nothing spent on cards this month yet';
+  el.innerHTML=rows.length?`<p class="ccc-lede">Share of the <b>${fmt(T)}</b> spent on cards this month. Tap one to see every spend in it.</p>`+
+    rows.map((r,i)=>`<div class="rank-row ccc-row" role="button" tabindex="0" onclick="ccCatOpen(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ccCatOpen(${i})}">
+      <div class="rk-badge" style="background:${CC_COLORS[i%CC_COLORS.length]}">${i+1}</div>
+      <div class="rk-body"><div class="rk-head"><span>${esc(r.name)}</span><span>${fmt(r.amt)}</span></div>
+      <div class="rk-track"><div class="rk-fill" data-w="${max?Math.round(r.amt/max*100):0}" style="width:${CC_FOLD.cats?(max?Math.round(r.amt/max*100):0):0}%;background:${CC_COLORS[i%CC_COLORS.length]}"></div></div>
+      <div class="rk-sub">${pct(r.amt,T)}% of this month’s card spending${r.emi?' · comes back every month':' · '+r.items.length+' spend'+(r.items.length===1?'':'s')}</div></div>
+      <span class="ccc-go" aria-hidden="true">&rsaquo;</span></div>`).join('')+
+    (rest.length?`<div class="ccc-rest">Plus ${rest.length} smaller ${rest.length===1?'category':'categories'}, ${fmt(rest.reduce((s,r)=>s+r.amt,0))} together (${pct(rest.reduce((s,r)=>s+r.amt,0),T)}%).</div>`:'')
+    :'<div class="empty-state" style="padding:20px"><p>Nothing charged to a card this month yet.</p></div>';
 }
-function renderCardCats(Ls){
-  const el=document.getElementById('cc-cats'),lbl=document.getElementById('cc-cat-lbl');if(!el)return;
-  if(lbl)lbl.textContent='this cycle, all cards';
-  const cat={};let tot=0,emi=0;
-  Ls.forEach(L=>{const cy=L.cycles.find(x=>x.isCur);if(!cy)return;cy.ch.forEach(e=>{cat[e.who]=(cat[e.who]||0)+(+e.amount||0);tot+=(+e.amount||0)});emi+=cy.emi});
-  if(emi){cat['EMIs and subscriptions']=emi;tot+=emi}
-  const rows=Object.entries(cat).sort((a,b)=>b[1]-a[1]);
-  const max=rows.length?rows[0][1]:0;
-  el.innerHTML=rows.length?rows.map((r,i)=>`<div class="rank-row"><div class="rk-badge" style="background:${CC_COLORS[i%CC_COLORS.length]}">${i+1}</div><div class="rk-body"><div class="rk-head"><span>${esc(r[0])}</span><span>${fmt(r[1])}</span></div><div class="rk-track"><div class="rk-fill" style="width:${max?Math.round(r[1]/max*100):0}%;background:${CC_COLORS[i%CC_COLORS.length]}"></div></div><div class="rk-sub">${pct(r[1],tot)}% of card spend this cycle</div></div></div>`).join('')
-    :'<div class="empty-state" style="padding:20px"><p>Nothing charged to a card this cycle yet.</p></div>';
+function ccBars(){document.querySelectorAll('#cc-cats .rk-fill[data-w]').forEach(b=>{b.style.width=b.dataset.w+'%'})}
+function ccCatOpen(i){
+  const r=CC_POOL&&CC_POOL.rows[i];if(!r)return;
+  if(r.emi){ccFold('emis',true);setTimeout(()=>{const s=document.getElementById('ccf-emis');if(s)s.scrollIntoView({behavior:ccReduced()?'auto':'smooth',block:'start'})},120);return}
+  document.getElementById('ccl-title').textContent=r.name+' on cards this month';
+  document.getElementById('ccl-sub').innerHTML=`${fmt(r.amt)} across ${r.items.length} spend${r.items.length===1?'':'s'}, ${pct(r.amt,CC_POOL.total)}% of this month’s card spending. Tap any one to change it.`;
+  document.getElementById('ccl-list').innerHTML=r.items.slice().sort((a,b)=>b.e.date.localeCompare(a.e.date)).map(x=>`<div class="mini-row" style="cursor:pointer" role="button" tabindex="0" onclick="closeM('m-cclist');openEditEntry(${x.e.id})" onkeydown="if(event.key==='Enter'){closeM('m-cclist');openEditEntry(${x.e.id})}"><div class="mb"><div class="mn">${esc(x.e.note&&x.e.note.trim()?x.e.note:x.e.who)}</div><div class="ms">${esc(shortDate(x.e.date))} · ${esc(x.c.name)}</div></div><span class="amount neg">${fmt(x.e.amount)}</span></div>`).join('');
+  openM('m-cclist');
 }
+// ---- EMIs and subscriptions that land on a card every month ----
 function renderCardRecurring(cards){
-  const el=document.getElementById('cc-recurring');if(!el)return;
+  const el=document.getElementById('cc-recurring'),hint=document.getElementById('ccf-emis-hint');if(!el)return;
   const rows=[];
-  EMIS.forEach((e,i)=>{if(e&&e.card)rows.push({name:e.name,card:e.card,amt:+e.amount||0,end:e.end,since:e.cardSince,kind:'EMI',edit:`editEMI(${i})`,done:e.end&&mRem(e.end)!==null&&e.end<cm()})});
-  SUBS.forEach((s,i)=>{if(s&&s.card)rows.push({name:s.name,card:s.card,amt:+s.amount||0,end:null,since:s.cardSince,kind:'Subscription',edit:`editSub(${i})`,done:false})});
-  const live=rows.filter(r=>!r.done);
-  el.innerHTML=(live.length?live.sort((a,b)=>b.amt-a.amt).map(r=>`<div class="summary-row" style="align-items:center;cursor:pointer" onclick="${r.edit}"><span><strong>${esc(r.name)}</strong><span class="cc-pill">${esc(cardLabel(r.card))}</span><div class="cl-meta">${r.kind}${r.since?' · on the card since '+esc(monthName(r.since)):''}${r.end?' · ends '+esc(monthName(r.end)):''}</div></span><span class="amount">${fmt(r.amt)}</span></div>`).join('')+`<div class="summary-row total"><span>Every month on cards</span><span class="amount">${fmt(live.reduce((s,r)=>s+r.amt,0))}</span></div>`
+  EMIS.forEach((e,i)=>{if(e&&e.card)rows.push({name:e.name,card:e.card,amt:+e.amount||0,end:e.end,since:e.cardSince,day:clampDay(e.day),kind:'EMI',edit:`editEMI(${i})`,done:e.end&&mRem(e.end)!==null&&e.end<cm()})});
+  SUBS.forEach((s,i)=>{if(s&&s.card)rows.push({name:s.name,card:s.card,amt:+s.amount||0,end:null,since:s.cardSince,day:clampDay(s.day),kind:'Subscription',edit:`editSub(${i})`,done:false})});
+  const live=rows.filter(r=>!r.done),tot=live.reduce((s,r)=>s+r.amt,0);
+  if(hint)hint.textContent=live.length?`${fmt(tot)} every month, ${live.length} ${live.length===1?'item':'items'}`:'EMIs and subscriptions billed to a card';
+  el.innerHTML=(live.length?live.sort((a,b)=>b.amt-a.amt).map(r=>`<div class="summary-row cce-row" role="button" tabindex="0" onclick="${r.edit}" onkeydown="if(event.key==='Enter'){${r.edit}}"><span><strong>${esc(r.name)}</strong><span class="cc-pill">${esc(cardLabel(r.card))}</span><div class="cl-meta">${r.kind}${r.day?' · charges on the '+ordinal(r.day)+', next '+esc(shortDate(nextChargeDate(r.day))):' · <span class="cce-miss">no charge date yet</span>'}${r.end?' · ends '+esc(monthName(r.end)):''}</div></span><span class="amount">${fmt(r.amt)}</span></div>`).join('')+`<div class="summary-row total"><span>Every month on cards</span><span class="amount">${fmt(tot)}</span></div>`
     :'<div class="empty-state" style="padding:18px"><p>No EMIs or subscriptions are set to a card yet.</p></div>')+
-    `<div class="section-sub mt-12">Set any EMI or subscription to a card from the <a style="color:var(--blue);cursor:pointer;font-weight:650" onclick="switchPage('emis')">EMIs tab</a> and it is added to that card's bill every month by itself.</div>`;
+    `<div class="section-sub mt-12">Tap any row to change it, including the day it charges. Set an EMI or subscription to a card from the <a style="color:var(--blue);cursor:pointer;font-weight:650" onclick="switchPage('emis')">EMIs tab</a> and it is added to that card's bill every month by itself.</div>`;
 }
+
+// ---- Collapsible sections ----
+function ccPaintFold(k){
+  const sec=document.getElementById('ccf-'+k);if(!sec)return;
+  const open=!!CC_FOLD[k];
+  sec.classList.toggle('open',open);
+  const h=sec.querySelector('.ccf-head');if(h)h.setAttribute('aria-expanded',open?'true':'false');
+  const w=sec.querySelector('.ccf-wrap');if(w){if(open)w.removeAttribute('inert');else w.setAttribute('inert','')}
+}
+function ccFold(k,force){
+  if(!(k in CC_FOLD))return;
+  const open=force==null?!CC_FOLD[k]:!!force;
+  if(open===CC_FOLD[k])return;
+  CC_FOLD[k]=open;ccPaintFold(k);
+  sfx(open?'open':'close');
+  if(!open)return;
+  if(k==='cats'){const b=document.querySelectorAll('#cc-cats .rk-fill[data-w]');b.forEach(x=>{x.style.width='0%'});requestAnimationFrame(()=>requestAnimationFrame(ccBars))}
+}
+function ccOpenPast(id){
+  const was=CC_FOLD.past;
+  ccFold('past',true);
+  setTimeout(()=>{
+    const el=document.getElementById('ccp-'+id)||document.getElementById('ccf-past');if(!el)return;
+    el.scrollIntoView({behavior:ccReduced()?'auto':'smooth',block:'start'});
+    el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+  },was?30:380);
+}
+
+// ---- Celebrations: a bill marked paid, or the last one cleared ----
+function ccCelebrate(fx){
+  if(!fx||ccReduced())return;
+  const tile=fx.card?document.querySelector(`.cct[data-cc="${fx.card}"]`):null;
+  const anchor=(tile&&tile.querySelector('.cct-act'))||document.getElementById('cc-hero');
+  if(!anchor)return;
+  const r=anchor.getBoundingClientRect();
+  if(r.bottom<0||r.top>innerHeight)return;
+  const cx=r.left+Math.min(r.width*.3,150),cy=r.top+r.height/2;
+  const layer=document.createElement('div');layer.className='cc-confetti';document.body.appendChild(layer);
+  const cols=['#D98A2B','#E8B25C','#3E8E5C','#7FD6A1','#3E7D74','#F1F4EC'];
+  const N=fx.clear?46:28;
+  for(let i=0;i<N;i++){
+    const p=document.createElement('i');
+    p.style.background=cols[i%cols.length];p.style.left=cx+'px';p.style.top=cy+'px';
+    if(i%3===0)p.style.borderRadius='50%';
+    layer.appendChild(p);
+    const a=Math.random()*Math.PI*2,d=70+Math.random()*(fx.clear?200:130);
+    const dx=Math.cos(a)*d,dy=Math.sin(a)*d*.75-60-Math.random()*60,rot=(Math.random()*720-360)|0;
+    try{p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) rotate(${rot}deg) scale(.9)`,opacity:1,offset:.55},{transform:`translate(calc(-50% + ${dx*1.1}px),calc(-50% + ${dy+120}px)) rotate(${rot*1.4}deg) scale(.6)`,opacity:0}],{duration:1100+Math.random()*500,easing:'cubic-bezier(.2,.7,.3,1)',fill:'forwards'})}catch(e){}
+  }
+  setTimeout(()=>{if(layer.parentNode)layer.parentNode.removeChild(layer)},1800);
+}
+// A light that follows the pointer across a card face
+(function(){
+  const host=document.getElementById('cc-cards');
+  if(!host||!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  host.addEventListener('pointermove',e=>{
+    const f=e.target.closest&&e.target.closest('.cct-face');if(!f)return;
+    const r=f.getBoundingClientRect();
+    f.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+    f.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+  });
+})();
+// ============ MATCH YOUR BANK ============
+// Your statement is the source of truth. This sheet takes what the bank app shows (the dates, each
+// month's bill, whether it was paid, and what is unbilled right now) and makes the tracker agree.
+// Bill amounts typed here sit on top of the logbook, which is never touched. Payments are only
+// added, or set aside where the bank says they are wrong (set aside means kept in the data,
+// just not counted). A backup is saved first and one tap undoes the lot.
+const CC_WARN='<svg viewBox="0 0 24 24" class="cc-tick cc-warn"><circle cx="12" cy="12" r="9"/><path d="M12 7.6v5.2M12 16.4v.1"/></svg>';
+
+function ccPresetPending(){return null}
+// The last few bills as the tracker has them now, for a card without a preset
+function matchRowsFor(c){
+  const L=cardLedger(c),out=[];
+  for(let k=1;k<=6;k++){
+    const ym=ymAdd(L.cur,-k),cy=ym>=L.since?(L.cycles.find(x=>x.ym===ym)||L.mk(ym,true)):L.mk(ym,false);
+    if(!(cy.bill>0)&&cy.ov==null&&!(cy.paid>0))continue;
+    const amt=cy.ov!=null?cy.ov:cy.bill,paid=cy.tracked?cy.left<=0:cy.paid>=cy.bill;
+    out.push({ym,amt,paid,note:'',fromLog:cy.ov==null,orig:amt,origPaid:paid});
+  }
+  return out;
+}
+function livePaysFor(cid,ym){return CARDS.pays.filter(p=>p.card===cid&&p.cycle===ym&&!p.del&&(+p.amount||0)!==0).sort((a,b)=>b.date.localeCompare(a.date)||(+b.u||0)-(+a.u||0))}
+function openMatch(focusId){
+  const cards=activeCards();
+  if(!cards.length){toast('Add a card first',null,null,null,2400);return}
+  const pre=ccPresetPending();
+  MATCH={preset:null,cards:cards.map(c=>{
+    const p=pre&&pre.cards.find(x=>x.card.id===c.id);
+    const b=ccBankNow(cardLedger(c));
+    const d=p?{id:c.id,stmt:p.stmt||c.stmt||0,due:p.due||c.due||0,unb:p.unb!=null?p.unb:(b?b.amt:''),hint:p.hint,rows:p.rows.map(r=>({...r})),fromPreset:true}
+      :{id:c.id,stmt:c.stmt||0,due:c.due||0,unb:b?b.amt:'',hint:'',rows:matchRowsFor(c),fromPreset:false};
+    d.rows.forEach(r=>{const P=r2(livePaysFor(c.id,r.ym).reduce((s,x)=>s+(+x.amount||0),0));r.fix=true;r.P=P});
+    return d;
+  })};
+  if(focusId){const i=MATCH.cards.findIndex(d=>d.id===focusId);if(i>0)MATCH.cards.unshift(MATCH.cards.splice(i,1)[0])}
+  matchPaint();openM('m-ccmatch');
+}
+function matchDays(sel,none){return `<option value="0">${none}</option>`+Array.from({length:31},(_,i)=>`<option value="${i+1}"${+sel===i+1?' selected':''}>${ordinal(i+1)}${i===30?' (or last day)':''}</option>`).join('')}
+function matchPaint(){
+  const host=document.getElementById('ccx-body');if(!host||!MATCH)return;
+  host.innerHTML=MATCH.cards.map((d,ci)=>{
+    const c=cardById(d.id);if(!c)return '';
+    const col=cardColor(c),fake={stmt:clampDay(d.stmt),due:clampDay(d.due)};
+    const rows=d.rows.map((r,ri)=>{
+      const made=fake.stmt?shortDate(r.ym+'-'+pad2(closeDay(fake,r.ym))):monthName(r.ym).split(' ')[0]+' spends';
+      const due=fake.due?dueDateFor(fake,r.ym):null;
+      let note=r.note?`<div class="ccx-note">${CC_WARN}<span>${esc(r.note)}</span></div>`:'';
+      const amt=+r.amt||0;
+      if(r.paid&&r.P>0&&r.P<amt)note+=`<div class="ccx-note"><span>${fmt(r.P)} is already recorded for this bill, so only ${fmt(amt-r.P)} is added.</span></div>`;
+      if(r.paid&&r.P>amt&&amt>0)note+=`<div class="ccx-note"><label><input type="checkbox" ${r.fix?'checked':''} onchange="matchRead();MATCH.cards[${ci}].rows[${ri}].fix=this.checked;matchLive()">${fmt(r.P)} is recorded as paid, more than the ${fmt(amt)} bill. Match the bank: set the extra aside so it does not come off the next bill.</label></div>`;
+      if(!r.paid&&r.P>0)note+=`<div class="ccx-note"><label><input type="checkbox" ${r.fix?'checked':''} onchange="matchRead();MATCH.cards[${ci}].rows[${ri}].fix=this.checked;matchLive()">${fmt(r.P)} is recorded as paid for this bill, but you marked it not paid. Set that payment aside.</label></div>`;
+      if(r.fromLog&&!r.paid)note+=`<div class="ccx-note"><span>Worked out from your logbook. Type the amount on your statement.</span></div>`;
+      return `<div class="ccx-row${r.paid?'':' is-due'}">
+        <div class="ccx-m"><b>${esc(monthName(r.ym))}</b><small>Bill made ${esc(made)}${due?' · due '+esc(shortDate(due)):''}</small></div>
+        <div class="ccx-amt"><span class="rs">₹</span><input type="number" inputmode="decimal" min="0" value="${r.amt===''||r.amt==null?'':esc(r.amt)}" data-x="${ci}:r:${ri}" placeholder="Bill amount" aria-label="${esc(monthName(r.ym))} bill amount" oninput="matchRead();matchLive()"></div>
+        <div class="ccx-seg" role="group" aria-label="Was it paid?"><button type="button" class="${r.paid?'':'on due'}" onclick="matchSet(${ci},${ri},0)">Not paid yet</button><button type="button" class="${r.paid?'on paid':''}" onclick="matchSet(${ci},${ri},1)">Paid</button></div>
+        <button type="button" class="icon-btn ccx-x" title="Leave this month out" aria-label="Leave ${esc(monthName(r.ym))} out" onclick="matchRead();MATCH.cards[${ci}].rows.splice(${ri},1);matchPaint()">&#10005;</button>
+        ${note}
+      </div>`;
+    }).join('');
+    return `<section class="ccx-card" data-ccx="${esc(d.id)}">
+      <div class="ccx-head" style="--c1:${col[0]};--c2:${col[1]}"><b>${esc(c.name)}</b>${d.fromPreset?'<span class="ccx-tag">Filled in from your message</span>':''}</div>
+      <div class="ccx-in">
+        <div class="ccx-dates">
+          <div class="form-group"><label>Statement date</label><select data-x="${ci}:stmt" onchange="matchRead();matchPaint()">${matchDays(d.stmt,'Choose')}</select></div>
+          <div class="form-group"><label>Due date</label><select data-x="${ci}:due" onchange="matchRead();matchPaint()">${matchDays(d.due,'Choose')}</select></div>
+          <div class="form-group"><label>Unbilled now, per bank (₹)</label><input type="number" inputmode="decimal" min="0" data-x="${ci}:unb" value="${d.unb===''||d.unb==null?'':esc(d.unb)}" placeholder="Optional" oninput="matchRead();matchLive()"></div>
+        </div>
+        ${d.hint?`<p class="ccx-hint">${esc(d.hint)}</p>`:''}
+        <div class="ccx-rows">${rows||'<div class="ccx-row"><div class="ccx-m"><small>No months yet. Add one below.</small></div></div>'}</div>
+        <button type="button" class="btn btn-secondary btn-xs ccx-more" onclick="matchAdd(${ci})">+ Add ${d.rows.length?'an older':'a'} month</button>
+        <div class="ccx-res" id="ccx-res-${ci}"></div>
+      </div>
+    </section>`;
+  }).join('');
+  matchPaintRes();
+}
+function matchRead(){
+  if(!MATCH)return;
+  document.querySelectorAll('#ccx-body [data-x]').forEach(el=>{
+    const p=el.dataset.x.split(':'),d=MATCH.cards[+p[0]];if(!d)return;
+    if(p[1]==='stmt'||p[1]==='due')d[p[1]]=clampDay(el.value);
+    else if(p[1]==='unb')d.unb=el.value===''?'':+el.value;
+    else if(p[1]==='r'){const r=d.rows[+p[2]];if(r)r.amt=el.value===''?'':+el.value}
+  });
+}
+function matchSet(ci,ri,paid){matchRead();const r=MATCH.cards[ci]&&MATCH.cards[ci].rows[ri];if(!r)return;r.paid=!!paid;matchPaint()}
+function matchAdd(ci){
+  matchRead();const d=MATCH.cards[ci];if(!d)return;
+  const c=cardById(d.id);if(!c)return;
+  const oldest=d.rows.length?d.rows.map(r=>r.ym).sort()[0]:cardLedger(c).cur;
+  const ym=ymAdd(oldest,-1);
+  const P=r2(livePaysFor(d.id,ym).reduce((s,x)=>s+(+x.amount||0),0));
+  d.rows.push({ym,amt:'',paid:true,note:'',fix:true,P});
+  matchPaint();
+  const ins=document.querySelectorAll(`#ccx-body [data-x^="${ci}:r:"]`);if(ins.length)ins[ins.length-1].focus();
+}
+function matchLive(){clearTimeout(_matchT);_matchT=setTimeout(matchPaintRes,140)}
+// Applies the sheet to a copy of the card data (or the real thing). Returns what changed, for undo.
+function matchMutate(T,M,now){
+  const log={cards:[],bills:[],added:[],aside:[]},today=td();
+  T.bills=T.bills||{};
+  M.cards.forEach(d=>{
+    const c=T.list.find(x=>x.id===d.id);if(!c)return;
+    const before=JSON.stringify(c),old=JSON.parse(before);
+    const rows=[];const seen={};
+    d.rows.forEach(r=>{
+      if(!(isMonthStr(r.ym)&&r.amt!==''&&r.amt!=null&&isFinite(+r.amt)&&+r.amt>=0)||seen[r.ym])return;
+      // A row the tracker filled in from the logbook and you left alone stays exactly as it was
+      if(r.fromLog&&r2(r.amt)===r2(r.orig)&&!!r.paid===!!r.origPaid)return;
+      seen[r.ym]=1;rows.push(r);
+    });
+    if(d.stmt>=1)c.stmt=clampDay(d.stmt);
+    if(d.due>=1)c.due=clampDay(d.due);
+    if(d.unb!==''&&d.unb!=null&&isFinite(+d.unb)){c.bankUnbilled=r2(d.unb);c.bankUnbilledOn=today}
+    else{delete c.bankUnbilled;delete c.bankUnbilledOn}
+    // Months typed back to back are tracked from the first one, so the history stays one ledger
+    if(rows.length){
+      // Only when that run reaches the months already tracked, so no untouched month is pulled in
+      const set=new Set(rows.map(r=>r.ym)),newest=rows.map(r=>r.ym).sort().pop();let start=newest;
+      while(set.has(ymAdd(start,-1)))start=ymAdd(start,-1);
+      if(!isMonthStr(c.since)||(c.since>start&&newest>=ymAdd(c.since,-1)))c.since=start;
+    }
+    if(JSON.stringify(c)!==before){c.u=now;log.cards.push(old)}
+    T.bills[c.id]=T.bills[c.id]||{};
+    rows.forEach(r=>{
+      const amt=r2(r.amt);
+      const live=T.pays.filter(p=>p.card===c.id&&p.cycle===r.ym&&!p.del&&(+p.amount||0)!==0).sort((a,b)=>b.date.localeCompare(a.date)||(+b.u||0)-(+a.u||0));
+      let P=r2(live.reduce((s,p)=>s+(+p.amount||0),0)),bill=amt;
+      const setAside=p=>{p.del=true;p.u=now;log.aside.push(p.id);P=r2(P-(+p.amount||0))};
+      if(r.paid){
+        if(P>amt){if(r.fix){for(const p of live){if(P<=amt)break;setAside(p)}}else bill=P}
+        if(P<amt){
+          const due=dueDateFor(c,r.ym);let date=due||(ymAdd(r.ym,1)+'-05');if(date>today)date=today;
+          const p={id:cardPayId(),card:c.id,cycle:r.ym,amount:r2(amt-P),date,note:'Matched to your bank statement',grp:'m'+now.toString(36),u:now,del:false};
+          T.pays.push(p);log.added.push(p.id);
+        }
+      }else if(P>0&&r.fix)live.forEach(setAside);
+      const cur=T.bills[c.id][r.ym];
+      if(!cur||cur.amt==null||r2(cur.amt)!==bill){log.bills.push({cid:c.id,ym:r.ym,old:cur?{...cur}:null});T.bills[c.id][r.ym]={amt:bill,u:now}}
+    });
+  });
+  return log;
+}
+// What each card will look like after applying, worked out on a copy
+function matchPreview(){
+  const out={};if(!MATCH)return out;
+  const clone=JSON.parse(JSON.stringify(CARDS));
+  matchMutate(clone,MATCH,Date.now());
+  const real=CARDS;
+  try{
+    CARDS=normCards(clone);
+    MATCH.cards.forEach(d=>{const c=cardById(d.id);if(!c)return;const L=cardLedger(c);out[d.id]={L,st:ccStatus(L),now:ccNow(L),bank:ccBankNow(L)}});
+  }finally{CARDS=real}
+  return out;
+}
+function matchPaintRes(){
+  if(!MATCH)return;
+  let pv={};try{pv=matchPreview()}catch(e){console.error('Match preview failed',e)}
+  MATCH.cards.forEach((d,ci)=>{
+    const el=document.getElementById('ccx-res-'+ci),r=pv[d.id];if(!el||!r)return;
+    const c=cardById(d.id),name=c?esc(c.name):'This card';
+    const expect=r2(d.rows.filter(x=>!x.paid&&x.amt!==''&&isFinite(+x.amt)).reduce((s,x)=>s+(+x.amt||0),0));
+    if(!(d.stmt>=1)||!(d.due>=1)){el.innerHTML=`<span class="bad" style="margin:0">Pick the statement date and due date for ${name} first. Without them the tracker cannot tell which spends are already on a bill.</span>`;return}
+    let h='After applying: ';
+    if(r.st.k==='red'||r.st.k==='amber')h+=`<b>${fmt(r.L.dueNow)} to pay</b>${r.st.due?', due '+esc(niceDate(r.st.due))+' ('+esc(r.st.t.toLowerCase())+')':''}.`;
+    else h+=`<span class="good">nothing to pay${r.st.k==='green'?', the last bill is paid':''}</span>.`;
+    const paidN=d.rows.filter(x=>x.paid&&x.amt!=='').length;
+    if(paidN)h+=` ${paidN} past ${paidN===1?'bill':'bills'} marked paid.`;
+    h+=` This month so far: ${fmt(r.now.logged)} logged`+(r.now.emi?` plus ${fmt(r.now.emi)} of EMIs`:'')+'.';
+    if(r.bank)h+=' '+ccBankTxt(r.bank,r.now.logged);
+    if(r2(r.L.dueNow)!==expect){
+      const notMade=d.rows.some(x=>!x.paid&&x.ym>=r.L.cur);
+      h+=`<span class="bad">You marked ${fmt(expect)} as not paid, but the tracker would show ${fmt(r.L.dueNow)}. `+(notMade?`With a statement date of the ${ordinal(d.stmt)}, that bill is not made yet. Check the date.`:`Another month it counts is not fully paid. Add that month here to settle it.`)+'</span>';
+    }
+    el.innerHTML=h;
+  });
+}
+async function matchApply(){
+  if(MATCH_BUSY||!MATCH)return;
+  matchRead();
+  const miss=MATCH.cards.findIndex(d=>d.rows.some(r=>r.amt!==''&&r.amt!=null)&&(!(d.stmt>=1)||!(d.due>=1)));
+  if(miss>=0){
+    const d=MATCH.cards[miss],c=cardById(d.id);
+    const s=document.querySelector(`#ccx-body [data-x="${miss}:${d.stmt>=1?'due':'stmt'}"]`);
+    if(s){const g=s.closest('.form-group');g.classList.remove('need');void g.offsetWidth;g.classList.add('need');s.scrollIntoView({block:'center',behavior:ccReduced()?'auto':'smooth'});s.focus()}
+    toast('Pick the statement date and due date for '+(c?c.name:'this card'),'Both are printed on its statement',null,null,4200);return;
+  }
+  MATCH_BUSY=true;const go=document.getElementById('ccx-go');if(go){go.disabled=true;go.textContent='Saving a backup first…'}
+  try{
+    // Catch up with the cloud, so anything another device recorded is counted before topping up
+    if(_supaOn()&&_syncReady){try{await _withTimeout(_loadAllFromSupabase(),8000)}catch(e){}}
+    try{await _withTimeout(bkSave('Before matching your cards to your bank','event'),5000)}catch(e){console.warn('Backup before matching failed',e)}
+    const now=Date.now(),presetWas=UI.ccPreset,dueBefore=ccDueAll();
+    const log=matchMutate(CARDS,MATCH,now);
+    CARDS=normCards(CARDS);S(K.cards,CARDS);
+    if(MATCH.preset){UI.ccPreset=MATCH.preset;S(K.ui,UI)}
+    const n=log.bills.length,a=log.added.length,s=log.aside.length;
+    closeM('m-ccmatch');MATCH=null;
+    CC_FX={match:true};renderAll();sfx(ccDueAll()<=0&&dueBefore>0?'goal':'win');
+    toast('Your cards now match your bank',[n?n+' '+(n===1?'bill':'bills')+' set':'',a?a+' '+(a===1?'payment':'payments')+' added':'',s?s+' set aside':''].filter(Boolean).join(' · ')||'Details saved','Undo',()=>matchUndo(log,presetWas),12000);
+  }catch(e){console.error('Match failed',e);toast('That did not save','Nothing was changed. Try again.',null,null,5000)}
+  finally{MATCH_BUSY=false;if(go){go.disabled=false;go.textContent='Apply to my cards'}}
+}
+function matchUndo(log,presetWas){
+  const t=Date.now();
+  log.cards.forEach(old=>{const c=CARDS.list.find(x=>x.id===old.id);if(!c)return;Object.keys(c).forEach(k=>{delete c[k]});Object.assign(c,old,{u:t})});
+  log.bills.forEach(b=>{CARDS.bills[b.cid]=CARDS.bills[b.cid]||{};CARDS.bills[b.cid][b.ym]=b.old?{...b.old,u:t}:{amt:null,u:t}});
+  const add=new Set(log.added),aside=new Set(log.aside);
+  CARDS.pays.forEach(p=>{if(add.has(p.id)){p.del=true;p.u=t}else if(aside.has(p.id)){p.del=false;p.u=t}});
+  S(K.cards,CARDS);
+  if(presetWas===undefined)delete UI.ccPreset;else UI.ccPreset=presetWas;
+  S(K.ui,UI);renderAll();toast('Put back the way it was','A copy of the matched version is in Backups',null,null,3200);
+}
+
+// ============ YOUR CARD STATEMENTS, SAVED ============
+// What you sent on 28 Sep 2026. Both cards: the bill covers the 15th of last month to the 15th of
+// this month, and it is due on the 5th. Every statement below was paid in full except September,
+// which is what you owe now. This is written into your card data once, by itself, the first time
+// this version opens after a successful cloud sync. A backup is taken first. It runs once across
+// every device (the flag syncs with your settings), and it never deletes anything: a payment that
+// disagrees with the statement is set aside, which keeps it in your data without counting it.
+const CC_FIX={id:'stmts-2026-09-28',on:'2026-09-28',cards:[
+  {id:'hdfc',match:/hdfc/i,stmt:15,due:5,last4:'0071',network:'visa',unbilled:0,unpaid:['2026-09'],
+   bills:{'2025-11':7270,'2025-12':3990,'2026-01':3580,'2026-02':2770,'2026-03':2920,'2026-04':3690,'2026-05':3210,'2026-06':9720,'2026-07':3460,'2026-08':6750,'2026-09':16112}},
+  {id:'sbi',match:/\bsbi\b/i,stmt:15,due:5,last4:'6483',network:'mastercard',unbilled:11100,unpaid:['2026-09'],
+   bills:{'2026-04':20300,'2026-05':45100,'2026-06':31300,'2026-07':11600,'2026-08':30500,'2026-09':25046}}
+]};
+function ccFixCard(T,f){return T.list.find(x=>x.id===f.id&&!x.archived)||T.list.find(x=>!x.archived&&f.match.test(x.name||''))||null}
+function ccFixMutate(T,now){
+  const log={cards:[],bills:[],added:[],aside:[],revived:[]},today=td();
+  T.bills=T.bills||{};
+  CC_FIX.cards.forEach(f=>{
+    const c=ccFixCard(T,f);if(!c)return;
+    const before=JSON.stringify(c),old=JSON.parse(before),months=Object.keys(f.bills).sort();
+    c.stmt=f.stmt;c.due=f.due;c.last4=f.last4;c.network=f.network;
+    c.bankUnbilled=f.unbilled;c.bankUnbilledOn=CC_FIX.on;
+    if(!isMonthStr(c.since)||c.since>months[0])c.since=months[0];
+    if(JSON.stringify(c)!==before){c.u=now;log.cards.push(old)}
+    T.bills[c.id]=T.bills[c.id]||{};
+    months.forEach(ym=>{
+      const amt=r2(f.bills[ym]),paid=f.unpaid.indexOf(ym)<0,fid='fx-'+c.id+'-'+ym;
+      const live=T.pays.filter(p=>p.card===c.id&&p.cycle===ym&&!p.del&&(+p.amount||0)!==0);
+      const P=r2(live.reduce((s,p)=>s+(+p.amount||0),0));
+      const aside=p=>{p.del=true;p.u=Math.max(now,(+p.u||0)+1);log.aside.push(p.id)};
+      if(paid){
+        // Paid in full: one payment of exactly the statement amount. What is already there stays if it adds up.
+        if(Math.abs(P-amt)>=1){
+          live.filter(p=>p.id!==fid).forEach(aside);
+          let date=dueDateFor(c,ym)||(ymAdd(ym,1)+'-05');if(date>today)date=today;
+          const ex=T.pays.find(p=>p.id===fid);
+          if(ex){log.revived.push({...ex});Object.assign(ex,{card:c.id,cycle:ym,amount:amt,date,del:false,u:Math.max(now,(+ex.u||0)+1)})}
+          else{T.pays.push({id:fid,card:c.id,cycle:ym,amount:amt,date,note:'From your statement',grp:'fx-'+c.id,u:now,del:false});log.added.push(fid)}
+        }
+      }else{
+        // Not paid yet: anything recorded against it on or before the day you sent this is set aside.
+        // A payment made after that is a real one, so it stays.
+        live.filter(p=>p.date<=CC_FIX.on).forEach(aside);
+      }
+      const cur=T.bills[c.id][ym];
+      if(!cur||cur.amt==null||r2(cur.amt)!==amt){log.bills.push({cid:c.id,ym,old:cur?{...cur}:null});T.bills[c.id][ym]={amt,u:now}}
+    });
+  });
+  return log;
+}
+const CC_BOOT=Date.now();let _ccFixBusy=false;
+function ccFixDone(){return !!(UI&&(UI.ccFix===CC_FIX.id||UI.ccFix==='x:'+CC_FIX.id))}
+async function ccRunFix(){
+  if(_ccFixBusy||ccFixDone()||!_LS_OK)return;
+  if(!CC_FIX.cards.some(f=>ccFixCard(CARDS,f)))return;
+  // Only on fresh data: after a cloud pull that finished in this session, or when there is no cloud
+  if(_supaOn()&&!(_syncReady&&(+META.pulledAt||0)>=CC_BOOT&&!_pulling))return;
+  _ccFixBusy=true;
+  try{
+    try{await _withTimeout(bkSave('Before saving your card statements','event'),5000)}catch(e){console.warn('Backup before statements failed',e)}
+    if(ccFixDone())return;
+    const now=Date.now(),log=ccFixMutate(CARDS,now);
+    CARDS=normCards(CARDS);S(K.cards,CARDS);
+    UI.ccFix=CC_FIX.id;S(K.ui,UI);
+    const changed=!!(log.cards.length||log.bills.length||log.added.length||log.aside.length);
+    if(changed&&ccPageOn())CC_FX={match:true};
+    renderAll();
+    if(changed){
+      const owe=CC_FIX.cards.map(f=>{const c=ccFixCard(CARDS,f);return c?c.name+' '+fmt(f.bills[f.unpaid[0]]):''}).filter(Boolean).join(' and ');
+      toast('Your card statements are saved',owe+' to pay by the 5th, plus every past statement','Show me',()=>{switchPage('cards');setTimeout(()=>{ccFold('past',true)},300)},14000);
+      sfx('goal');
+    }
+  }catch(e){console.error('Saving statements failed',e)}
+  finally{_ccFixBusy=false}
+}
+setInterval(ccRunFix,1500);
+
+// ============ STATEMENTS CHART ============
+// Every month's statement, on every card, from the first one on record. This month's spending so
+// far sits at the end in a lighter shade, so you can see how it is shaping up against the rest.
+function ccChartData(Ls){
+  const by={},set=new Set();
+  Ls.forEach(L=>{by[L.card.id]={};ccPastRows(L).forEach(cy=>{if(cy.bill>0){by[L.card.id][cy.ym]=cy.bill;set.add(cy.ym)}})});
+  let months=[...set].sort();
+  if(months.length){
+    const out=[];for(let ym=months[0],g=0;ym<=months[months.length-1]&&g<36;ym=ymAdd(ym,1),g++)out.push(ym);
+    months=out.slice(-24);
+  }
+  return {by,months};
+}
+const CC_TOTALS={id:'ccTotals',afterDatasetsDraw(ch){
+  const ctx=ch.ctx,n=ch.data.labels.length;ctx.save();
+  ctx.font='600 10.5px "Space Grotesk",system-ui,sans-serif';ctx.fillStyle=readVar('--txt-2','#4B5A4E');ctx.textAlign='center';
+  for(let i=0;i<n;i++){let tot=0,top=Infinity,x=0;
+    ch.data.datasets.forEach((d,di)=>{const m=ch.getDatasetMeta(di);if(!ch.isDatasetVisible(di))return;const v=+d.data[i]||0;tot+=v;const el=m.data[i];if(el&&v>0){top=Math.min(top,el.y);x=el.x}});
+    if(tot>0&&isFinite(top))ctx.fillText(fmtS(tot),x,top-6);
+  }
+  ctx.restore();
+}};
+function renderCardChart(Ls,animate){
+  const box=document.getElementById('cc-chart'),foot=document.getElementById('cc-chart-foot'),sum=document.getElementById('cc-chart-sum');
+  if(!box)return;
+  const {by,months}=ccChartData(Ls);
+  if(!months.length){box.style.display='none';if(CI['ch-cards']){CI['ch-cards'].destroy();delete CI['ch-cards']}return}
+  box.style.display='';
+  // This month so far, one bar per card, labelled as unfinished
+  const curYm=Ls.reduce((m,L)=>L.cur>m?L.cur:m,'');
+  const labels=months.map(monYY).concat([monShort(curYm)+' so far']);
+  const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`};
+  const cards=Ls.filter(L=>months.some(m=>by[L.card.id][m])||ccNow(L).spend>0);
+  const sets=cards.map(L=>{const col=cardColor(L.card)[0];return {label:L.card.name,
+    data:months.map(m=>by[L.card.id][m]||0).concat([ccNow(L).spend]),
+    backgroundColor:months.map(()=>col).concat([hexA(col,.32)]),borderColor:months.map(()=>col).concat([col]),
+    borderWidth:months.map(()=>0).concat([1.5]),borderRadius:3,stack:'b',maxBarThickness:40}});
+  MC('ch-cards',{type:'bar',data:{labels,datasets:sets},plugins:[CC_TOTALS],
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:16}},animation:animate&&!ccReduced()?{duration:900,easing:'easeOutQuart'}:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y),footer:items=>'Total: '+fmt(items.reduce((s,x)=>s+x.parsed.y,0))}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:0,autoSkip:true,autoSkipPadding:6}},y:{stacked:true,beginAtZero:true,ticks:{callback:v=>fmtS(v)},grid:{color:'rgba(75,90,78,.14)'}}}}});
+  const tots=months.map(m=>cards.reduce((s,L)=>s+(by[L.card.id][m]||0),0));
+  const withBills=tots.filter(v=>v>0),avg=withBills.length?withBills.reduce((a,b)=>a+b,0)/withBills.length:0;
+  const hi=tots.reduce((b,v,i)=>v>b.v?{v,i}:b,{v:0,i:-1});
+  if(sum)sum.innerHTML=`<b>${fmt(withBills.reduce((a,b)=>a+b,0))}</b> across ${withBills.length} ${withBills.length===1?'statement month':'statement months'}`;
+  if(foot)foot.textContent=`Each bar is one month’s statements, all cards stacked. Your usual month is about ${fmt(avg)}${hi.i>=0?', and the highest was '+monthName(months[hi.i])+' at '+fmt(hi.v):''}. The last bar is this month so far, not billed yet.`;
+}
+
+// ============ EXPORT ============
+// Three ways out: a report that is pleasant to read and print, spreadsheets for Excel or Google
+// Sheets, and the backup file that restores everything. Exporting never changes any data.
+function openExport(){closeRail();openM('m-export')}
+function ccDownload(text,name,type){
+  const blob=new Blob([text],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),6000);
+}
+function csvCell(v){v=v==null?'':String(v);return /[",\n\r]/.test(v)||/^[=+\-@]/.test(v)?'"'+(/^[=+\-@]/.test(v)?"'":'')+v.replace(/"/g,'""')+'"':v}
+function csvOf(rows){return '﻿'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')}
+function exportLogbookAll(){
+  if(!LB.length){toast('Nothing logged yet',null,null,null,2600);return}
+  const typeName={expense:'Expense',fixed:'Fixed cost',payout:'Agency cost',income:'Income',investment:'Investment'};
+  const rows=[['Date','Month','Type','Category','Note','Amount (₹)','In or out','Paid with','Foreign currency','Foreign amount','Rate']];
+  LB.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id).forEach(e=>{
+    rows.push([e.date,monthName(e.date.slice(0,7)),typeName[e.type]||e.type,e.who||'',e.note||'',r2(e.amount),e.type==='income'?'In':'Out',
+      (e.card||e.cc)?entryCardName(e):'Bank / UPI',e.fx?(e.fxCur||'USD'):'',e.fx?(e.fxAmt||0):'',e.fx?(e.fxRate||0):'']);
+  });
+  ccDownload(csvOf(rows),`logbook_all_${td()}.csv`,'text/csv;charset=utf-8');
+  sfx('save');toast('Logbook exported',LB.length+' entries, newest first',null,null,3200);
+}
+function exportStatementsCSV(){
+  const rows=[['Card','Statement month','Bill made on','Due on','Bill (₹)','Paid (₹)','Last paid on','Status','Source']];
+  let n=0;
+  CARDS.list.forEach(c=>{
+    const L=cardLedger(c);
+    ccPastRows(L).forEach(cy=>{n++;
+      rows.push([c.name+(c.last4?' ••'+c.last4:''),monthName(cy.ym),cycleWindow(c,cy.ym).end,cy.due||'',r2(cy.bill),r2(cy.paid),cy.ps.length?cy.ps[cy.ps.length-1].date:'',cy.status.t,cy.ov!=null?'Statement':'Logbook']);
+    });
+  });
+  if(!n){toast('No statements yet',null,null,null,2600);return}
+  ccDownload(csvOf(rows),`card_statements_${td()}.csv`,'text/csv;charset=utf-8');
+  sfx('save');toast('Statements exported',n+' months across your cards',null,null,3200);
+}
+function exportReport(){
+  let html;
+  try{html=buildReport()}catch(e){console.error('Report failed',e);toast('The report could not be built','Your data is fine. Try the backup file instead.',null,null,5000);return}
+  ccDownload(html,`Pratim-Finance-Report-${td()}.html`,'text/html;charset=utf-8');
+  sfx('win');toast('Report downloaded','Open it in any browser. Print it or save it as a PDF from there.',null,null,4600);
+}
+// A stacked bar chart drawn as plain SVG, so the report needs nothing loaded to show it
+function rptBars(labels,series,ariaLabel){
+  const W=760,H=230,pl=52,pr=10,pt=22,pb=30,n=labels.length;if(!n)return '';
+  const tot=labels.map((_,i)=>series.reduce((s,x)=>s+(+x.data[i]||0),0)),max=Math.max(1,...tot)*1.08;
+  const bw=(W-pl-pr)/n,bar=Math.max(6,Math.min(36,bw*.62)),y=v=>pt+(H-pt-pb)*(1-v/max);
+  let g='';
+  for(let k=0;k<=4;k++){const v=max/1.08*k/4,yy=y(v).toFixed(1);g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" class="gl"/><text x="${pl-8}" y="${(+yy+3.5).toFixed(1)}" text-anchor="end" class="ax">${esc(fmtS(v))}</text>`}
+  labels.forEach((lb,i)=>{
+    let acc=0;const x=pl+bw*i+(bw-bar)/2;
+    series.forEach(s=>{const v=+s.data[i]||0;if(v<=0)return;const y0=y(acc),y1=y(acc+v);g+=`<rect x="${x.toFixed(1)}" y="${y1.toFixed(1)}" width="${bar.toFixed(1)}" height="${Math.max(0,y0-y1).toFixed(1)}" fill="${s.color}" rx="2"><title>${esc(s.name+' '+lb+': '+fmt(v))}</title></rect>`;acc+=v});
+    if(tot[i]>0&&n<=18)g+=`<text x="${(x+bar/2).toFixed(1)}" y="${(y(tot[i])-6).toFixed(1)}" text-anchor="middle" class="tv">${esc(fmtS(tot[i]))}</text>`;
+    if(n<=18||i%2===0)g+=`<text x="${(x+bar/2).toFixed(1)}" y="${H-10}" text-anchor="middle" class="ax">${esc(lb)}</text>`;
+  });
+  const legend=series.length>1?`<div class="legend">${series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')}</div>`:'';
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="${esc(ariaLabel)}">${g}</svg>${legend}`;
+}
+function buildReport(){
+  const now=new Date(),today=td(),R=v=>fmt(v),RS=v=>fmtSign(v);
+  const T=(head,rows,cls)=>`<table class="${cls||''}"><thead><tr>${head.map(h=>`<th${h[0]==='#'?' class="n"':''}>${esc(h[0]==='#'?h.slice(1):h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
+  const td_=(v,n)=>`<td${n?' class="n"':''}>${v}</td>`;
+  const cards=activeCards(),Ls=cards.map(cardLedger),sts=Ls.map(ccStatus);
+  const owe=r2(Ls.reduce((s,L)=>s+L.dueNow,0));
+  const nextDue=sts.filter(s=>s.due&&(s.k==='red'||s.k==='amber')).map(s=>s.due).sort()[0];
+  const m=cm(),ms=monthStats(m);
+  const nwNow=nwTotal(NW);
+  const emiLive=EMIS.filter(e=>e&&!(mRem(e.end)!==null&&mRem(e.end)<=0)),monthly=r2(emiLive.reduce((s,e)=>s+(+e.amount||0),0)+SUBS.reduce((s,x)=>s+(+(x&&x.amount)||0),0));
+  // Credit cards
+  let cardsHtml='';
+  const ch=ccChartData(Ls);
+  if(ch.months.length){
+    const series=Ls.filter(L=>ch.months.some(mm=>ch.by[L.card.id][mm])).map(L=>({name:L.card.name,color:cardColor(L.card)[0],data:ch.months.map(mm=>ch.by[L.card.id][mm]||0)}));
+    cardsHtml+=`<div class="figure"><h3>Statements, month by month</h3>${rptBars(ch.months.map(monYY),series,'Card statements by month')}</div>`;
+  }
+  Ls.forEach((L,i)=>{
+    const c=L.card,st=sts[i],now=ccNow(L),rows=ccPastRows(L);
+    const bill=st.k==='red'||st.k==='amber'?`<b>${R(L.dueNow)}</b> to pay${st.due?', due '+esc(niceDate(st.due)):''}`:st.k==='green'?'<b>Paid</b>, nothing to pay':'No bill';
+    cardsHtml+=`<div class="cardblk"><div class="cardhead" style="--c1:${cardColor(c)[0]};--c2:${cardColor(c)[1]}"><div><b>${esc(c.name)}</b><span>${esc([c.network?CC_NETS[c.network]||'':'',c.last4?'•••• '+c.last4:''].filter(Boolean).join('  '))}</span></div><div class="cardmeta">${c.stmt>=1?'Bill made on the '+ordinal(c.stmt):'Calendar months'}${c.due>=1?' · due on the '+ordinal(c.due):''}${c.limit>0?' · limit '+R(c.limit):''}</div></div>
+      <div class="kv"><div><span>Bill to pay</span><p>${bill}</p></div><div><span>This month so far</span><p><b>${R(now.spend)}</b>, becomes a bill on ${esc(niceDate(L.cur+'-'+pad2(closeDay(c,L.cur))))}</p></div></div>
+      ${rows.length?T(['Statement','#Bill','#Paid','Paid on','Status'],rows.map(cy=>`<tr>${td_(esc(monthName(cy.ym)))}${td_(R(cy.bill),1)}${td_(cy.paid>0?R(cy.paid):'Not yet',1)}${td_(cy.ps.length?esc(niceDate(cy.ps[cy.ps.length-1].date)):'')}${td_(`<span class="tag t-${cy.status.cls.replace('tag-','')}">${esc(cy.status.t)}</span>`)}</tr>`)):'<p class="muted">No statements yet.</p>'}
+    </div>`;
+  });
+  // Month by month, from the logbook
+  const monthsAll=[...new Set(LB.map(e=>e&&e.date&&e.date.slice(0,7)).filter(isMonthStr))].sort().reverse().slice(0,12);
+  const mstats=monthsAll.map(monthStats);
+  const monthHtml=mstats.length?`<div class="figure"><h3>Money out, month by month</h3>${rptBars(mstats.slice().reverse().map(s=>monYY(s.m)),[{name:'Personal',color:'#B14A2E',data:mstats.slice().reverse().map(s=>s.exp)},{name:'Fixed',color:'#D98A2B',data:mstats.slice().reverse().map(s=>s.fix)},{name:'Agency',color:'#3E7D74',data:mstats.slice().reverse().map(s=>s.agy)}],'Spending by month')}</div>`+
+    T(['Month','#Income','#Personal','#Fixed','#Agency','#Invested','#On cards','#Kept'],mstats.map(s=>`<tr>${td_(esc(monthName(s.m))+(s.cur?' <small>so far</small>':''))}${td_(R(s.inc),1)}${td_(R(s.exp),1)}${td_(R(s.fix),1)}${td_(R(s.agy),1)}${td_(R(s.invEff),1)}${td_(R(s.cardSpend),1)}${td_(`<span class="${s.saved<0?'neg':'pos'}">${RS(s.saved)}</span>`,1)}</tr>`)):'<p class="muted">Nothing logged yet.</p>';
+  // Categories this month
+  const cats=Object.entries(ms.cats).sort((a,b)=>b[1]-a[1]);
+  const catHtml=cats.length?T(['Category','#Spent','#Budget','#Left'],cats.map(([k,v])=>{const b=catBudgetFor(k);return `<tr>${td_(esc(k))}${td_(R(v),1)}${td_(b?R(b):'',1)}${td_(b?`<span class="${b-v<0?'neg':'pos'}">${RS(b-v)}</span>`:'',1)}</tr>`})):'<p class="muted">No personal spending logged this month.</p>';
+  // EMIs and subscriptions
+  const recRows=[];
+  EMIS.forEach(e=>{if(!e)return;const r=mRem(e.end),ended=r!==null&&r<=0;const d=clampDay(e.day);recRows.push({ended,html:`<tr${ended?' class="dim"':''}>${td_(esc(e.name||'EMI'))}${td_('EMI')}${td_(R(e.amount),1)}${td_(d?ordinal(d):'Not set')}${td_(d&&!ended?esc(niceDate(nextChargeDate(d))):'')}${td_(esc(e.card?cardLabel(e.card):'Bank or auto-debit'))}${td_(ended?'Finished':e.end?esc(monthName(e.end)):'Ongoing')}</tr>`,amt:+e.amount||0})});
+  SUBS.forEach(s=>{if(!s)return;const d=clampDay(s.day);recRows.push({ended:false,html:`<tr>${td_(esc(s.name||'Subscription'))}${td_('Subscription')}${td_(R(s.amount),1)}${td_(d?ordinal(d):'Not set')}${td_(d?esc(niceDate(nextChargeDate(d))):'')}${td_(esc(s.card?cardLabel(s.card):'Bank or auto-debit'))}${td_('Ongoing')}</tr>`,amt:+s.amount||0})});
+  recRows.sort((a,b)=>a.ended-b.ended||b.amt-a.amt);
+  const recHtml=recRows.length?T(['Name','Type','#Monthly','Charges on','Next','Paid from','Ends'],recRows.map(r=>r.html))+`<p class="total">Every month: <b>${R(monthly)}</b></p>`:'<p class="muted">No EMIs or subscriptions.</p>';
+  // Budget plan
+  const bud=(list,label)=>list&&list.length?`<h3>${label}</h3>`+T(['Item','#Monthly'],list.map(x=>`<tr>${td_(esc(x.name))}${td_(R(x.amount),1)}</tr>`)):'';
+  const budHtml=`<div class="kv"><div><span>Planned income</span><p><b>${R(BG.income)}</b> a month</p></div></div>`+bud(BG.variable,'Spending budgets')+bud(BG.fixed,'Fixed costs')+bud(BG.savings,'Savings and investing');
+  // Net worth
+  const nwParts=[['Bank',NW.bank],['Investments',NW.investments],['Cash',NW.cash],['Resellables',NW.resellables],['Lent out',NW.lending]];
+  const hist=(Array.isArray(NWH)?NWH:[]).filter(h=>h&&h.date).slice(-12).reverse();
+  const nwHtml=T(['Part','#Value'],nwParts.map(p=>`<tr>${td_(p[0])}${td_(R(+p[1]||0),1)}</tr>`).concat([`<tr class="sum">${td_('<b>Total</b>')}${td_(`<b>${R(nwNow)}</b>`,1)}</tr>`]))+
+    (hist.length?`<h3>Snapshots</h3>`+T(['Date','#Total'],hist.map(h=>`<tr>${td_(esc(niceDate(h.date)))}${td_(R(nwTotal(h)),1)}</tr>`)):'');
+  // Investments
+  const sips=(INV.sips||[]).filter(Boolean);
+  const invHtml=(sips.length?`<h3>Monthly SIPs</h3>`+T(['Fund','#Monthly','Why'],sips.map(x=>`<tr>${td_(esc(x.name))}${td_(R(+x.current||+x.target||0),1)}${td_(esc([x.why,x.horizon].filter(Boolean).join(' · ')))}</tr>`)):'')+
+    ((INV.contrib||[]).length?`<h3>Funds</h3>`+T(['Fund','#Monthly','#Saved','#Target'],INV.contrib.map(c=>`<tr>${td_(esc(c.name))}${td_(R(c.monthly),1)}${td_(R(contribBal(c.key)),1)}${td_(c.target?R(c.target):'',1)}</tr>`)):'');
+  // Goals and wishlist
+  const goalHtml=(GOALS.length?T(['Goal','#Saved','#Target','Progress'],GOALS.map(g=>`<tr>${td_(esc(g.name))}${td_(R(g.current),1)}${td_(R(g.target),1)}${td_(g.target>0?Math.min(100,pct(g.current,g.target))+'%':'')}</tr>`)):'')+
+    (WISH.length?`<h3>Wishlist</h3>`+T(['Item','#Price','Status'],WISH.slice().sort((a,b)=>(+a.priority||99)-(+b.priority||99)).map(w=>`<tr>${td_(esc(w.name))}${td_(w.price>0?R(w.price):'',1)}${td_(esc((WISH_ST[wishStatus(w)]||{}).label||''))}</tr>`)):'');
+  // Agency
+  const agHtml=AG&&AG.clients&&AG.clients.length?T(['Client','#Monthly','Status'],AG.clients.map(c=>`<tr>${td_(esc(c.name))}${td_(R(c.amount),1)}${td_(esc(c.status==='pending'?'Pending':'Active'))}</tr>`))+(AG.costs&&AG.costs.length?`<h3>Agency costs</h3>`+T(['Cost','#Monthly'],AG.costs.map(c=>`<tr>${td_(esc(c.name))}${td_(R(c.amount),1)}</tr>`)):''):'';
+  // Logbook, every entry, grouped by month
+  const typeName={expense:'Expense',fixed:'Fixed',payout:'Agency',income:'Income',investment:'Invest'};
+  const byM={};LB.forEach(e=>{if(e&&isMonthStr(String(e.date).slice(0,7)))(byM[e.date.slice(0,7)]=byM[e.date.slice(0,7)]||[]).push(e)});
+  const logHtml=Object.keys(byM).sort().reverse().map(mm=>{
+    const list=byM[mm].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id),s=monthStats(mm);
+    return `<div class="logm"><h3>${esc(monthName(mm))}<small>${list.length} entries · in ${R(s.inc)} · out ${R(s.out)}</small></h3>`+
+      T(['Date','Category','Note','Type','Paid with','#Amount'],list.map(e=>`<tr>${td_(esc(shortDate(e.date)))}${td_(esc(e.who||''))}${td_(esc(e.note||''))}${td_(esc(typeName[e.type]||e.type))}${td_(esc((e.card||e.cc)?entryCardName(e):'Bank / UPI'))}${td_(`<span class="${e.type==='income'?'pos':''}">${e.type==='income'?'+ ':''}${R(e.amount)}</span>`,1)}</tr>`),'log')+'</div>';
+  }).join('')||'<p class="muted">Nothing logged yet.</p>';
+  const sec=(id,title,lede,body)=>body?`<section id="${id}"><h2>${title}</h2>${lede?`<p class="lede">${lede}</p>`:''}${body}</section>`:'';
+  const toc=[['cards','Credit cards'],['months','Month by month'],['cats','This month by category'],['recurring','EMIs and subscriptions'],['budget','Budget plan'],['networth','Net worth'],['invest','Investments'],['goals','Goals and wishlist'],['agency','Agency'],['logbook','Every logbook entry']];
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finance report · ${esc(niceDate(today))}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;600;700&family=Space+Mono:wght@700&family=Fraunces:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#D98A2B;--accent-deep:#8A5410;--accent-soft:#E8B25C;--paper:#F1F4EC;--paper-deep:#E7ECDF;--parchment:#DCE4D2;--ink-deep:#16241C;--ink-deep-2:#1F3327;--ink:#202A22;--ink-mid:#4B5A4E;--ink-faint:#5C6A5E;--hair:rgba(22,36,28,.14);--red:#B14A2E;--green:#2F7A4C}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:Manrope,-apple-system,'Segoe UI',Arial,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.6;font-variant-numeric:tabular-nums}
+.wrap{max-width:960px;margin:0 auto;padding:clamp(20px,4vw,48px)}
+h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:500;letter-spacing:-.02em;color:var(--ink)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--hair);margin-bottom:28px}
+.brand{font-family:Fraunces,Georgia,serif;font-style:italic;font-size:18px;color:var(--ink-mid)}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.08;margin-top:6px}
+h1 b{font-weight:700;color:var(--accent-deep)}
+.when{font-size:13px;color:var(--ink-faint)}
+.print{font:600 13px Manrope,sans-serif;background:var(--ink-deep);color:var(--paper);border:0;border-radius:4px;padding:10px 16px;cursor:pointer}
+.print:hover{background:var(--accent-deep)}
+.glance{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:12px;margin-bottom:34px}
+.stat{background:#fff;border:1px solid var(--hair);border-radius:4px;padding:16px 18px}
+.stat span{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1}
+.stat small{display:block;font-size:12px;color:var(--ink-mid);margin-top:4px}
+.stat.dark{background:linear-gradient(150deg,var(--ink-deep-2),var(--ink-deep));color:var(--paper);border-color:transparent}
+.stat.dark span{color:var(--accent-soft)}.stat.dark small{color:rgba(241,244,236,.75)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 16px;margin:-10px 0 34px;font-size:12.5px}
+nav.toc a{color:var(--accent-deep);text-decoration:none;font-weight:600}
+section{margin-bottom:44px}
+h2{font-size:26px;margin-bottom:6px}
+h3{font-size:16px;font-weight:600;margin:22px 0 10px}
+h3 small{font-family:Manrope,sans-serif;font-size:12px;font-weight:600;color:var(--ink-faint);margin-left:10px;letter-spacing:0}
+.lede{color:var(--ink-mid);margin-bottom:16px;max-width:70ch}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--hair);border-radius:4px;overflow:hidden;font-size:13px;margin-bottom:8px}
+th{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);text-align:left;padding:9px 12px;background:var(--paper-deep);border-bottom:1px solid var(--hair)}
+td{padding:9px 12px;border-bottom:1px solid var(--hair);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.n{text-align:right;white-space:nowrap}
+td small{color:var(--ink-faint);font-size:11px}
+tr.dim td{color:var(--ink-faint)}
+tr.sum td{background:var(--paper-deep)}
+table.log td:nth-child(3){color:var(--ink-mid)}
+.pos{color:var(--green);font-weight:600}.neg{color:var(--red);font-weight:600}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--parchment);color:var(--ink-mid)}
+.t-green{background:rgba(62,142,92,.14);color:var(--green)}.t-red{background:rgba(177,74,46,.12);color:var(--red)}.t-amber{background:rgba(217,138,43,.18);color:var(--accent-deep)}.t-blue{background:rgba(217,138,43,.13);color:var(--accent-deep)}
+.muted{color:var(--ink-faint)}
+.total{text-align:right;margin-top:8px;color:var(--ink-mid)}
+.figure{background:#fff;border:1px solid var(--hair);border-radius:4px;padding:6px 16px 14px;margin-bottom:16px}
+.figure h3{margin:12px 0 4px}
+.chart{width:100%;height:auto;display:block}
+.chart .gl{stroke:var(--parchment);stroke-width:1}
+.chart .ax{font:500 10.5px Manrope,sans-serif;fill:var(--ink-faint)}
+.chart .tv{font:600 10.5px 'Space Grotesk',sans-serif;fill:var(--ink-mid)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-mid);margin-top:4px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.cardblk{margin:18px 0 26px}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;border-radius:4px;color:#F1F4EC;background:linear-gradient(135deg,var(--c1),var(--c2))}
+.cardhead b{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.02em;margin-right:12px}
+.cardhead span{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;opacity:.8}
+.cardmeta{font-size:12px;opacity:.85}
+.kv{display:flex;gap:28px;flex-wrap:wrap;margin:14px 2px 12px}
+.kv span{display:block;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.kv p{font-size:14px;margin-top:2px}
+.logm h3{border-top:1px solid var(--hair);padding-top:18px}
+footer{border-top:1px solid var(--hair);padding-top:18px;font-size:12px;color:var(--ink-faint)}
+@media(max-width:720px){.glance{grid-template-columns:1fr 1fr}.stat b{font-size:22px}table{font-size:12px}th,td{padding:8px}}
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  body{background:#fff;font-size:12px}
+  .wrap{padding:0;max-width:none}
+  .print,nav.toc{display:none}
+  section{break-before:auto}
+  h2{break-after:avoid}h3{break-after:avoid}
+  tr,.stat,.figure,.cardhead,.kv{break-inside:avoid}
+  thead{display:table-header-group}
+  .stat,.figure,table{border-color:#d7ddd0}
+}
+</style></head><body><div class="wrap">
+<header class="top"><div><div class="brand">Pratim's Finance Tracker</div><h1>Your money, <b>${esc(monthName(m))}</b></h1><div class="when">Report made on ${esc(now.toLocaleString('en-IN',{day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'}))}. All figures in Indian rupees.</div></div><button class="print" onclick="window.print()">Print or save as PDF</button></header>
+<div class="glance">
+  <div class="stat dark"><span>Card bills to pay</span><b>${R(owe)}</b><small>${owe>0?(nextDue?'Due '+esc(niceDate(nextDue)):'Due soon'):'Nothing waiting'}</small></div>
+  <div class="stat"><span>Spent this month</span><b>${R(ms.out)}</b><small>${ms.count} entries so far</small></div>
+  <div class="stat"><span>Net worth</span><b>${R(nwNow)}</b><small>${NW.updatedAt?'Updated '+esc(niceDate(String(NW.updatedAt).slice(0,10))):'Latest figures'}</small></div>
+  <div class="stat"><span>Every month</span><b>${R(monthly)}</b><small>EMIs and subscriptions</small></div>
+</div>
+<nav class="toc">${toc.map(t=>`<a href="#${t[0]}">${t[1]}</a>`).join('')}</nav>
+${sec('cards','Credit cards','What each card owes, when it is due, and every statement on record.',cardsHtml||'<p class="muted">No cards yet.</p>')}
+${sec('months','Month by month','Everything in and out, from your logbook. Invested counts what you logged or ticked off as done.',monthHtml)}
+${sec('cats','This month by category','Personal spending in '+esc(monthName(m))+' against your budget.',catHtml)}
+${sec('recurring','EMIs and subscriptions','What leaves every month, and the day each one charges.',recHtml)}
+${sec('budget','Budget plan','',budHtml)}
+${sec('networth','Net worth','',nwHtml)}
+${sec('invest','Investments','',invHtml)}
+${sec('goals','Goals and wishlist','',goalHtml)}
+${sec('agency','Agency','Retainers and costs.',agHtml)}
+${sec('logbook','Every logbook entry','Newest first, grouped by month. '+LB.length+' entries in total.',logHtml)}
+<footer>Made by your finance tracker. This is a copy for reading and printing. To move your data to another device, use the backup file instead.</footer>
+</div></body></html>`;
+}
+
+// ============ WHEN THINGS CHARGE ============
+// Every EMI and subscription can carry the day of the month it charges, so nothing lands as a surprise.
+function nextChargeDate(day){
+  const t=td();let ym=cm(),d=ym+'-'+pad2(Math.min(day,dimYM(ym)));
+  if(d<t){ym=ymAdd(ym,1);d=ym+'-'+pad2(Math.min(day,dimYM(ym)))}
+  return d;
+}
+function upcomingCharges(){
+  const t=td(),items=[],missing=[];
+  const add=(kind,i,x)=>{
+    const d=clampDay(x.day),name=x.name||(kind==='emi'?'EMI':'Subscription');
+    if(!d){missing.push({kind,i,name});return}
+    const date=nextChargeDate(d);
+    if(kind==='emi'&&isMonthStr(x.end)&&date.slice(0,7)>x.end)return;
+    items.push({kind,i,name,amt:+x.amount||0,day:d,card:x.card||'',date,days:daysBetween(t,date)});
+  };
+  EMIS.forEach((e,i)=>{if(!e)return;const r=mRem(e.end);if(r!==null&&r<=0)return;add('emi',i,e)});
+  SUBS.forEach((s,i)=>{if(s)add('sub',i,s)});
+  items.sort((a,b)=>a.date.localeCompare(b.date)||b.amt-a.amt);
+  return {items,missing};
+}
+function daySel(kind,i,day){
+  const d=clampDay(day);
+  return `<div class="day-cell"><select class="day-sel${d?'':' empty'}" aria-label="Day it charges each month" onchange="setChargeDay('${kind}',${i},this.value)"><option value="0">${d?'No date':'Add date'}</option>${Array.from({length:31},(_,k)=>`<option value="${k+1}"${d===k+1?' selected':''}>${ordinal(k+1)}</option>`).join('')}</select>${d?`<small>Next ${esc(shortDate(nextChargeDate(d)))}</small>`:''}</div>`;
+}
+function setChargeDay(kind,i,v){
+  const arr=kind==='sub'?SUBS:EMIS,key=kind==='sub'?K.sub:K.emi,x=arr[i];if(!x)return;
+  const was=x.day,d=clampDay(v),name=x.name;
+  if(d)x.day=d;else delete x.day;
+  S(key,arr);renderAll();sfx('save');
+  toast(d?name+' charges on the '+ordinal(d):name+' has no charge date now',d?'Next on '+niceDate(nextChargeDate(d)):null,'Undo',()=>{
+    const list=kind==='sub'?SUBS:EMIS,y=list[i];if(!y||y.name!==name)return;
+    if(was)y.day=was;else delete y.day;S(kind==='sub'?K.sub:K.emi,list);renderAll();
+  },6000);
+}
+function paintEmiDay(day){
+  const sel=document.getElementById('emi-day');if(!sel)return;
+  const d=clampDay(day);
+  sel.innerHTML='<option value="0">Not set</option>'+Array.from({length:31},(_,k)=>`<option value="${k+1}">${ordinal(k+1)} of the month${k===30?' (or last day)':''}</option>`).join('');
+  sel.value=String(d||0);
+}
+// A strip of what charges next. The EMIs page shows the month ahead; the cards page the next ten days.
+function renderSoon(hostId,sumId,days,fromCards){
+  const host=document.getElementById(hostId);if(!host)return {items:[],missing:[]};
+  const sum=sumId?document.getElementById(sumId):null;
+  const up=upcomingCharges(),shown=up.items.filter(x=>x.days<=days);
+  const in7=up.items.filter(x=>x.days<=7).reduce((s,x)=>s+x.amt,0),in30=up.items.filter(x=>x.days<=30).reduce((s,x)=>s+x.amt,0);
+  if(sum)sum.innerHTML=up.items.length?`<b>${fmt(in7)}</b> in the next 7 days · ${fmt(in30)} in 30`:'';
+  const chip=x=>{
+    const dt=new Date(x.date+'T00:00'),u=x.days<=1?' u-now':x.days<=5?' u-soon':'';
+    const when=x.days===0?'Today':x.days===1?'Tomorrow':'In '+x.days+' days';
+    return `<button class="soon-chip${u}" onclick="${x.kind==='sub'?'editSub':'editEMI'}(${x.i})" title="Tap to change it, including the day it charges"><span class="sd"><b>${dt.getDate()}</b><small>${esc(dt.toLocaleDateString('en-IN',{month:'short'}))}</small></span><span class="sb"><span class="sn">${esc(x.name)}</span><span class="ss">${esc(when)}${x.card?' · '+esc(cardLabel(x.card)):''}</span></span><span class="sa">${fmt(x.amt)}</span></button>`;
+  };
+  let h=shown.length?`<div class="soon-row">${shown.map(chip).join('')}</div>`:`<div class="soon-empty">${up.items.length?'Nothing charges in the next '+days+' days.':'No charge dates saved yet.'}</div>`;
+  if(up.missing.length){
+    const go=fromCards?"switchPage('emis');setTimeout(()=>{const t=document.getElementById('emi-soon-card');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},350)":"const t=document.getElementById('sub-tbl');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})";
+    h+=`<div class="soon-miss">${CC_WARN}<span>${up.missing.length} ${up.missing.length===1?'has':'have'} no charge date yet: ${esc(up.missing.slice(0,3).map(m=>m.name).join(', '))}${up.missing.length>3?' and '+(up.missing.length-3)+' more':''}.</span><button class="soon-link" onclick="${go}">Add dates</button></div>`;
+  }
+  host.innerHTML=h;
+  return up;
+}
+
 // ---- Recording a payment ----
 function openPay(id){
   const c=cardById(id);if(!c)return;
@@ -5814,8 +7258,8 @@ function openPay(id){
   document.getElementById('ccp-card').value=c.id;
   document.getElementById('ccp-title').textContent='Pay '+c.name;
   const opts=[];
-  if(L.dueNow>0){const open=L.cycles.filter(x=>x.closed&&x.left>0);opts.push({k:open.length>1?'Every billed amount':monShort(open[0].ym)+' bill',v:L.dueNow,s:open[0].due?'Due '+shortDate(open[0].due):'Billed and due'})}
-  if(L.toPay>0&&L.toPay!==L.dueNow)opts.push({k:'Everything so far',v:L.toPay,s:'Includes this cycle, back to zero'});
+  if(L.dueNow>0){const open=L.cycles.filter(x=>x.closed&&x.left>0);opts.push({k:open.length>1?'All bills to pay':'Bill to pay · '+monShort(open[0].ym),v:L.dueNow,s:open[0].due?'Due '+shortDate(open[0].due):'The bill that is waiting'})}
+  if(L.toPay>0&&L.toPay!==L.dueNow)opts.push({k:L.dueNow>0?'Bill + this month so far':'This month so far',v:L.toPay,s:L.dueNow>0?'Clears the card to zero':'Pay early, card back to zero'});
   const host=document.getElementById('ccp-opts');
   host.innerHTML=opts.map((o,i)=>`<button class="pay-opt" data-v="${o.v}" onclick="ccpPick(${o.v})"><span class="k">${esc(o.k)}</span><span class="v">${fmt(o.v)}</span><span class="s">${esc(o.s)}</span></button>`).join('');
   host.style.display=opts.length?'grid':'none';
@@ -5831,11 +7275,19 @@ function ccpPaint(){
   const amt=r2(+document.getElementById('ccp-amt').value||0);
   document.querySelectorAll('#ccp-opts .pay-opt').forEach(b=>b.classList.toggle('on',r2(+b.dataset.v)===amt));
   const el=document.getElementById('ccp-alloc');
-  if(!(amt>0)){el.innerHTML='Enter what you paid. It is applied to the oldest unpaid bill first.';return}
+  if(!(amt>0)){el.innerHTML='Enter what you paid. It goes to the oldest bill first.';return}
   const L=cardLedger(c),parts=allocatePayment(L,amt);
-  const after=r2(Math.max(0,L.toPay)-amt);
-  el.innerHTML='Goes toward '+parts.map(p=>`<b>${esc(monShort(p.cycle))}</b> ${fmt(p.amount)}`).join(' + ')+'. '+
-    (after>0?`<b>${fmt(after)}</b> will still be left to pay on ${esc(c.name)}.`:after<0?`That is <b>${fmt(-after)}</b> more than you owe, kept as paid ahead.`:`${esc(c.name)} goes back to <b>zero</b>.`);
+  // Speak about the bill and this month separately, never as one number added together
+  const toBills=r2(parts.filter(p=>p.cycle<L.cur).reduce((s,p)=>s+p.amount,0));
+  const billLeft=r2(Math.max(0,L.dueNow-toBills));
+  const monthLeft=r2(Math.max(0,L.toPay-L.dueNow-(amt-toBills)));
+  const extra=r2(amt-Math.max(0,L.toPay));
+  let tail;
+  if(extra>0)tail=`That is <b>${fmt(extra)}</b> more than everything on ${esc(c.name)}, kept as paid ahead for the next bill.`;
+  else if(billLeft>0)tail=`<b>${fmt(billLeft)}</b> of the bill will still be left to pay.`;
+  else if(L.dueNow>0)tail=`<b>The bill is fully paid.</b>`+(monthLeft>0?` This month’s ${fmt(monthLeft)} is not billed yet.`:` ${esc(c.name)} goes back to zero.`);
+  else tail=monthLeft>0?`${fmt(monthLeft)} of this month’s spending is still not billed.`:`${esc(c.name)} goes back to <b>zero</b>.`;
+  el.innerHTML='Goes toward '+parts.map(p=>`<b>${p.cycle===L.cur?'this month':esc(monShort(p.cycle))+' bill'}</b> ${fmt(p.amount)}`).join(' + ')+'. '+tail;
 }
 function ccpSave(){
   const c=cardById(document.getElementById('ccp-card').value);if(!c)return;
@@ -5844,10 +7296,13 @@ function ccpSave(){
   const date=document.getElementById('ccp-date').value||td(),note=document.getElementById('ccp-note').value.trim();
   const parts=allocatePayment(cardLedger(c),amt),grp='g'+Date.now().toString(36),now=Date.now();
   const made=parts.map(p=>({id:cardPayId(),card:c.id,cycle:p.cycle,amount:p.amount,date,note,grp,u:now,del:false}));
+  const dueBefore=ccDueAll(),cardDueBefore=cardLedger(c).dueNow;
   CARDS.pays.push(...made);S(K.cards,CARDS);
-  closeM('m-ccpay');renderAll();sfx('win');
-  const left=Math.max(0,cardLedger(c).toPay);
-  toast(c.name+' payment recorded',fmt(amt)+(left>0?' · '+fmt(left)+' still to pay':' · back to zero'),'Undo',()=>{
+  const clear=dueBefore>0&&ccDueAll()<=0;
+  CC_FX={card:c.id,clear};
+  closeM('m-ccpay');renderAll();sfx(clear?'goal':'win');
+  const La=cardLedger(c);
+  toast(c.name+' marked paid',fmt(amt)+(La.dueNow>0?' · '+fmt(La.dueNow)+' of the bill still to pay':cardDueBefore>0?' · bill cleared':' · paid early'),'Undo',()=>{
     const t=Date.now();CARDS.pays.forEach(p=>{if(p.grp===grp){p.del=true;p.u=t}});S(K.cards,CARDS);renderAll();
     toast('Payment removed',null,null,null,2400);
   },8000);
@@ -5860,14 +7315,17 @@ function openCycle(id,ym){
   const L=cardLedger(c);
   const cy=ym>=L.since?(L.cycles.find(x=>x.ym===ym)||L.mk(ym,true)):L.mk(ym,false);
   document.getElementById('ccm-card').value=c.id;document.getElementById('ccm-ym').value=ym;
-  document.getElementById('ccm-title').textContent=c.name+' · '+cycleLabel(c,ym);
+  const isNow=ym===L.cur,isAhead=ym>L.cur;
+  document.getElementById('ccm-title').textContent=c.name+' · '+(isNow?'this month':cycleLabel(c,ym));
   const span=cycleSpan(c,ym);
-  document.getElementById('ccm-sub').innerHTML=(isCalendarCard(c)?'Charges dated in '+esc(span):'Charges from '+esc(span))+(cy.due?' · due '+esc(niceDate(cy.due)):'')+
-    (cy.tracked?'':' · <b>History</b>: before this card’s start month ('+esc(monthName(c.since))+'), so it is kept as a record and never adds to what you owe.');
+  document.getElementById('ccm-sub').innerHTML=(isCalendarCard(c)?'Spends dated in '+esc(span):'Spends from '+esc(span))+
+    (isNow||isAhead?' · becomes a bill on '+esc(niceDate(ym+'-'+pad2(closeDay(c,ym)))):(cy.due?' · pay by '+esc(niceDate(cy.due)):''))+
+    (cy.tracked?'':' · <b>Past bill</b> from before you started tracking this card ('+esc(monthName(c.since))+'), so it is kept as a record and never adds to what you owe.');
   const list=cy.ch.map(e=>`<div class="mini-row" style="cursor:pointer" onclick="closeM('m-ccmonth');openEditEntry(${e.id})"><div class="mb"><div class="mn">${esc(e.note&&e.note.trim()?e.note:e.who)}</div><div class="ms">${esc(shortDate(e.date))} · ${esc(e.who)}</div></div><span class="amount neg">${fmt(e.amount)}</span></div>`).join('')+
     cy.recs.map(r=>`<div class="mini-row"><div class="mb"><div class="mn">${esc(r.name)}</div><div class="ms">${r.kind==='emi'?'EMI':'Subscription'}, added every month</div></div><span class="amount neg">${fmt(r.amount)}</span></div>`).join('');
-  document.getElementById('ccm-tracked').innerHTML=`<div class="card-title">Tracked for this bill &middot; ${fmt(cy.spend)}</div>`+
-    `<div class="mini-list">${list||'<div class="mini-empty">Nothing tracked for this cycle. Type the bill from your statement below.</div>'}</div>`;
+  document.getElementById('ccm-tracked').innerHTML=`<div class="card-title">${isNow?'Spent this month so far':'Spends on this bill'} &middot; ${fmt(cy.spend)}</div>`+
+    `<div class="mini-list">${list||'<div class="mini-empty">Nothing logged for this month. Type the bill from your statement below.</div>'}</div>`+
+    (cy.ch.length?'<div class="np-hint" style="margin:-8px 0 6px">Tap any spend to change it.</div>':'');
   const bill=document.getElementById('ccm-bill');
   bill.value=cy.ov!=null?cy.ov:'';bill.placeholder=cy.spend?String(cy.spend):'0';
   CCM_PAYS=cy.ps.map(p=>({id:p.id,amount:p.amount,date:p.date,note:p.note}));
@@ -5904,10 +7362,18 @@ function ccmPaint(){
   let bill=typed?r2(+billIn.value||0):tracked;
   const hint=document.getElementById('ccm-bill-hint');
   if(!typed&&closed&&paid>tracked){bill=paid;hint.innerHTML='No bill typed in, so it is taken as what you paid: <b>'+fmt(paid)+'</b>. Card bills are usually paid in full, so that is almost always the real bill.'}
-  else hint.innerHTML=typed?'Using the amount you typed. Clear the box to go back to the tracked '+fmt(tracked)+'.':'Leave blank to use the tracked '+fmt(tracked)+', or type the exact amount from your statement.';
+  else hint.innerHTML=typed?'Using the amount you typed. Clear the box to go back to the '+fmt(tracked)+' logged here.':closed?'Leave blank to use the '+fmt(tracked)+' logged here, or type the exact amount from your statement.':'Leave blank. It adds up from what you log until the bill is made.';
+  const pt=document.getElementById('ccm-pays-title');if(pt)pt.textContent=closed?'Payments toward this bill':'Paid early, before the bill';
   const left=r2(bill-paid),hist=ym<c.since;
-  if(hist&&left>0){document.getElementById('ccm-result').innerHTML=`Bill <b>${fmt(bill)}</b>, paid <b>${fmt(paid)}</b>. This is a history month, so the gap is only noted here and never added to what you owe. Add the payment if you cleared it.`;return}
-  document.getElementById('ccm-result').innerHTML=bill<=0&&paid<=0?'Nothing billed or paid for this cycle.':
+  if(!closed){
+    const made=niceDate(ym+'-'+pad2(closeDay(c,ym)));
+    document.getElementById('ccm-result').innerHTML=paid>0
+      ?`Spent <b>${fmt(bill)}</b> so far, paid early <b>${fmt(paid)}</b>. `+(left>0?`<b>${fmt(left)}</b> will be on the bill made on ${esc(made)}.`:left<0?`<b style="color:var(--green)">${fmt(-left)} paid ahead</b>, which goes toward the next bill.`:`<b style="color:var(--green)">Fully covered</b> so far.`)
+      :`Spent <b>${fmt(bill)}</b> so far. Nothing to pay yet: it becomes a bill on ${esc(made)}.`;
+    return;
+  }
+  if(hist&&left>0){document.getElementById('ccm-result').innerHTML=`Bill <b>${fmt(bill)}</b>, paid <b>${fmt(paid)}</b>. This is from before you started tracking this card, so the gap is only noted here and never added to what you owe. Add the payment if you cleared it.`;return}
+  document.getElementById('ccm-result').innerHTML=bill<=0&&paid<=0?'Nothing billed or paid for this month.':
     left>0?`Bill <b>${fmt(bill)}</b>, paid <b>${fmt(paid)}</b> → <b style="color:var(--red)">${fmt(left)} still to pay</b>.`:
     left<0?`Bill <b>${fmt(bill)}</b>, paid <b>${fmt(paid)}</b> → <b style="color:var(--green)">${fmt(-left)} paid ahead</b>, which goes toward the next bill.`:
     `Bill <b>${fmt(bill)}</b>, paid <b>${fmt(paid)}</b> → <b style="color:var(--green)">cleared</b>.`;
@@ -5936,10 +7402,14 @@ function ccmSave(){
   });
   CARDS.pays.forEach(p=>{if(p.card===c.id&&p.cycle===ym&&!p.del&&!keepIds.has(p.id)){p.del=true;p.u=now}});
   // Editing a month before the start month is still just history, and never moves the start
-  S(K.cards,CARDS);closeM('m-ccmonth');renderAll();
+  const dueBefore=ccDueAll();
+  S(K.cards,CARDS);
   const became=cardLedger(c);
   const cy=became.cycles.find(x=>x.ym===ym);
-  if(cy&&cy.left<=0&&cy.bill>0&&paid>0)sfx('win');
+  const cleared=!!(cy&&cy.left<=0&&cy.bill>0&&paid>0),clear=dueBefore>0&&ccDueAll()<=0;
+  if(cleared||clear)CC_FX={card:c.id,clear};
+  closeM('m-ccmonth');renderAll();
+  if(cleared||clear)sfx(clear?'goal':'win');
   toast(c.name+' '+monShort(ym)+' saved',paid>0?fmt(paid)+' paid':'Bill updated','Undo',()=>{
     const snap=JSON.parse(before),t=Date.now();
     // Undo by re-applying the earlier copy of this cycle, stamped newer so it wins everywhere
@@ -5968,7 +7438,7 @@ function cmRead(){
 }
 function cmPaint(){
   const live=CM_DRAFT.map((c,i)=>({c,i})).filter(x=>!x.c.archived),arch=CM_DRAFT.map((c,i)=>({c,i})).filter(x=>x.c.archived);
-  const days='<option value="0">Not set</option>'+Array.from({length:31},(_,d)=>`<option value="${d+1}">${d+1}${d+1===31?' (last day)':''}</option>`).join('');
+  const days='<option value="0">Not set</option>'+Array.from({length:31},(_,d)=>`<option value="${d+1}">${ordinal(d+1)}${d+1===31?' (last day)':''}</option>`).join('');
   document.getElementById('cm-list').innerHTML=live.length?live.map(({c,i})=>{
     const col=cardColor(c);
     return `<div class="cm-card" data-cm-card="${esc(c.id)}">
@@ -5977,16 +7447,17 @@ function cmPaint(){
       <div class="cm-grid">
         <div class="form-group"><label>Name</label><input value="${esc(c.name)}" data-cm="${i}:name" placeholder="HDFC Regalia" oninput="this.closest('.cm-card').querySelector('b').textContent=this.value||'New card'"></div>
         <div class="form-group"><label>Last 4 digits</label><input value="${esc(c.last4)}" data-cm="${i}:last4" inputmode="numeric" maxlength="4" placeholder="Optional"></div>
+        <div class="form-group"><label>Network</label><select data-cm="${i}:network"><option value="">Not set</option>${Object.keys(CC_NETS).map(k=>`<option value="${k}"${c.network===k?' selected':''}>${CC_NETS[k]}</option>`).join('')}</select></div>
         <div class="form-group"><label>Credit limit (₹)</label><input type="number" value="${c.limit||''}" data-cm="${i}:limit" inputmode="numeric" placeholder="Optional"></div>
-        <div class="form-group"><label>Statement day</label><select data-cm="${i}:stmt">${days}</select></div>
-        <div class="form-group"><label>Due day</label><select data-cm="${i}:due">${days}</select></div>
-        <div class="form-group"><label>Count bills from</label><input type="month" value="${esc(c.since)}" data-cm="${i}:since"></div>
+        <div class="form-group"><label>Statement date</label><select data-cm="${i}:stmt">${days}</select></div>
+        <div class="form-group"><label>Due date</label><select data-cm="${i}:due">${days}</select></div>
+        <div class="form-group"><label>Start tracking from</label><input type="month" value="${esc(c.since)}" data-cm="${i}:since"></div>
       </div>
       <div class="cm-sw-row mt-12">${Object.keys(CARD_COLORS).map(k=>`<button class="cm-sw ${c.color===k?'on':''}" title="${CARD_COLORS[k].n}" style="background:linear-gradient(150deg,${CARD_COLORS[k].c[0]},${CARD_COLORS[k].c[1]})" onclick="cmRead();CM_DRAFT[${i}].color='${k}';cmPaint()"></button>`).join('')}</div>
     </div>`;
   }).join(''):'<div class="mini-empty" style="text-align:left">No cards yet. Add your first one below.</div>';
   live.forEach(({c,i})=>{const s=document.querySelector(`[data-cm="${i}:stmt"]`),d=document.querySelector(`[data-cm="${i}:due"]`);if(s)s.value=String(c.stmt||0);if(d)d.value=String(c.due||0)});
-  document.getElementById('cm-arch').innerHTML=arch.length?`<div class="card-title mt-12">Removed cards &middot; history kept</div>`+arch.map(({c,i})=>`<div class="mini-row"><div class="mb"><div class="mn">${esc(c.name)}</div><div class="ms">Its charges and payments are all still here</div></div><button class="btn btn-secondary btn-xs" onclick="cmRead();CM_DRAFT[${i}].archived=false;delete CM_MOVES[CM_DRAFT[${i}].id];cmPaint()">Bring back</button></div>`).join(''):'';
+  document.getElementById('cm-arch').innerHTML=arch.length?`<div class="card-title mt-12">Removed cards &middot; history kept</div>`+arch.map(({c,i})=>`<div class="mini-row"><div class="mb"><div class="mn">${esc(c.name)}</div><div class="ms">Its spends and payments are all still here</div></div><button class="btn btn-secondary btn-xs" onclick="cmRead();CM_DRAFT[${i}].archived=false;delete CM_MOVES[CM_DRAFT[${i}].id];cmPaint()">Bring back</button></div>`).join(''):'';
 }
 function cmAdd(noPaint){
   if(!noPaint)cmRead();
@@ -6718,7 +8189,7 @@ function renderPerformance(){
   // Plan for next month
   const plan=[];
   facts.bad.slice(0,2).forEach(f=>{if(f.tip)plan.push(`<b>${esc(f.t)}.</b> ${esc(f.tip)}`)});
-  activeCards().forEach(c=>{const L=cardLedger(c);if(L.toPay>0){const o=L.cycles.find(x=>x.left>0&&x.due);plan.push(`<b>Pay ${esc(c.name)}: ${fmt(L.toPay)}</b>${o&&o.due?' by '+esc(niceDate(o.due)):''}, then mark it paid on the Credit Cards page.`)}});
+  activeCards().forEach(c=>{const L=cardLedger(c);if(L.dueNow>0){const o=L.cycles.find(x=>x.closed&&x.left>0&&x.due);plan.push(`<b>Pay ${esc(c.name)}: ${fmt(L.dueNow)}</b>${o&&o.due?' by '+esc(niceDate(o.due)):''}, then mark it paid on the Credit Cards page.`)}});
   const investFlagged=facts.bad.slice(0,2).some(f=>/invest/i.test(f.t));
   if(s.saved>0&&pfBudget().st>0&&s.invEff<pfBudget().st){if(!investFlagged)plan.push(`<b>Top up investing.</b> ${fmt(Math.min(s.saved,pfBudget().st-s.invEff))} of what you kept would close this month's gap.`)}
   else if(s.saved>0)plan.push(`<b>Give the ${fmt(s.saved)} you kept a job.</b> Move it to a goal or an extra SIP before it drifts into spending.`);
