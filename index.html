@@ -16,12 +16,14 @@
 <meta name="apple-mobile-web-app-title" content="Finance">
 <meta name="format-detection" content="telephone=no">
 <title>Pratim's Finance Tracker</title>
-<link rel="icon" type="image/svg+xml" href="FAV.svg">
-<link rel="icon" type="image/png" sizes="192x192" href="FAV-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="FAV-180.png">
+<script>(function(){var r=document.documentElement,l="mint";try{var s=localStorage.getItem("pfx_look");if(s==="classic"||s==="mint")l=s}catch(e){}r.setAttribute("data-look",l);r.classList.add("v17-boot");setTimeout(function(){r.classList.remove("v17-boot")},5000)})();</script>
+<link rel="icon" type="image/svg+xml" href="FAV.svg?v=17">
+<link rel="icon" type="image/png" sizes="32x32" href="FAV-32.png?v=17">
+<link rel="icon" type="image/png" sizes="192x192" href="FAV-192.png?v=17">
+<link rel="apple-touch-icon" sizes="180x180" href="FAV-180.png?v=17">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Fraunces:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Fraunces:ital,wght@1,500&family=Google+Sans+Flex:wght@400..800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* ==================================================================
@@ -2217,6 +2219,305 @@ body.wr-on{overflow:hidden}
   .sp-fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .alg-sub{font-size:12px}
 }
+/* ==================================================================
+   v17 LAYER  ·  Premium motion, a phone-first polish, and the Mint look
+   Presentation only. Nothing in this layer reads or writes stored data.
+   html[data-look="mint"] is the new look. html[data-look="classic"]
+   is v16 exactly as it was, plus the motion. The switch lives in the
+   rail (More on a phone) and is kept on this device only.
+   ================================================================== */
+:root{--spring:cubic-bezier(.34,1.3,.5,1);--v17-rise:16px}
+
+/* ---------- Pages arrive in a soft cascade ---------- */
+.page.active{animation:none}
+.page.active>*{animation:v17rise .62s var(--ease) both}
+.page.active>*:nth-child(2){animation-delay:.05s}
+.page.active>*:nth-child(3){animation-delay:.1s}
+.page.active>*:nth-child(4){animation-delay:.15s}
+.page.active>*:nth-child(5){animation-delay:.2s}
+.page.active>*:nth-child(6){animation-delay:.25s}
+.page.active>*:nth-child(7){animation-delay:.3s}
+.page.active>*:nth-child(n+8){animation-delay:.34s}
+@keyframes v17rise{from{opacity:0;transform:translate3d(0,var(--v17-rise),0)}to{opacity:1;transform:none}}
+@media(min-width:821px){
+  @keyframes v17rise{from{opacity:0;transform:translate3d(0,var(--v17-rise),0);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+}
+/* Held until the splash has gone, so the first screen rises into view */
+html.v17-boot .page.active>*{animation-play-state:paused}
+/* Further down the page, blocks rise as they scroll in */
+.page.active .v17-pre{opacity:0;transform:translate3d(0,22px,0);animation:none!important}
+.page.active .v17-in{animation:v17rise .7s var(--ease) both!important}
+
+/* Bars and meters fill in from the left when a page opens */
+.page.active .progress-fill,.page.active .hr-bar i,.page.active .cpd-line i,.page.active .sts-bar i{
+  transform-origin:left center;animation:v17grow 1.1s .18s var(--ease) both}
+@keyframes v17grow{from{transform:scaleX(0)}to{transform:none}}
+
+/* ---------- Touch and pointer feel ---------- */
+.card[onclick],.stat-card[onclick],.feed-row,.alg-row,.cct,.wl-row{transition:transform .22s var(--ease),box-shadow .24s var(--ease),background .2s,border-color .2s}
+.card[onclick]:active,.stat-card[onclick]:active,.cct:active{transform:scale(.985)}
+button,.btn,.chip,.sort-btn{transition:background .2s var(--ease),box-shadow .24s var(--ease),transform .18s var(--ease),color .2s,border-color .2s}
+button:active,.btn:active{transform:scale(.965)}
+.chip.selected{animation:v17pop .36s var(--spring)}
+@keyframes v17pop{0%{transform:scale(.92)}100%{transform:none}}
+.toggle .toggle-knob{transition:left .34s var(--spring),width .2s var(--ease)}
+.toggle:active .toggle-knob{width:25px}
+.toggle.on:active .toggle-knob{left:18px}
+/* A light that follows the pointer across cards, desktop only */
+@media(hover:hover) and (pointer:fine){
+  .card,.stat-card{background-image:radial-gradient(460px circle at var(--mx,-600px) var(--my,-600px),var(--v17-spot,rgba(217,138,43,.07)),transparent 46%)}
+  .btn-primary{background-image:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);background-size:250% 100%;background-position:120% 0;
+    transition:background-color .2s var(--ease),background-position .7s var(--ease),box-shadow .24s var(--ease),transform .18s var(--ease)}
+  .btn-primary:hover{background-position:-20% 0}
+}
+
+/* ---------- The top bar settles in once the page moves ---------- */
+.topbar{transition:box-shadow .3s var(--ease),background .3s var(--ease),border-color .3s}
+body.v17-scrolled .topbar{box-shadow:0 10px 28px -18px rgba(22,36,28,.42)}
+#page-title.v17-swap{animation:v17title .42s var(--ease)}
+@keyframes v17title{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Rows that scroll sideways fade at the edge ---------- */
+.v17-fr{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent)}
+.v17-fl{-webkit-mask-image:linear-gradient(90deg,transparent,#000 34px);mask-image:linear-gradient(90deg,transparent,#000 34px)}
+.v17-fl.v17-fr{-webkit-mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent)}
+
+/* ---------- Pop-ups fade in and out, sheets glide ---------- */
+.modal-overlay{animation:none;opacity:0;pointer-events:none;
+  transition:opacity .34s var(--ease),display .34s allow-discrete,overlay .34s allow-discrete}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+@starting-style{.modal-overlay.open{opacity:0}}
+.modal-overlay .modal{animation:none;opacity:0;transform:translate3d(0,18px,0) scale(.975);
+  transition:transform .46s var(--spring),opacity .3s var(--ease)}
+.modal-overlay.open .modal{opacity:1;transform:none}
+@starting-style{.modal-overlay.open .modal{opacity:0;transform:translate3d(0,18px,0) scale(.975)}}
+@media(max-width:640px){
+  .modal-overlay .modal{opacity:1;transform:translate3d(0,100%,0);transition:transform .5s cubic-bezier(.2,.9,.24,1)}
+  .modal-overlay.open .modal{transform:none}
+  @starting-style{.modal-overlay.open .modal{opacity:1;transform:translate3d(0,100%,0)}}
+  .modal-overlay .modal.v17-drag{transition:none}
+  .modal::before{width:44px;height:5px;border-radius:999px;margin-bottom:12px;cursor:grab}
+  .modal{overscroll-behavior:contain}
+}
+
+/* ---------- Toasts spring up ---------- */
+.toast{animation:v17toast .5s var(--spring) both}
+@keyframes v17toast{from{opacity:0;transform:translate3d(0,22px,0) scale(.94)}to{opacity:1;transform:none}}
+
+/* ---------- Phone tab bar: one highlight that glides between tabs ---------- */
+.v17-ind{display:none}
+@media(max-width:820px){
+  .mnav{isolation:isolate}
+  .v17-ind{display:block;position:absolute;left:0;top:0;width:0;height:0;z-index:0;pointer-events:none;border-radius:var(--radius);
+    background:var(--accent-soft);box-shadow:0 8px 22px -8px rgba(232,178,92,.7);opacity:0;
+    transition:transform .55s var(--spring),width .55s var(--spring),height .3s var(--ease),opacity .25s var(--ease)}
+  .v17-ind.on{opacity:1}
+  .v17-ind::before{content:'';position:absolute;top:-8px;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;
+    background:var(--accent-soft);box-shadow:0 0 12px rgba(232,178,92,.9)}
+  .v17-ind.v17-still{transition:opacity .25s var(--ease)}
+  .mnav.v17-has-ind .mnav-btn{z-index:1;background:transparent!important;box-shadow:none!important;animation:none}
+  .mnav.v17-has-ind .mnav-btn::before{display:none}
+  .mnav.v17-has-ind .mnav-btn.active,.mnav.v17-has-ind .mnav-btn.v17-on{color:var(--ink-deep)}
+  .mnav-btn svg{transition:transform .4s var(--spring)}
+  .mnav-btn.active svg,.mnav-btn.v17-on svg{transform:translateY(-1px) scale(1.06)}
+  /* Bigger, easier taps */
+  .icon-btn{width:38px;height:38px}
+  .feed-row{-webkit-user-select:none;user-select:none}
+}
+
+/* ---------- The Look switch in the rail ---------- */
+.v17-look .v17-sw{display:inline-flex;width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(from 210deg,#E2F07A 0 50%,#16241C 50% 100%);box-shadow:inset 0 0 0 1.5px rgba(22,36,28,.25)}
+html[data-look="classic"] .v17-look .v17-sw{background:conic-gradient(from 210deg,#E8B25C 0 50%,#16241C 50% 100%)}
+body.rail-min .v17-look span:not(.v17-sw){display:none}
+
+@media(prefers-reduced-motion:reduce){
+  .page.active>*,.page.active .v17-in,.toast,.chip.selected,#page-title.v17-swap{animation:none!important}
+  .page.active .v17-pre{opacity:1;transform:none}
+  .page.active .progress-fill,.page.active .hr-bar i,.page.active .cpd-line i,.page.active .sts-bar i{animation:none}
+  .modal-overlay,.modal-overlay .modal,.v17-ind{transition:none!important}
+}
+
+/* ==================================================================
+   THE MINT LOOK
+   Sage paper becomes a soft mint wash, gold becomes a fresh lemon,
+   corners round off, and Google Sans Flex sets everything except the
+   wordmark. Money green and red, and every status colour, keep their
+   meaning.
+   ================================================================== */
+html[data-look="mint"]{
+  --bg:#E4EEE6;--surface:#FFFFFF;--surface-2:#F1F6F2;--surface-3:#E5EEE7;--rail:rgba(255,255,255,.66);
+  --border:rgba(14,38,26,.075);--border-strong:rgba(14,38,26,.15);
+  --txt:#0E1913;--txt-2:#3F4F45;--txt-3:#5A6B60;
+  --blue:#4C680A;--blue-hover:#3B5206;--blue-soft:rgba(186,212,52,.22);
+  --green:#13834D;--green-vivid:#1C9E5E;--green-soft:rgba(28,158,94,.12);
+  --red:#BF3B27;--red-vivid:#CC4630;--red-soft:rgba(204,70,48,.1);
+  --teal:#2F7A6D;
+  --shadow:0 1px 2px rgba(14,38,26,.04),0 8px 22px -12px rgba(14,38,26,.14);
+  --shadow-lg:0 2px 6px rgba(14,38,26,.05),0 24px 48px -20px rgba(14,38,26,.26);
+  --shadow-blue:0 10px 22px -10px rgba(14,25,19,.55);
+  --r-lg:16px;--r-md:12px;--r-sm:11px;--r-card:24px;
+  --accent:#C5DB3A;--accent-deep:#4C680A;--accent-soft:#E2F07A;
+  --fill:#0E1913;--fill-hover:#21352A;--fill-text:#F4F8EE;
+  --ring:rgba(176,204,40,.4);--glass:rgba(232,241,234,.74);--seg-active:#FFFFFF;
+  --sans:'Google Sans Flex','Manrope',-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Arial,sans-serif;
+  --num:'Google Sans Flex','Space Grotesk',-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Arial,sans-serif;
+  --label:'Google Sans Flex','Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
+  --v17-spot:rgba(196,222,60,.13)
+}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"]{
+    --bg:#0B130F;--surface:#131D18;--surface-2:#18251E;--surface-3:#203027;--rail:rgba(14,22,18,.78);
+    --border:rgba(226,242,232,.075);--border-strong:rgba(226,242,232,.15);
+    --txt:#EEF4EF;--txt-2:#B2C1B6;--txt-3:#8C9E92;
+    --blue:#E2F07A;--blue-hover:#EEF7A6;--blue-soft:rgba(226,240,122,.13);
+    --green:#4FD08B;--green-vivid:#4FD08B;--green-soft:rgba(79,208,139,.14);
+    --red:#F28B71;--red-vivid:#F28B71;--red-soft:rgba(242,139,113,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.4);--shadow-lg:0 24px 50px -18px rgba(0,0,0,.6);
+    --fill:#E2F07A;--fill-hover:#EEF7A6;--fill-text:#0E1913;
+    --glass:rgba(11,19,15,.76);--seg-active:#283B30;--v17-spot:rgba(226,240,122,.07)
+  }
+}
+/* The mint wash behind everything, painted once and held still */
+html[data-look="mint"] body{background:var(--bg);letter-spacing:-.003em}
+html[data-look="mint"] body::before{content:'';position:fixed;inset:-10vh -10vw;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(44% 38% at 92% 4%,rgba(232,244,138,.72),transparent 70%),
+    radial-gradient(52% 46% at 0% 34%,rgba(168,218,190,.62),transparent 70%),
+    radial-gradient(48% 40% at 70% 100%,rgba(196,232,206,.75),transparent 72%),
+    var(--bg)}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"] body::before{background:
+    radial-gradient(44% 38% at 92% 4%,rgba(226,240,122,.09),transparent 70%),
+    radial-gradient(52% 46% at 0% 34%,rgba(79,208,139,.08),transparent 70%),
+    var(--bg)}
+}
+html[data-look="mint"] ::selection{background:rgba(226,240,122,.6)}
+
+/* Type: one family, figures always line up */
+html[data-look="mint"] body{font-feature-settings:'tnum' 1}
+html[data-look="mint"] .card-title,html[data-look="mint"] label,html[data-look="mint"] th,html[data-look="mint"] .nav-label{letter-spacing:.07em;font-weight:650}
+html[data-look="mint"] .big-number,html[data-look="mint"] .nwh-value,html[data-look="mint"] .sts-big,html[data-look="mint"] .cpd-big,
+html[data-look="mint"] .cpd-date b,html[data-look="mint"] .to-value,html[data-look="mint"] .hf-num{font-weight:600;letter-spacing:-.04em}
+html[data-look="mint"] .cch-say{font-weight:450;letter-spacing:-.035em}
+html[data-look="mint"] .cch-say b{font-weight:650}
+html[data-look="mint"] h1,html[data-look="mint"] h2,html[data-look="mint"] h3{letter-spacing:-.025em}
+
+/* Rail: frosted glass, the open page sits in a lemon pill */
+html[data-look="mint"] .rail{background:var(--rail);-webkit-backdrop-filter:saturate(170%) blur(22px);backdrop-filter:saturate(170%) blur(22px);border-right-color:var(--border)}
+html[data-look="mint"] .tab{border-radius:12px}
+html[data-look="mint"] .tab:hover{background:rgba(14,38,26,.05)}
+html[data-look="mint"] .tab.active{background:var(--accent-soft);color:#0E1913;box-shadow:0 6px 16px -10px rgba(120,150,20,.7)}
+html[data-look="mint"] .tab.active:hover{background:var(--accent-soft)}
+html[data-look="mint"] .rail-btn{border-radius:12px}
+html[data-look="mint"] .rail-btn:hover{background:rgba(14,38,26,.05)}
+html[data-look="mint"] .brand-mark{border-radius:11px}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"] .tab:hover,html[data-look="mint"] .rail-btn:hover{background:rgba(226,242,232,.06)}
+}
+
+/* Top bar */
+html[data-look="mint"] .topbar{border-bottom-color:transparent}
+html[data-look="mint"] body.v17-scrolled .topbar{border-bottom-color:var(--border)}
+html[data-look="mint"] .ghost-btn{background:rgba(255,255,255,.72);border-color:var(--border);box-shadow:0 1px 2px rgba(14,38,26,.05);border-radius:12px}
+html[data-look="mint"] .ghost-btn:hover{background:var(--accent-soft);color:#0E1913}
+html[data-look="mint"] .rail-open{border-radius:12px;background:rgba(255,255,255,.72)}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"] .ghost-btn,html[data-look="mint"] .rail-open{background:rgba(226,242,232,.06)}
+}
+
+/* Cards: rounder, lighter, lifted by shadow instead of lines */
+html[data-look="mint"] .card,html[data-look="mint"] .stat-card,html[data-look="mint"] .goal-card,
+html[data-look="mint"] .cch,html[data-look="mint"] .wrb,html[data-look="mint"] .pf-hero,html[data-look="mint"] .nw-hero,
+html[data-look="mint"] .total-out-bar,html[data-look="mint"] #quick-log-card{border-radius:var(--r-card)!important}
+html[data-look="mint"] .card,html[data-look="mint"] .stat-card,html[data-look="mint"] .goal-card,html[data-look="mint"] .cch{border-color:rgba(255,255,255,.7);box-shadow:var(--shadow)}
+html[data-look="mint"] .card:hover{border-color:rgba(255,255,255,.9);box-shadow:var(--shadow-lg)}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"] .card,html[data-look="mint"] .stat-card,html[data-look="mint"] .goal-card,html[data-look="mint"] .cch{border-color:var(--border)}
+}
+html[data-look="mint"] .modal{border-radius:26px}
+html[data-look="mint"] .hr-card,html[data-look="mint"] .crd-pill,html[data-look="mint"] .pay-opt,html[data-look="mint"] .imp-sum>*{border-radius:16px}
+html[data-look="mint"] .tag{border-radius:999px;padding:3px 10px}
+html[data-look="mint"] .progress-bar{height:8px}
+
+/* Controls */
+html[data-look="mint"] input,html[data-look="mint"] select,html[data-look="mint"] textarea{border-radius:14px;border-color:var(--border-strong);background:var(--surface)}
+html[data-look="mint"] input:focus,html[data-look="mint"] select:focus,html[data-look="mint"] textarea:focus{border-color:#8FAE16;box-shadow:0 0 0 4px var(--ring)}
+html[data-look="mint"] .btn,html[data-look="mint"] button.btn{border-radius:14px}
+html[data-look="mint"] .btn-primary{box-shadow:var(--shadow-blue)}
+html[data-look="mint"] .btn-primary:hover{box-shadow:0 14px 26px -12px rgba(14,25,19,.6)}
+html[data-look="mint"] .btn-secondary{background:var(--surface-3)}
+html[data-look="mint"] .btn-secondary:hover,html[data-look="mint"] .icon-btn:hover,html[data-look="mint"] .chip:hover{background:var(--accent-soft);color:#0E1913}
+html[data-look="mint"] .icon-btn{border-radius:12px}
+html[data-look="mint"] .chip{border-radius:999px;background:var(--surface-3)}
+html[data-look="mint"] .chip.selected{background:var(--fill);color:var(--fill-text);box-shadow:var(--shadow-blue)}
+html[data-look="mint"] .sort-btn{border-radius:999px}
+html[data-look="mint"] .segment{border-radius:16px;padding:4px;background:var(--surface-3)}
+html[data-look="mint"] .segment button{border-radius:12px}
+html[data-look="mint"] .segment button.active{box-shadow:0 1px 2px rgba(14,38,26,.08),0 6px 14px -8px rgba(14,38,26,.25)}
+html[data-look="mint"] .toggle.on{background:#1C9E5E}
+html[data-look="mint"] #log-add-btn{border-radius:16px}
+html[data-look="mint"] button:focus-visible,html[data-look="mint"] .btn:focus-visible,html[data-look="mint"] .tab:focus-visible,
+html[data-look="mint"] .ghost-btn:focus-visible,html[data-look="mint"] .chip:focus-visible{outline:2px solid #8FAE16;outline-offset:2px}
+
+/* Headline: the first sentence on Home sits on lemon, like a balance card */
+html[data-look="mint"] #h-overview .cch-main{background:linear-gradient(140deg,#F2F7A4 0%,#E6F084 55%,#DCEB72 100%)}
+html[data-look="mint"] #h-overview .cch-main::after{background:radial-gradient(circle,rgba(255,255,255,.55),transparent 68%)}
+html[data-look="mint"] #h-overview .cch-say,html[data-look="mint"] #h-overview .cch-sub b{color:#0E1913}
+html[data-look="mint"] #h-overview .cch-sub{color:#3A4A20}
+html[data-look="mint"] #h-overview .cch-orb{background:rgba(255,255,255,.55)}
+html[data-look="mint"] #h-overview .cch-acts .btn-ghost{box-shadow:inset 0 0 0 1.5px #0E1913;color:#0E1913;background:rgba(255,255,255,.35)}
+html[data-look="mint"] #h-overview .cch-acts .btn-ghost:hover{background:#0E1913;color:#F4F8EE}
+/* Every other headline gets a faint lemon morning light */
+html[data-look="mint"] .cch-main{background:radial-gradient(120% 140% at 0% 0%,rgba(226,240,122,.28),transparent 55%)}
+html[data-look="mint"] .cch::before{width:5px;border-radius:0 4px 4px 0;top:18px;bottom:18px}
+@media(prefers-color-scheme:dark){
+  html[data-look="mint"] #h-overview .cch-main{background:linear-gradient(140deg,#2B3612 0%,#1C2612 60%,#161F12 100%)}
+  html[data-look="mint"] #h-overview .cch-say,html[data-look="mint"] #h-overview .cch-sub b{color:#F2F8C8}
+  html[data-look="mint"] #h-overview .cch-sub{color:#C9D3A0}
+  html[data-look="mint"] #h-overview .cch-orb{background:rgba(226,240,122,.12)}
+  html[data-look="mint"] #h-overview .cch-acts .btn-ghost{box-shadow:inset 0 0 0 1.5px #E2F07A;color:#E2F07A;background:transparent}
+  html[data-look="mint"] .cch-main{background:radial-gradient(120% 140% at 0% 0%,rgba(226,240,122,.07),transparent 55%)}
+}
+/* Dark panels keep the forest, lit with lemon instead of gold */
+html[data-look="mint"] .cpd-k{color:#E2F07A}
+html[data-look="mint"] .cpd-btn{background:#E2F07A;color:#0E1913}
+html[data-look="mint"] .wrb{background:radial-gradient(120% 160% at 100% 0%,rgba(226,240,122,.34),transparent 55%),linear-gradient(135deg,#1F3327,#12201A)}
+html[data-look="mint"] .wrb-play{background:#E2F07A;border-radius:14px}
+html[data-look="mint"] .crd-util-track i{background:#E2F07A}
+html[data-look="mint"] .xp-opt.lead .xp-ico{background:rgba(226,240,122,.16)}
+html[data-look="mint"] .toast .tact:hover{background:rgba(226,240,122,.16)}
+html[data-look="mint"] .toast{border-radius:18px}
+
+/* Phone tab bar: deep ink with a lemon highlight */
+@media(max-width:820px){
+  html[data-look="mint"] .mnav{background:rgba(12,21,16,.96);border-top-color:rgba(226,242,232,.08)}
+  html[data-look="mint"] .mnav-btn{border-radius:16px}
+  html[data-look="mint"] .v17-ind{border-radius:16px;background:#E2F07A;box-shadow:0 10px 24px -10px rgba(214,236,90,.75)}
+  html[data-look="mint"] .v17-ind::before{background:#E2F07A;box-shadow:0 0 14px rgba(226,240,122,.9)}
+  html[data-look="mint"] .mnav.v17-has-ind .mnav-btn.active,html[data-look="mint"] .mnav.v17-has-ind .mnav-btn.v17-on{color:#0E1913}
+  html[data-look="mint"] .page{padding-left:14px;padding-right:14px}
+  html[data-look="mint"] .card,html[data-look="mint"] .stat-card,html[data-look="mint"] .cch,html[data-look="mint"] #quick-log-card{--r-card:22px}
+}
+@media(max-width:640px){
+  html[data-look="mint"] .modal,html[data-look="mint"] .modal.wide{border-radius:28px 28px 0 0}
+}
+
+/* Splash in the Mint look */
+html[data-look="mint"] #splash .a1{background:radial-gradient(circle,#E2F07A,transparent 66%)}
+html[data-look="mint"] #splash .a2{background:radial-gradient(circle,#CFE8D6,transparent 66%)}
+html[data-look="mint"] #splash .a3{background:radial-gradient(circle,#8FCBA9,transparent 68%)}
+html[data-look="mint"] .sp-fill{background:linear-gradient(90deg,#1F3327,#7FA61C 55%,#E2F07A);box-shadow:0 0 14px rgba(196,222,60,.5)}
+html[data-look="mint"] .sp-track{background:rgba(14,38,26,.08)}
+
+/* The rail's monogram matches the new icon */
+.brand-mark.v17-mark{color:#E8B25C;font-size:0}
+.brand-mark.v17-mark svg{width:24px;height:24px;display:block}
+html[data-look="mint"] .brand-mark.v17-mark{color:#E2F07A;background:linear-gradient(150deg,#244432,#0C1811);box-shadow:0 6px 16px -6px rgba(12,24,17,.55)}
+
+/* Rail items read left to right, like a list (they were centred by the global button rule) */
+.tab,.rail-btn{justify-content:flex-start}
+.brand-mark.v17-mark svg{width:26px;height:26px}
 </style>
 
 </head>
@@ -2234,7 +2535,7 @@ body.wr-on{overflow:hidden}
 <div class="shell">
 <aside class="rail" id="rail">
   <div class="brand">
-    <div class="brand-mark">&#8377;</div>
+    <div class="brand-mark v17-mark"><svg viewBox="28 30 136 136" width="22" height="22" aria-hidden="true" fill="currentColor"><path transform="translate(36.572 150.000) scale(0.077143 -0.077143)" d="M1328 961Q1315 854 1264.5 767.5Q1214 681 1132.5 619.5Q1051 558 943.0 525.0Q835 492 705 492Q620 492 568.5 507.0Q517 522 467 548L473 562Q531 534 577.0 524.5Q623 515 671 515Q774 515 855.5 563.5Q937 612 994.0 713.5Q1051 815 1078 973Q1103 1121 1079.0 1211.0Q1055 1301 996.0 1342.0Q937 1383 856 1383Q807 1383 776.5 1364.5Q746 1346 734 1307Q728 1291 708.5 1219.0Q689 1147 659.5 1038.5Q630 930 596.0 804.5Q562 679 529.0 553.5Q496 428 467.5 322.0Q439 216 421.5 148.0Q404 80 401 69Q397 53 403.0 42.0Q409 31 426 29L560 17Q567 16 570.5 14.0Q574 12 574 8Q574 4 570.5 2.0Q567 0 560 0H-14Q-19 0 -22.0 1.5Q-25 3 -25 7Q-25 10 -22.5 12.5Q-20 15 -13 16L77 27Q98 29 108.5 41.0Q119 53 127 74Q130 84 149.0 153.0Q168 222 197.5 329.5Q227 437 262.5 564.5Q298 692 332.5 820.0Q367 948 397.0 1057.5Q427 1167 446.0 1238.5Q465 1310 467 1323Q472 1345 465.0 1357.0Q458 1369 436 1372L347 1384Q338 1385 335.5 1387.5Q333 1390 333 1393Q333 1397 336.5 1398.5Q340 1400 347 1400H903Q1008 1400 1092.0 1369.0Q1176 1338 1233.0 1280.5Q1290 1223 1315.5 1142.0Q1341 1061 1328 961Z"/><circle cx="144" cy="141" r="11.5"/></svg></div>
     <div class="brand-txt"><b>Pratim&#39;s</b><span>Finance Tracker</span></div>
   </div>
   <nav class="tabs" aria-label="Sections">
@@ -9794,6 +10095,285 @@ setInterval(()=>{bkDaily()},30*60000);
     },240);
   }
   requestAnimationFrame(tick);
+})();
+</script>
+<script>
+// ==================================================================
+// v17  ·  Premium motion, phone polish and the Look switch.
+// Presentation only: this block never reads or writes the ledger, never
+// calls S(), and never touches a pft_ key. It watches the page through
+// observers instead of changing any existing function. The only thing it
+// keeps is the chosen look, under its own key on this device.
+// ==================================================================
+(function(){
+  var root=document.documentElement;
+  var RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+  var PHONE=window.matchMedia?matchMedia('(max-width: 820px)'):{matches:false};
+  var FINE=window.matchMedia?matchMedia('(hover: hover) and (pointer: fine)'):{matches:false};
+  function safe(fn){return function(){try{return fn.apply(this,arguments)}catch(e){console.warn('v17',e)}}}
+
+  // ---------- The Look switch ----------
+  var LOOK_KEY='pfx_look';
+  var LOOKS={mint:{name:'Mint',light:'#E4EEE6',dark:'#0B130F'},classic:{name:'Classic',light:'#F1F4EC',dark:'#14201A'}};
+  function look(){var l=root.getAttribute('data-look');return LOOKS[l]?l:'mint'}
+  function paintThemeColor(){
+    var L=LOOKS[look()];
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){
+      m.setAttribute('content',/dark/.test(m.getAttribute('media')||'')?L.dark:L.light)});
+  }
+  function paintLookBtn(){
+    var b=document.getElementById('v17-look-lbl');if(b)b.textContent='Look: '+LOOKS[look()].name;
+  }
+  function chartsFollowLook(){
+    if(!window.Chart)return;
+    var cs=getComputedStyle(root);
+    var v=function(n,d){var x=cs.getPropertyValue(n).trim();return x||d};
+    Chart.defaults.font.family=v('--sans','Manrope,-apple-system,sans-serif');
+    Chart.defaults.color=v('--txt-2','#4B5A4E');
+    Chart.defaults.borderColor=v('--border','rgba(22,36,28,.14)');
+    Chart.defaults.plugins.tooltip.cornerRadius=look()==='mint'?12:4;
+    Chart.defaults.plugins.tooltip.backgroundColor=look()==='mint'?'rgba(14,25,19,.94)':'rgba(22,36,28,.94)';
+  }
+  window.setLook=safe(function(l){
+    if(!LOOKS[l])return;
+    root.setAttribute('data-look',l);
+    try{localStorage.setItem(LOOK_KEY,l)}catch(e){}
+    paintThemeColor();paintLookBtn();chartsFollowLook();
+    // Charts pick up the new type and colours on the next draw. renderAll is what every tab switch already runs.
+    if(typeof renderAll==='function')renderAll();
+    placeInd(true);
+    if(typeof toast==='function')toast(LOOKS[l].name+' look on','Only this device changes. Your data is untouched.',null,null,2600);
+  });
+  window.cycleLook=function(){setLook(look()==='mint'?'classic':'mint')};
+  var addLookBtn=safe(function(){
+    var foot=document.querySelector('.rail-foot');if(!foot||document.getElementById('v17-look'))return;
+    var b=document.createElement('button');
+    b.className='rail-btn v17-look';b.id='v17-look';b.type='button';
+    b.title='Switch between the Mint look and the Classic look';
+    b.innerHTML='<span class="v17-sw" aria-hidden="true"></span><span id="v17-look-lbl"></span>';
+    b.addEventListener('click',function(){cycleLook()});
+    var snd=document.getElementById('sfx-btn');
+    foot.insertBefore(b,snd?snd.nextSibling:null);
+    paintLookBtn();
+  });
+
+  // ---------- Money that rolls up to its value ----------
+  // Only the text of a figure moves, never its markup. It starts near the final
+  // value (never from zero) and stops the moment the app writes a new value.
+  var NUM_SEL='.big-number,.cch-say .amt,.sts-big,.nwh-value,.cpd-big,.to-value,.hf-num,.metric .v,.pf-chips .v,.fl-mfig .v,.coll-head .cv,.bm-hero,.cpd-tot,.score-num .n';
+  var RX=/^(\s*[^\d\s]{0,3}\s*)(\d{1,3}(?:,\d{2,3})+|\d{3,})(\.\d+)?(.{0,6})$/;
+  function grouped(n,dec,style){
+    if(style==='in')return n.toLocaleString('en-IN',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    if(style==='us')return n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    return n.toFixed(dec);
+  }
+  function rollNode(node){
+    var t=node.data,m=RX.exec(t);if(!m)return;
+    var ints=m[2],dec=m[3]?m[3].length-1:0;
+    var target=parseFloat(ints.replace(/,/g,'')+(m[3]||''));
+    if(!(target>=100)||!isFinite(target))return;
+    var style=/,\d\d,/.test(ints)||/^\d{1,2},\d\d,/.test(ints)?'in':(ints.indexOf(',')>=0?'us':'none');
+    if(style==='us'&&/^\d{1,3},\d{3}$/.test(ints)&&target<100000)style='in';
+    var from=target*0.86,t0=0,dur=target>99999?1100:900;
+    // The starting figure is written straight away, before the screen paints, so the
+    // final value is never shown first and then wound back
+    var fmtv=function(v){return m[1]+grouped(dec?v:Math.round(v),dec,style)+m[4]};
+    var last=fmtv(from),done=false;node.data=last;
+    var step=function(now){
+      if(done||!node.isConnected||node.data!==last)return; // the app has rewritten it, leave it alone
+      if(!t0)t0=now;
+      var p=Math.min(1,(now-t0)/dur),e=p===1?1:1-Math.pow(2,-10*p);
+      var v=from+(target-from)*e;
+      last=p<1?fmtv(v):t;
+      node.data=last;
+      if(p<1)requestAnimationFrame(step);else done=true;
+    };
+    requestAnimationFrame(step);
+    // Belt and braces: if frames stall (a hidden tab), the true figure still lands
+    setTimeout(function(){if(!done&&node.isConnected&&node.data===last){done=true;node.data=t}},dur+700);
+  }
+  function rollIn(scope){
+    if(RM.matches||!scope)return;
+    var els=scope.matches&&scope.matches(NUM_SEL)?[scope]:scope.querySelectorAll(NUM_SEL);
+    Array.prototype.forEach.call(els,function(el){
+      if(el.closest('#page-cards')||el.dataset.v17Rolled==='1')return;
+      var r=el.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>innerHeight)return;
+      el.dataset.v17Rolled='1';
+      var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null),n,done=0;
+      while((n=w.nextNode())&&done<2){if(/\d/.test(n.data)&&RX.test(n.data)){rollNode(n);done++}}
+    });
+  }
+  function clearRolled(page){page.querySelectorAll('[data-v17-rolled]').forEach(function(el){delete el.dataset.v17Rolled})}
+
+  // ---------- Blocks further down rise as they scroll in ----------
+  var io=null;
+  function revealSetup(page){
+    if(io){io.disconnect();io=null}
+    document.querySelectorAll('.v17-pre').forEach(function(el){el.classList.remove('v17-pre')});
+    if(RM.matches||!('IntersectionObserver' in window)||!page)return;
+    var list=[];
+    Array.prototype.forEach.call(page.children,function(c){
+      if(/\bgrid\b|\bov-now\b/.test(c.className)&&c.children.length>1)Array.prototype.push.apply(list,c.children);
+      else list.push(c);
+    });
+    var vh=innerHeight;
+    io=new IntersectionObserver(function(ents){
+      ents.forEach(function(en){
+        if(!en.isIntersecting)return;
+        var el=en.target;io&&io.unobserve(el);
+        rollIn(el);
+        el.classList.remove('v17-pre');el.classList.add('v17-in');
+        setTimeout(function(){el.classList.remove('v17-in')},900);
+      });
+    },{rootMargin:'0px 0px -6% 0px',threshold:0.01});
+    list.forEach(function(el){
+      var r=el.getBoundingClientRect();
+      if(r.height&&r.top>vh*0.98){el.classList.add('v17-pre');io.observe(el)}
+    });
+  }
+
+  // ---------- When a page opens ----------
+  var lastPage=null;
+  var onPage=safe(function(page,first){
+    if(!page)return;
+    clearRolled(page);
+    // This runs right after the app has drawn the page and before the screen paints
+    revealSetup(page);rollIn(page);
+    var t=document.getElementById('page-title');
+    if(t&&!first&&!RM.matches){t.classList.remove('v17-swap');void t.offsetWidth;t.classList.add('v17-swap')}
+    placeInd(first);
+    lastPage=page;
+  });
+  var pages=document.querySelector('.pages');
+  if(pages&&'MutationObserver' in window){
+    new MutationObserver(function(muts){
+      for(var i=0;i<muts.length;i++){
+        var el=muts[i].target;
+        if(el.classList&&el.classList.contains('page')&&el.classList.contains('active')&&el!==lastPage){onPage(el);break}
+      }
+    }).observe(pages,{subtree:true,attributes:true,attributeFilter:['class']});
+  }
+
+  // ---------- Phone tab bar: one gliding highlight ----------
+  var ind=null;
+  var placeInd=safe(function(instant){
+    var nav=document.getElementById('mnav');if(!nav)return;
+    if(!ind){ind=document.createElement('span');ind.className='v17-ind';ind.setAttribute('aria-hidden','true');nav.insertBefore(ind,nav.firstChild);nav.classList.add('v17-has-ind')}
+    if(!PHONE.matches){ind.classList.remove('on');return}
+    var more=document.getElementById('mnav-more');
+    var btn=nav.querySelector('.mnav-btn.active');
+    if(!btn){
+      // At start the app shows the logbook without marking its tab, so go by the open page
+      var pg=document.querySelector('.page.active'),id=pg?pg.id.replace(/^page-/,''):'';
+      btn=id?nav.querySelector('.mnav-btn[data-mnav="'+id+'"]'):null;
+      if(btn)btn.classList.add('v17-on');
+    }
+    nav.querySelectorAll('.mnav-btn.v17-on').forEach(function(b){if(b!==btn)b.classList.remove('v17-on')});
+    if(more&&!btn)more.classList.add('v17-on');
+    if(!btn)btn=more;
+    if(!btn||!btn.offsetWidth){ind.classList.remove('on');return}
+    if(instant||RM.matches)ind.classList.add('v17-still');
+    ind.style.width=btn.offsetWidth+'px';ind.style.height=btn.offsetHeight+'px';
+    ind.style.transform='translate3d('+btn.offsetLeft+'px,'+btn.offsetTop+'px,0)';
+    ind.classList.add('on');
+    if(instant||RM.matches)requestAnimationFrame(function(){requestAnimationFrame(function(){ind.classList.remove('v17-still')})});
+  });
+  window.addEventListener('resize',function(){placeInd(true);fadeRows()});
+
+  // ---------- A tiny tap you can feel, on Android ----------
+  var buzz=function(ms){try{if(navigator.vibrate&&PHONE.matches&&!RM.matches)navigator.vibrate(ms)}catch(e){}};
+  document.addEventListener('click',function(e){
+    var t=e.target&&e.target.closest?e.target.closest('.mnav-btn,.chip,.segment button,.toggle,#log-add-btn,.btn-primary'):null;
+    if(t)buzz(t.matches('#log-add-btn,.btn-primary')?12:6);
+  },true);
+
+  // ---------- Pointer light on cards (desktop) ----------
+  if(FINE.matches&&!RM.matches){
+    var raf=0,lastE=null;
+    document.addEventListener('pointermove',function(e){
+      lastE=e;if(raf)return;
+      raf=requestAnimationFrame(function(){
+        raf=0;var c=lastE.target&&lastE.target.closest?lastE.target.closest('.card,.stat-card'):null;if(!c)return;
+        var r=c.getBoundingClientRect();c.style.setProperty('--mx',(lastE.clientX-r.left)+'px');c.style.setProperty('--my',(lastE.clientY-r.top)+'px');
+      });
+    },{passive:true});
+  }
+
+  // ---------- Top bar shadow once the page scrolls ----------
+  var sc=false;
+  window.addEventListener('scroll',function(){var s=scrollY>6;if(s!==sc){sc=s;document.body.classList.toggle('v17-scrolled',s)}},{passive:true});
+
+  // ---------- Sideways rows fade at the edge that has more ----------
+  var ROWS='.page>.section-header:first-child>div,.filter-pills,.soon-row,.range-pills,.pf-chips,.to-break';
+  function fadeOne(el){
+    var o=el.scrollWidth-el.clientWidth>4;
+    el.classList.toggle('v17-fl',o&&el.scrollLeft>4);
+    el.classList.toggle('v17-fr',o&&el.scrollLeft<el.scrollWidth-el.clientWidth-4);
+  }
+  var fadeRows=safe(function(){document.querySelectorAll(ROWS).forEach(fadeOne)});
+  document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&t.matches&&t.matches(ROWS))fadeOne(t)},{capture:true,passive:true});
+
+  // ---------- Number pads for money on a phone ----------
+  var numPads=safe(function(){
+    document.querySelectorAll('input[type="number"]:not([inputmode])').forEach(function(i){i.setAttribute('inputmode','decimal')});
+  });
+
+  // ---------- Sheets: pull the handle down to close ----------
+  // Same as pressing Escape: the sheet closes, nothing is saved or deleted.
+  (function(){
+    var m=null,ov=null,y0=0,dy=0,t0=0,on=false;
+    document.addEventListener('touchstart',function(e){
+      if(!PHONE.matches||e.touches.length!==1)return;
+      var t=e.target&&e.target.closest?e.target.closest('.modal-overlay.open .modal'):null;if(!t)return;
+      var r=t.getBoundingClientRect(),y=e.touches[0].clientY;
+      if(y-r.top>56||t.scrollTop>0)return; // only from the handle and title strip
+      if(e.target.closest('input,select,textarea,button,a,[contenteditable]'))return;
+      m=t;ov=t.closest('.modal-overlay');y0=y;dy=0;t0=Date.now();on=true;
+    },{passive:true});
+    document.addEventListener('touchmove',function(e){
+      if(!on||!m)return;
+      dy=Math.max(0,e.touches[0].clientY-y0);
+      if(dy>4){m.classList.add('v17-drag');m.style.transform='translate3d(0,'+dy+'px,0)';if(ov)ov.style.opacity=String(Math.max(.35,1-dy/600))}
+    },{passive:true});
+    var end=function(){
+      if(!on||!m)return;on=false;
+      var v=dy/Math.max(1,Date.now()-t0),sheet=m,o=ov;m=null;ov=null;
+      sheet.classList.remove('v17-drag');
+      if(dy>120||(dy>40&&v>.55)){
+        sheet.style.transform='';if(o){o.style.opacity='';o.classList.remove('open')}
+        buzz(8);
+      }else{sheet.style.transform='';if(o)o.style.opacity=''}
+    };
+    document.addEventListener('touchend',end,{passive:true});
+    document.addEventListener('touchcancel',end,{passive:true});
+  })();
+
+  // ---------- Start ----------
+  var boot=safe(function(){
+    paintThemeColor();chartsFollowLook();addLookBtn();numPads();fadeRows();placeInd(true);
+    // Late renders add rows and inputs. Keep them in step without touching what they hold.
+    if('MutationObserver' in window){
+      var q=0;new MutationObserver(function(){if(q)return;q=setTimeout(function(){q=0;numPads();fadeRows()},250)})
+        .observe(document.querySelector('.main')||document.body,{childList:true,subtree:true});
+    }
+  });
+  boot();
+  // Let the first screen rise once the splash has gone
+  var release=safe(function(){
+    if(!root.classList.contains('v17-boot'))return;
+    root.classList.remove('v17-boot');
+    var p=document.querySelector('.page.active');if(p)onPage(p,true);
+  });
+  var sp=document.getElementById('splash');
+  if(!sp)release();
+  else{
+    var mo=new MutationObserver(function(){if(!sp.isConnected||sp.classList.contains('hide')){mo.disconnect();setTimeout(release,120)}});
+    mo.observe(sp,{attributes:true,attributeFilter:['class']});
+    mo.observe(document.body,{childList:true});
+    setTimeout(release,4000);
+  }
+  // Fonts can change widths after load; keep the tab highlight on its tab
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){placeInd(true);fadeRows()});
 })();
 </script>
 </body>
