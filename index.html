@@ -27,7 +27,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* ==================================================================
-   PRATIM'S FINANCE TRACKER  ·  v18
+   PRATIM'S FINANCE TRACKER  ·  v19
    One look, shared with the client task board: sage paper with soft mint light,
    rounded glass surfaces, a green brand, gold only where something is current.
    Figures set in Space Grotesk, labels in Space Mono, headings in Urbanist, body in Inter.
@@ -2591,6 +2591,104 @@ html.v17-boot .page.active>*{animation-play-state:paused}
 .fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(var(--safe-b) + 84px);left:auto;top:auto;z-index:99;width:58px;height:58px;border-radius:20px;background:var(--fill);color:var(--fill-text);
   display:none;align-items:center;justify-content:center;padding:0;border:none;cursor:pointer;font-size:0;box-shadow:0 16px 30px -12px rgba(21,102,80,.9),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .15s var(--spring)}
 @media(max-width:820px){.fab{display:flex!important}body.on-logbook .fab{display:none!important}body:has(.modal-overlay.open) .fab{display:none!important}}
+/* =========================================================================
+   v19 LAYER  ·  Cards paid from funds, and a calmer sidebar
+   The rail: the open page sits in a soft green pill, each page can carry
+   a small live figure (what is safe to spend, what a card owes, what is
+   owed to you), and the quiet tools at the bottom fold into a two-column
+   grid so every page stays in view. On a phone the drawer scrolls as one
+   piece, has its own close button, and swipes shut.
+   ========================================================================= */
+.tab{min-height:42px;padding:7px 10px 7px 8px;gap:11px;font-size:14px}
+.tab svg{width:30px;height:30px;padding:5.5px;border-radius:10px;transition:background .2s,color .2s,transform .2s var(--spring)}
+.tab:hover svg{background:var(--surface)}
+.tab.active{background:var(--brand-soft);color:var(--txt)}
+.tab.active::before{left:-2px;top:11px;bottom:11px}
+.tab.active svg{background:var(--surface);color:var(--brand);box-shadow:0 1px 2px rgba(19,33,26,.08),0 4px 10px -6px rgba(19,33,26,.25)}
+.tab-txt{flex:1;min-width:0}
+.tab-badge{margin-left:auto;flex-shrink:0;font-family:var(--num);font-size:11px;font-weight:650;line-height:1;padding:5px 7px;border-radius:999px;
+  background:var(--surface-2);color:var(--txt-2);border:1px solid var(--border);white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis}
+.tab-badge:empty{display:none}
+.tab-badge.is-red{background:var(--red-soft);color:var(--red);border-color:transparent}
+.tab-badge.is-amber{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+.tab-badge.is-green{background:var(--green-soft);color:var(--green);border-color:transparent}
+body.priv .tab-badge{filter:blur(5px)}
+body.rail-min .tab-badge{position:absolute;top:6px;right:8px;width:8px;height:8px;padding:0;font-size:0;border:2px solid var(--rail)}
+body.rail-min .tab-badge.is-red{background:var(--red-vivid)}
+body.rail-min .tab-badge.is-amber{background:var(--gold)}
+body.rail-min .tab-badge.is-green,body.rail-min .tab-badge:not(.is-red):not(.is-amber){display:none}
+.nav-label{display:flex;align-items:center;gap:8px;padding:12px 10px 6px}
+.nav-label::after{content:"";flex:1;height:1px;background:var(--border)}
+body.rail-min .nav-label::after{display:none}
+.nav-group{padding:0 0 4px}
+
+/* The quiet tools: a tidy grid instead of a long list */
+.rail-foot{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-top:10px}
+.rail-foot .sync{grid-column:1/-1;background:var(--surface-2);border-radius:12px;padding:8px 12px}
+.rail-btn{padding:8px 10px;min-height:38px;border-radius:12px;font-size:12px;min-width:0}
+.rail-btn span{overflow:hidden;text-overflow:ellipsis}
+.rail-foot .rail-collapse{grid-column:1/-1}
+body.rail-min .rail-foot{grid-template-columns:1fr}
+.rail-x{display:none}
+
+@media(max-width:1080px){
+  .rail{width:min(86vw,330px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    border-radius:0 26px 26px 0;border-right:none;padding:calc(14px + var(--safe-t)) 14px calc(16px + var(--safe-b)) 16px;
+    transition:transform .38s var(--ease),box-shadow .38s var(--ease)}
+  body.rail-min .rail{width:min(86vw,330px);padding-left:16px;padding-right:14px}
+  body.rail-min .brand-txt,body.rail-min .tab-txt,body.rail-min .rail-search span,body.rail-min .rail-search kbd,body.rail-min .sync span,body.rail-min .rail-btn span{display:revert}
+  body.rail-min .tab,body.rail-min .rail-btn{justify-content:flex-start;padding:7px 10px 7px 8px}
+  body.rail-min .nav-label{opacity:1;height:auto;padding:12px 10px 6px}
+  body.rail-min .rail-foot{grid-template-columns:1fr 1fr}
+  body.rail-min .tab-badge{position:static;width:auto;height:auto;padding:5px 7px;font-size:11px;border:1px solid var(--border)}
+  .rail>*{flex-shrink:0}
+  .rail-search{height:44px;margin-bottom:6px}
+  .tabs{flex:none;overflow:visible}
+  .tab{min-height:48px;font-size:15px}
+  .rail-btn{min-height:44px}
+  .rail-x{display:inline-flex;margin-left:auto;width:40px;height:40px;border-radius:13px;border:1px solid var(--border);background:var(--surface-2);
+    color:var(--txt-2);align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:none;flex-shrink:0}
+  .rail-x svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .brand{padding:2px 2px 14px}
+  .rail-search kbd{display:none}
+  body.rail-open{overflow:hidden}
+  body.rail-open .fab,body.rail-open .mnav{opacity:0;pointer-events:none}
+  .fab,.mnav{transition:opacity .2s}
+  .scrim{transition:opacity .3s}
+}
+
+/* Fund-paid card spends */
+.cct-fund{display:flex;gap:7px;align-items:flex-start;font-size:12px;line-height:1.45;font-weight:550;color:var(--green);background:var(--green-soft);border-radius:10px;padding:8px 10px}
+.cct-fund .cc-tick{width:15px;height:15px;flex-shrink:0;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cct-fund b{font-family:var(--num);font-weight:700}
+.ccp-fund{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--green-soft);color:var(--green)}
+.sts-r.is-info b{color:var(--green)}
+.sts-r.is-info b::before{content:"✓ ";font-family:var(--sans)}
+.pw-from{margin-top:10px}
+
+/* Phone polish: nothing wider than the screen, roomy tap targets, sheets that respect the notch */
+@media(max-width:640px){
+  html,body{overflow-x:hidden}
+  .chip-row{gap:8px}
+  .chip{min-height:42px;padding:9px 14px}
+  .pw-row .chip-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0;padding:2px 0 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .pw-row .chip-row::-webkit-scrollbar{display:none}
+  .pw-row .chip{flex-shrink:0;scroll-snap-align:start}
+  .hero-acts{display:grid;grid-template-columns:1fr;gap:8px}
+  .hero-acts .btn{width:100%;justify-content:center;min-height:46px}
+  .fund-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .fund-acts .btn,.fund-acts .done-btn{width:100%;justify-content:center;min-height:42px}
+  .fund-acts .fund-edit{position:absolute;top:14px;right:14px}
+  .fund{position:relative}
+  .fund-id{padding-right:46px}
+  .page .section-header{flex-wrap:wrap;gap:10px}
+  .page .section-header>div[style*="display:flex"]{width:100%;min-width:0}
+  .page .section-header>div[style*="display:flex"]>.btn,.page .section-header>div[style*="display:flex"]>select{flex:1 1 auto;min-width:0;justify-content:center}
+  .fund-nums{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .modal{max-height:calc(100dvh - var(--safe-t) - 12px);overflow-y:auto;overscroll-behavior:contain}
+  .topbar .actions{gap:6px}
+  .ghost-btn{width:40px;height:40px}
+}
 </style>
 </head>
 <body>
@@ -2610,6 +2708,7 @@ html.v17-boot .page.active>*{animation-play-state:paused}
   <div class="brand">
     <div class="brand-mark"><svg viewBox="28 30 136 136" width="22" height="22" aria-hidden="true" fill="currentColor"><path transform="translate(36.572 150.000) scale(0.077143 -0.077143)" d="M1328 961Q1315 854 1264.5 767.5Q1214 681 1132.5 619.5Q1051 558 943.0 525.0Q835 492 705 492Q620 492 568.5 507.0Q517 522 467 548L473 562Q531 534 577.0 524.5Q623 515 671 515Q774 515 855.5 563.5Q937 612 994.0 713.5Q1051 815 1078 973Q1103 1121 1079.0 1211.0Q1055 1301 996.0 1342.0Q937 1383 856 1383Q807 1383 776.5 1364.5Q746 1346 734 1307Q728 1291 708.5 1219.0Q689 1147 659.5 1038.5Q630 930 596.0 804.5Q562 679 529.0 553.5Q496 428 467.5 322.0Q439 216 421.5 148.0Q404 80 401 69Q397 53 403.0 42.0Q409 31 426 29L560 17Q567 16 570.5 14.0Q574 12 574 8Q574 4 570.5 2.0Q567 0 560 0H-14Q-19 0 -22.0 1.5Q-25 3 -25 7Q-25 10 -22.5 12.5Q-20 15 -13 16L77 27Q98 29 108.5 41.0Q119 53 127 74Q130 84 149.0 153.0Q168 222 197.5 329.5Q227 437 262.5 564.5Q298 692 332.5 820.0Q367 948 397.0 1057.5Q427 1167 446.0 1238.5Q465 1310 467 1323Q472 1345 465.0 1357.0Q458 1369 436 1372L347 1384Q338 1385 335.5 1387.5Q333 1390 333 1393Q333 1397 336.5 1398.5Q340 1400 347 1400H903Q1008 1400 1092.0 1369.0Q1176 1338 1233.0 1280.5Q1290 1223 1315.5 1142.0Q1341 1061 1328 961Z"/><circle cx="144" cy="141" r="11.5"/></svg></div>
     <div class="brand-txt"><b>Pratim&#39;s</b><span>Finance Tracker</span></div>
+    <button class="rail-x" onclick="closeRail()" aria-label="Close menu"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <button class="rail-search" onclick="cmdOpen()" title="Search everything, or jump anywhere (Cmd K or /)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.6"/><path d="M15.8 15.8L20.5 20.5"/></svg><span>Search or jump to</span><kbd>⌘K</kbd></button>
   <nav class="tabs" aria-label="Sections">
@@ -2798,6 +2897,10 @@ html.v17-boot .page.active>*{animation-play-state:paused}
       <div class="chip-row" id="log-pw-chips"></div>
       <div class="pw-warn" id="log-pw-warn" style="display:none"></div>
     </div>
+    <div class="pw-row pw-from" id="log-from-row" style="display:none">
+      <div class="pw-head"><label>Comes out of</label><span class="pw-hint" id="log-from-hint"></span></div>
+      <div class="chip-row" id="log-from-chips"></div>
+    </div>
     <div class="form-row" id="log-trip-row" style="display:none"><div class="form-group ul"><label id="log-trip-l">Trip</label><input type="text" id="log-trip" list="log-trips" placeholder="Give it a name so the whole trip adds up in one place" autocomplete="off"><datalist id="log-trips"></datalist></div></div>
     <div class="sp-row" id="log-split-row">
       <button type="button" class="sp-head" onclick="toggleLogSplit()" aria-controls="log-split-fields">
@@ -2961,11 +3064,6 @@ html.v17-boot .page.active>*{animation-play-state:paused}
       <div class="card-title" style="margin:0;color:var(--blue);text-transform:none;letter-spacing:0;font-size:13px" id="sip-total-lbl"></div>
     </div>
     <div id="sip-list"></div>
-  </div>
-  <div class="card mb-16">
-    <div class="card-title">Invested so far</div>
-    <div class="section-sub" style="margin:-4px 0 14px">What the invested pot holds right now. Type a value and it saves instantly.</div>
-    <div class="grid grid-3"><div class="form-group ul"><label>Invested so far (₹)</label><input type="text" id="fund-investment" inputmode="decimal" placeholder="0" oninput="saveFund('investment',this.value)"></div></div>
   </div>
   <section class="ccf pgf" id="f-inv-log">
   <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="ccf-t"><b>SIP log, month by month</b><small>Whether each month’s SIP and travel fund actually went out</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
@@ -3306,6 +3404,10 @@ html.v17-boot .page.active>*{animation-play-state:paused}
     <div class="chip-row" id="ed-pw-chips"></div>
   </div>
   <div class="pw-note" id="ed-via-note" hidden></div>
+  <div class="pw-row pw-from" id="ed-from-row" style="display:none">
+    <div class="pw-head"><label>Comes out of</label><span class="pw-hint" id="ed-from-hint"></span></div>
+    <div class="chip-row" id="ed-from-chips"></div>
+  </div>
   <div class="form-row" id="ed-trip-row" style="display:none"><div class="form-group"><label id="ed-trip-l">Trip</label><input type="text" id="ed-trip" list="ed-trips" placeholder="Name the trip or the reason" autocomplete="off"><datalist id="ed-trips"></datalist></div></div>
   <div class="sp-row" id="ed-split-row" style="display:none">
     <button type="button" class="sp-head" onclick="toggleEdSplit()" aria-controls="ed-split-fields">
@@ -3523,6 +3625,10 @@ html.v17-boot .page.active>*{animation-play-state:paused}
   <div class="ql-amt mb-12"><label for="fs-amt">Amount</label><div class="amt-wrap"><span class="rs">₹</span><input type="text" id="fs-amt" inputmode="decimal" autocomplete="off" placeholder="0" oninput="paintFsChips()"></div><div class="np-hint" id="fs-left" style="margin:6px 0 0"></div></div>
   <div class="form-group mb-12"><label>What was it for</label><div class="chip-row" id="fs-chips"></div></div>
   <div class="form-row"><div class="form-group"><label id="fs-trip-l">Trip</label><input type="text" id="fs-trip" list="fs-trips" autocomplete="off"><datalist id="fs-trips"></datalist></div><div class="form-group" style="max-width:170px"><label>Date</label><input type="date" id="fs-date"></div></div>
+  <div class="pw-row mb-12" id="fs-pw-row">
+    <div class="pw-head"><label>Paid with</label><span class="pw-hint" id="fs-pw-hint">Bank, UPI or cash</span></div>
+    <div class="chip-row" id="fs-pw-chips"></div>
+  </div>
   <div class="form-row"><div class="form-group"><label>Note (optional)</label><input type="text" id="fs-note" placeholder="Hotel name, what it was, anything useful later"></div></div>
   <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="fsSave()">Log it</button><button class="btn btn-secondary" onclick="closeM('m-fund')">Cancel</button></div>
 </div></div>
@@ -4382,18 +4488,20 @@ function setEditType(t,keepCat){
   paintEditCats(keepCat===undefined?'':keepCat);
   paintEditPayWith();
 }
-function pickEditCard(id){
-  const f=String(id||'').indexOf('fund:')===0?String(id).slice(5):'';
-  const was=ED_FUND;
-  if(f){ED_FUND=f;ED_CARD=''}else{ED_FUND='';ED_CARD=id}
+function pickEditCard(id){ED_CARD=String(id||'').indexOf('fund:')===0?'':id;paintEditPayWith()}
+function pickEditFund(k){
+  const was=ED_FUND;ED_FUND=k&&fundByKey(k)?k:'';
   if(was!==ED_FUND)paintEditCats(document.getElementById('ed-cat').value);
   paintEditPayWith();
 }
 function paintEditPayWith(){
   const host=document.getElementById('ed-pw-chips');if(!host)return;
-  host.innerHTML=payWithChips(ED_FUND?'fund:'+ED_FUND:ED_CARD,'pickEditCard',ED_CARD==='?',ED_TYPE==='expense');
+  host.innerHTML=payWithChips(ED_CARD,'pickEditCard',ED_CARD==='?',false);
   const h=document.getElementById('ed-pw-hint');
-  if(h)h.innerHTML=payWithHint(ED_FUND?'fund:'+ED_FUND:ED_CARD);
+  if(h)h.innerHTML=payWithHint(ED_CARD,ED_FUND);
+  const fr=document.getElementById('ed-from-row');
+  if(fr){const show=ED_TYPE==='expense'&&hasFunds();fr.style.display=show?'':'none';
+    if(show){document.getElementById('ed-from-chips').innerHTML=fundFromChips(ED_FUND,'pickEditFund');document.getElementById('ed-from-hint').innerHTML=fundFromHint(ED_FUND)}}
   const tr=document.getElementById('ed-trip-row');if(tr){tr.style.display=ED_FUND&&ED_TYPE==='expense'?'':'none';if(ED_FUND){const l=document.getElementById('ed-trip-l');if(l)l.textContent=fundTripLabel(ED_FUND);document.getElementById('ed-trips').innerHTML=fundTripNames(ED_FUND).slice(0,20).map(t=>`<option value="${esc(t)}"></option>`).join('')}}
 }
 function toggleEditFX(){
@@ -4453,8 +4561,7 @@ function saveEditEntry(){
     e.split={who:sp.who,amt:sp.amt,back};
     if(back){e.split.backOn=(was&&was.back&&was.backOn)||td();e.split.backAt=(was&&was.back&&was.backAt)||Date.now()}
   }else delete e.split;
-  if(e.fund){delete e.cc;delete e.ccCleared;delete e.card;delete e.viaCard}
-  else if(ED_VIA&&CARD_TYPES.indexOf(ED_TYPE)>=0){/* stays in the card bill through the EMIs tab, never added twice */}
+  if(ED_VIA&&CARD_TYPES.indexOf(ED_TYPE)>=0){/* stays in the card bill through the EMIs tab, never added twice */}
   else if(CARD_TYPES.indexOf(ED_TYPE)>=0&&ED_CARD){e.cc=true;delete e.viaCard;if(ED_CARD==='?')delete e.card;else e.card=ED_CARD}
   else{delete e.cc;delete e.ccCleared;delete e.card;if(CARD_TYPES.indexOf(ED_TYPE)<0)delete e.viaCard}
   if(ED_TYPE==='income'&&ED_FX){
@@ -4874,10 +4981,9 @@ function setLogType(t){LOG_TYPE=t;LOG_CAT='';document.querySelectorAll('#log-seg
   if(SPLIT_TYPES.indexOf(t)<0&&LOG_SPLIT)toggleLogSplit(false);
   paintLogPayWith();
 }
-function pickLogCard(id){
-  const f=String(id||'').indexOf('fund:')===0?String(id).slice(5):'';
-  const was=LOG_FUND;
-  if(f){LOG_FUND=f;LOG_CARD=''}else{LOG_FUND='';LOG_CARD=id}
+function pickLogCard(id){LOG_CARD=String(id||'').indexOf('fund:')===0?'':id;paintLogPayWith()}
+function pickLogFund(k){
+  const was=LOG_FUND;LOG_FUND=k&&fundByKey(k)?k:'';
   if(was!==LOG_FUND){LOG_CAT='';renderLogChips()}
   paintLogPayWith();
 }
@@ -4885,8 +4991,11 @@ function paintLogPayWith(){
   const host=document.getElementById('log-pw-chips');if(!host)return;
   if(LOG_CARD&&!cardById(LOG_CARD))LOG_CARD='';
   if(LOG_FUND&&(!fundByKey(LOG_FUND)||LOG_TYPE!=='expense')){LOG_FUND='';LOG_CAT='';renderLogChips()}
-  host.innerHTML=payWithChips(LOG_FUND?'fund:'+LOG_FUND:LOG_CARD,'pickLogCard',false,LOG_TYPE==='expense');
-  const h=document.getElementById('log-pw-hint');if(h)h.innerHTML=payWithHint(LOG_FUND?'fund:'+LOG_FUND:LOG_CARD);
+  host.innerHTML=payWithChips(LOG_CARD,'pickLogCard',false,false);
+  const h=document.getElementById('log-pw-hint');if(h)h.innerHTML=payWithHint(LOG_CARD,LOG_FUND);
+  const fr=document.getElementById('log-from-row');
+  if(fr){const show=LOG_TYPE==='expense'&&hasFunds();fr.style.display=show?'':'none';
+    if(show){document.getElementById('log-from-chips').innerHTML=fundFromChips(LOG_FUND,'pickLogFund');document.getElementById('log-from-hint').innerHTML=fundFromHint(LOG_FUND)}}
   const tr=document.getElementById('log-trip-row');if(tr){tr.style.display=LOG_FUND?'':'none';if(LOG_FUND){const l=document.getElementById('log-trip-l');if(l)l.textContent=fundTripLabel(LOG_FUND);document.getElementById('log-trips').innerHTML=fundTripNames(LOG_FUND).slice(0,20).map(t=>`<option value="${esc(t)}"></option>`).join('')}}
   const w=document.getElementById('log-pw-warn');
   if(w){
@@ -5269,7 +5378,7 @@ function addLog(force){
   const entry={id:newId(),date:d,type:LOG_TYPE,who:LOG_CAT,amount:a,note:n,ts:now,u:now};
   if(sp)entry.split={who:sp.who,amt:sp.amt,back:false};
   if(LOG_TYPE==='expense'&&LOG_FUND&&fundByKey(LOG_FUND)){entry.fund=LOG_FUND;const tr=(document.getElementById('log-trip').value||'').trim();if(tr)entry.trip=tr}
-  else if(CARD_TYPES.indexOf(LOG_TYPE)>=0&&LOG_CARD&&cardById(LOG_CARD)){entry.cc=true;entry.card=LOG_CARD}
+  if(CARD_TYPES.indexOf(LOG_TYPE)>=0&&LOG_CARD&&cardById(LOG_CARD)){entry.cc=true;entry.card=LOG_CARD}
   if(LOG_TYPE==='income'&&LOG_FX){
     entry.fx=true;
     entry.fxCur=document.getElementById('log-fx-cur').value||'USD';
@@ -5409,7 +5518,12 @@ function openBudgetModal(){
   ['fixed','variable','savings'].forEach(t=>{const lbl=t==='fixed'?'Fixed Costs':t==='variable'?'Variable Costs':'Savings & Investments';h+=`<div class="card-title mt-16">${lbl}</div>`;BG[t].forEach((x,i)=>{h+=`<div class="form-row"><div class="form-group"><input value="${x.name}" data-b="${t}-${i}-n"></div><div class="form-group" style="max-width:110px"><input type="number" value="${rsIn(x.amount)}" data-b="${t}-${i}-a"></div><button class="icon-btn" title="Remove" onclick="bgRemove('${t}',${i})">✕</button></div>`});h+=`<button class="btn btn-secondary btn-xs" onclick="BG.${t}.push({name:'',amount:0});openBudgetModal()">+ Add</button>`});
   document.getElementById('bg-editor').innerHTML=h;openM('m-budget');
 }
-function saveBudget(){BG.income=toP(document.getElementById('bg-inc-e').value);['fixed','variable','savings'].forEach(t=>{BG[t].forEach((x,i)=>{const n=document.querySelector(`[data-b="${t}-${i}-n"]`),a=document.querySelector(`[data-b="${t}-${i}-a"]`);if(n)x.name=n.value;if(a)x.amount=toP(a.value)});BG[t]=BG[t].filter(x=>x.name.trim())});S(K.bg,BG);closeM('m-budget');renderAll()}
+// Rent lives in two places: the Budget plan's fixed costs and Flat and Lending. They are one number,
+// so changing either one changes the other, and Safe to spend always sees the latest rent.
+function bgRentLine(){return (BG.fixed||[]).find(x=>x&&/^\s*rent\s*$/i.test(x.name||''))||(BG.fixed||[]).find(x=>x&&/\brent\b/i.test(x.name||''))||null}
+function rentToFlat(was){const l=bgRentLine();if(!l||!FLAT)return false;const v=r2(+l.amount||0);if(v>0&&v!==r2(+FLAT.rent||0)&&(was==null||v!==was)){FLAT.rent=v;S(K.flat,FLAT);return true}return false}
+function rentToBudget(){const l=bgRentLine();if(!l||!FLAT)return false;const v=r2(+FLAT.rent||0);if(v>0&&v!==r2(+l.amount||0)){l.amount=v;S(K.bg,BG);return true}return false}
+function saveBudget(){const _rl=bgRentLine(),_rw=_rl?r2(+_rl.amount||0):null;BG.income=toP(document.getElementById('bg-inc-e').value);['fixed','variable','savings'].forEach(t=>{BG[t].forEach((x,i)=>{const n=document.querySelector(`[data-b="${t}-${i}-n"]`),a=document.querySelector(`[data-b="${t}-${i}-a"]`);if(n)x.name=n.value;if(a)x.amount=toP(a.value)});BG[t]=BG[t].filter(x=>x.name.trim())});S(K.bg,BG);const _rc=rentToFlat(_rw);closeM('m-budget');renderAll();if(_rc)toast('Rent is now '+fmt(FLAT.rent),'Updated in Flat and Lending and in Safe to spend too',null,null,4200)}
 
 // ============ EMIS ============
 const EMI_CAT_COL={Furniture:'#7A5C8F',Personal:'#B14A2E',Vehicle:'#3E7D74',Tech:'#3E8E5C',Service:'#D98A2B'};
@@ -5723,7 +5837,7 @@ function renderFunds(m){
     const status=avail<0?'Overspent by '+fmt(-avail):tgt>0?(avail>=tgt?'Target reached':fmt(tgt-avail)+' to go to '+fmt(tgt)):spent?fmt(spent)+' spent so far':'Nothing spent from it yet';
     const lede=last?'Last spend '+fmt(last.amount)+' on '+esc((last.note||'').trim()||last.who)+(last.trip?' · '+esc(last.trip):'')+', '+esc(niceDate(last.date)):'Log a spend and it shows up here with where it went.';
     const catBars=cats.length?`<div class="fd-cats">${cats.slice(0,5).map(([n,v],j)=>`<div class="fd-cat"><span class="fd-cat-n">${esc(n)}</span><span class="fd-cat-t"><i style="width:${Math.round(v/cats[0][1]*100)}%"></i></span><b>${fmt(v)}</b><small>${pct(v,spent)}%</small></div>`).join('')}</div>`:'';
-    const row=e=>`<div class="fd-row" role="button" tabindex="0" onclick="openEditEntry(${e.id})" onkeydown="if(event.key==='Enter'){openEditEntry(${e.id})}"><span class="fd-av">${svgIco(fundRowIcon(e.who))}</span><span class="fd-b"><b>${esc((e.note||'').trim()||e.who)}</b><small>${esc(e.who)} · ${esc(shortDate(e.date))}${!isTravel&&e.trip?' · '+esc(e.trip):''}</small></span><span class="fd-amt">${fmt(e.amount)}</span></div>`;
+    const row=e=>`<div class="fd-row" role="button" tabindex="0" onclick="openEditEntry(${e.id})" onkeydown="if(event.key==='Enter'){openEditEntry(${e.id})}"><span class="fd-av">${svgIco(fundRowIcon(e.who))}</span><span class="fd-b"><b>${esc((e.note||'').trim()||e.who)}</b><small>${esc(e.who)} · ${esc(shortDate(e.date))}${!isTravel&&e.trip?' · '+esc(e.trip):''}${e.card?' · on '+esc(cardLabel(e.card)):''}</small></span><span class="fd-amt">${fmt(e.amount)}</span></div>`;
     let ledger='';
     if(spends.length){
       if(view==='trips'&&groups.some(g=>g.name)){
@@ -5780,18 +5894,26 @@ function saveFundEdit(){
 }
 function removeFundFromEdit(){const i=+document.getElementById('fe-idx').value;closeM('m-fundedit');removeContrib(i)}
 // ---- Log a spend from a fund ----
-let FS={key:'',cat:'',trip:''};
+let FS={key:'',cat:'',trip:'',card:''};
+function fsPickCard(id){FS.card=String(id||'').indexOf('fund:')===0?'':id;paintFsPay()}
+function paintFsPay(){
+  const host=document.getElementById('fs-pw-chips');if(!host)return;
+  if(FS.card&&!cardById(FS.card))FS.card='';
+  host.innerHTML=payWithChips(FS.card,'fsPickCard',false,false);
+  const h=document.getElementById('fs-pw-hint');
+  if(h)h.innerHTML=FS.card?`Goes on the <b>${esc(cardById(FS.card).name)}</b> bill. The ${esc(fundName(FS.key))} pays it off, so your bank is not counted twice`:'Paid straight from the fund, by bank, UPI or cash';
+}
 function openFundSpend(key,trip){
   const c=fundByKey(key);if(!c)return;
-  FS={key,cat:'',trip:trip||''};
+  FS={key,cat:'',trip:trip||'',card:(FS&&FS.card&&cardById(FS.card))?FS.card:''};
   document.getElementById('fs-title').textContent='Spend from the '+(c.name||'fund');
-  document.getElementById('fs-sub').innerHTML=`<b>${fmt(fundAvail(key))}</b> available right now. This comes off the fund, not your monthly budget.`;
+  document.getElementById('fs-sub').innerHTML=`<b>${fmtSign(fundAvail(key))}</b> available right now. This comes off the fund, not your monthly budget.`;
   document.getElementById('fs-amt').value='';document.getElementById('fs-note').value='';
   document.getElementById('fs-date').value=td();
   const tl=document.getElementById('fs-trip-l');if(tl)tl.textContent=fundTripLabel(key)+(fundKind(c)==='travel'?' (so the trip adds up in one place)':'');
   const ti=document.getElementById('fs-trip');ti.value=FS.trip;ti.placeholder=fundKind(c)==='travel'?'e.g. Goa, Oct 2026':'e.g. Bike repair';
   document.getElementById('fs-trips').innerHTML=fundTripNames(key).slice(0,20).map(t=>`<option value="${esc(t)}"></option>`).join('');
-  paintFsChips();openM('m-fund');
+  paintFsChips();paintFsPay();openM('m-fund');
   setTimeout(()=>{try{document.getElementById('fs-amt').focus()}catch(e){}},80);
 }
 function paintFsChips(){
@@ -5810,11 +5932,12 @@ function fsSave(force){
   const now=Date.now(),trip=(document.getElementById('fs-trip').value||'').trim();
   const e={id:newId(),date:d,type:'expense',who:FS.cat,amount:a,note:document.getElementById('fs-note').value.trim(),fund:key,ts:now,u:now};
   if(trip)e.trip=trip;
+  if(FS.card&&cardById(FS.card)){e.cc=true;e.card=FS.card}
   LB.push(e);S(K.lb,LB);closeM('m-fund');
   syncGoalFor(c,fundAvail(key),false);
   renderAll();
   const av=fundAvail(key);
-  toast('Logged '+fmt(a)+' from the '+(c.name||'fund'),(trip?trip+' · ':'')+(av>=0?fmt(av)+' left':'overspent by '+fmt(-av)),'Undo',()=>{const i=LB.findIndex(x=>x.id===e.id);if(i<0)return;LB.splice(i,1);LBDEL[String(e.id)]=Date.now();S(K.lbdel,LBDEL);S(K.lb,LB);renderAll()},7000);
+  toast('Logged '+fmt(a)+' from the '+(c.name||'fund'),(trip?trip+' · ':'')+(e.card?'on '+cardLabel(e.card)+' · ':'')+(av>=0?fmt(av)+' left':'overspent by '+fmt(-av)),'Undo',()=>{const i=LB.findIndex(x=>x.id===e.id);if(i<0)return;LB.splice(i,1);LBDEL[String(e.id)]=Date.now();S(K.lbdel,LBDEL);S(K.lb,LB);renderAll()},7000);
   if(av<0)setTimeout(()=>toast(fundName(key)+' is overspent',fmt(-av)+' more went out than was put in. Top it up or adjust the balance.',null,null,6000),400);
 }
 
@@ -6685,7 +6808,7 @@ function toggleMyRent(m){FLAT.myPayments[m]=!FLAT.myPayments[m];S(K.flat,FLAT);r
 function togglePersonPay(pi,ii,m){FLAT.people[pi].items[ii].payments[m]=!FLAT.people[pi].items[ii].payments[m];S(K.flat,FLAT);renderAll();if(FLAT.people[pi].items[ii].payments[m])sfx('coin')}
 function openFlatEdit(){document.getElementById('fl-rent').value=rsIn(FLAT.rent);document.getElementById('fl-start').value=FLAT.startMonth;document.getElementById('fl-end').value=FLAT.endMonth;let h='';FLAT.people.forEach((p,pi)=>{h+=`<div class="card mb-12" style="padding:14px"><div class="form-row"><div class="form-group"><label>Name</label><input value="${p.name}" data-fp="${pi}-n"></div><button class="btn btn-danger btn-xs" onclick="flRemovePerson(${pi})">Remove</button></div>`;p.items.forEach((item,ii)=>{h+=`<div style="padding:10px 0;border-top:1px solid var(--rule)"><div class="form-row"><div class="form-group"><label>Label</label><input value="${item.label}" data-fi="${pi}-${ii}-l"></div><div class="form-group" style="max-width:100px"><label>Amount</label><input type="number" value="${rsIn(item.amount)}" data-fi="${pi}-${ii}-a"></div></div><div class="form-row"><div class="form-group"><label>Start</label><input type="month" value="${item.startMonth}" data-fi="${pi}-${ii}-s"></div><div class="form-group"><label>End</label><input type="month" value="${item.endMonth}" data-fi="${pi}-${ii}-e"></div><button class="icon-btn" onclick="flRemoveItem(${pi},${ii})">✕</button></div></div>`});h+=`<button class="btn btn-secondary btn-xs mt-8" onclick="FLAT.people[${pi}].items.push({label:'',amount:0,startMonth:'${cm()}',endMonth:'${cm()}',payments:{}});openFlatEdit()">+ Add Obligation</button></div>`});document.getElementById('fl-people-ed').innerHTML=h;openM('m-flat')}
 function addFlatPerson(){FLAT.people.push({name:'',items:[]});openFlatEdit()}
-function saveFlat(){FLAT.rent=toP(document.getElementById('fl-rent').value);FLAT.startMonth=document.getElementById('fl-start').value;FLAT.endMonth=document.getElementById('fl-end').value;const nm=genMonths(FLAT.startMonth,FLAT.endMonth);const op={...FLAT.myPayments};FLAT.myPayments={};nm.forEach(m=>FLAT.myPayments[m]=op[m]||false);FLAT.people.forEach((p,pi)=>{const n=document.querySelector(`[data-fp="${pi}-n"]`);if(n)p.name=n.value;p.items.forEach((item,ii)=>{const l=document.querySelector(`[data-fi="${pi}-${ii}-l"]`),a=document.querySelector(`[data-fi="${pi}-${ii}-a"]`),s=document.querySelector(`[data-fi="${pi}-${ii}-s"]`),e=document.querySelector(`[data-fi="${pi}-${ii}-e"]`);if(l)item.label=l.value;if(a)item.amount=toP(a.value);const ns=s?s.value:item.startMonth,ne=e?e.value:item.endMonth;const nmo=genMonths(ns,ne);const opp={...item.payments};item.payments={};nmo.forEach(m=>item.payments[m]=opp[m]||false);item.startMonth=ns;item.endMonth=ne})});FLAT.people=FLAT.people.filter(p=>p.name.trim());S(K.flat,FLAT);closeM('m-flat');renderAll()}
+function saveFlat(){FLAT.rent=toP(document.getElementById('fl-rent').value);FLAT.startMonth=document.getElementById('fl-start').value;FLAT.endMonth=document.getElementById('fl-end').value;const nm=genMonths(FLAT.startMonth,FLAT.endMonth);const op={...FLAT.myPayments};FLAT.myPayments={};nm.forEach(m=>FLAT.myPayments[m]=op[m]||false);FLAT.people.forEach((p,pi)=>{const n=document.querySelector(`[data-fp="${pi}-n"]`);if(n)p.name=n.value;p.items.forEach((item,ii)=>{const l=document.querySelector(`[data-fi="${pi}-${ii}-l"]`),a=document.querySelector(`[data-fi="${pi}-${ii}-a"]`),s=document.querySelector(`[data-fi="${pi}-${ii}-s"]`),e=document.querySelector(`[data-fi="${pi}-${ii}-e"]`);if(l)item.label=l.value;if(a)item.amount=toP(a.value);const ns=s?s.value:item.startMonth,ne=e?e.value:item.endMonth;const nmo=genMonths(ns,ne);const opp={...item.payments};item.payments={};nmo.forEach(m=>item.payments[m]=opp[m]||false);item.startMonth=ns;item.endMonth=ne})});FLAT.people=FLAT.people.filter(p=>p.name.trim());S(K.flat,FLAT);rentToBudget();closeM('m-flat');renderAll()}
 
 // ============ GOALS & WISHLIST ============
 function surplusVal(){return BG.income-BG.fixed.reduce((s,x)=>s+x.amount,0)-BG.variable.reduce((s,x)=>s+x.amount,0)-BG.savings.reduce((s,x)=>s+x.amount,0)}
@@ -7095,7 +7218,20 @@ function payWithChips(sel,fn,showUnknown,allowFunds){
   h+=`<div class="chip chip-edit" onclick="openCardsManager()" title="Add, rename or remove cards">&#9998; Cards</div>`;
   return h;
 }
-function payWithHint(sel){
+// Which pot the money comes out of: this month's budget, or one of your funds.
+// Separate from "Paid with", so a trip can go on a card and still come off the Travel Fund.
+function fundFromChips(sel,fn){
+  let h=`<div class="chip ${!sel?'selected':''}" onclick="${fn}('')" title="Counts in this month's spending">Monthly budget</div>`;
+  (INV.contrib||[]).forEach(c=>{h+=`<div class="chip chip-fund ${sel===c.key?'selected':''}" onclick="${fn}('${esc(c.key)}')" title="Comes off the ${esc(c.name||'fund')}, not this month's budget"><svg class="ib" viewBox="0 0 24 24">${fundIcon(c.key)}</svg>${esc(c.name||'Fund')}</div>`});
+  return h;
+}
+function fundFromHint(k){
+  if(!k||!fundByKey(k))return 'Counts in this month’s spending';
+  return `Comes off the <b>${esc(fundName(k))}</b> &middot; ${fmtSign(fundAvail(k))} available`;
+}
+function hasFunds(){return Array.isArray(INV.contrib)&&INV.contrib.length>0}
+function payWithHint(sel,fund){
+  if(fund&&sel&&sel!=='?'&&cardById(sel))return `On <b>${esc(cardById(sel).name)}</b>, cleared from the <b>${esc(fundName(fund))}</b> when you pay the bill`;
   if(!sel)return 'Bank, UPI or cash';
   if(String(sel).indexOf('fund:')===0){const k=String(sel).slice(5),av=fundAvail(k);return `Comes off the <b>${esc(fundName(k))}</b> &middot; ${fmt(av)} available`}
   if(sel==='?')return 'A credit card, but which one was never set';
@@ -7353,21 +7489,40 @@ function _cardLedgerRaw(c){
     const ps=(payBy[ym]||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
     const logged=r2(ch.reduce((s,e)=>s+(+e.amount||0),0)),emi=r2(recs.reduce((s,r)=>s+r.amount,0));
     const spend=r2(logged+emi),ov=billOverride(c,ym),bill=ov!=null?ov:spend,paid=r2(ps.reduce((s,p)=>s+(+p.amount||0),0));
-    const cy={ym,ch,recs,ps,logged,emi,spend,ov,bill,paid,tracked,closed:ym<cur,isCur:ym===cur,future:ym>cur,due:dueDateFor(c,ym),win:cycleWindow(c,ym),carryIn:0,left:0};
+    // Spends logged against a fund (travel, emergency) are still on the card's bill, but the
+    // money to clear them was set aside in that fund. The first payments on a bill use it up.
+    const fund=r2(Math.min(bill,ch.filter(e=>e.fund).reduce((s,e)=>s+(+e.amount||0),0)));
+    const cy={ym,ch,recs,ps,logged,emi,spend,ov,bill,paid,fund,fundPaid:0,fundLeft:0,tracked,closed:ym<cur,isCur:ym===cur,future:ym>cur,due:dueDateFor(c,ym),win:cycleWindow(c,ym),carryIn:0,left:0};
     if(!tracked){cy.left=Math.max(0,r2(bill-paid));cy.status=cycleStatus(cy,today)}
     return cy;
   };
-  const cycles=[];let credit=0,g=0;
+  const cycles=[],payFund={};let credit=0,g=0;
   for(let ym=since;ym<=end&&g<600;ym=ymAdd(ym,1),g++){
     const cy=mk(ym,true);cy.carryIn=credit;
     let left=r2(cy.bill-cy.paid-credit);
     if(left<0){credit=-left;left=0}else credit=0;
     cy.left=left;cy.creditOut=credit;cy.status=cycleStatus(cy,today);
+    let rem=cy.fund;
+    cy.ps.forEach(p=>{const f=r2(Math.max(0,Math.min(rem,+p.amount||0)));if(f>0){payFund[p.id]=f;rem=r2(rem-f)}});
+    cy.fundPaid=r2(cy.fund-rem);cy.fundLeft=r2(Math.min(rem,left));
     cycles.push(cy);
   }
   const dueNow=r2(cycles.filter(x=>x.closed).reduce((s,x)=>s+x.left,0));
   const building=r2(cycles.filter(x=>!x.closed).reduce((s,x)=>s+x.left,0));
-  return {card:c,cur,since,end,cycles,mk,dueNow,building,credit:r2(credit),toPay:r2(dueNow+building-credit),rec};
+  const fundOwe=r2(cycles.reduce((s,x)=>s+x.fundLeft,0)),fundDue=r2(cycles.filter(x=>x.closed).reduce((s,x)=>s+x.fundLeft,0));
+  return {card:c,cur,since,end,cycles,mk,dueNow,building,credit:r2(credit),toPay:r2(dueNow+building-credit),rec,payFund,fundOwe,fundDue};
+}
+// The part of a card that your own bank has to cover: everything owed, less what a fund pays for
+function cardBankOwe(L){return r2(Math.max(0,Math.max(0,L.toPay)-L.fundOwe))}
+// Which funds are paying for this card right now, as "Travel Fund ₹4,000"
+function cardFundParts(L,closedOnly){
+  const by={};
+  L.cycles.forEach(cy=>{
+    if(closedOnly&&!cy.closed)return;
+    let rem=cy.fundLeft;if(!(rem>0))return;
+    cy.ch.filter(e=>e.fund).slice().sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{const a=r2(Math.min(rem,+e.amount||0));if(a>0){by[e.fund]=r2((by[e.fund]||0)+a);rem=r2(rem-a)}});
+  });
+  return Object.keys(by).map(k=>({key:k,name:fundName(k),amt:by[k]}));
 }
 // The rows shown on a card: the newest `n` cycles, including history before the start month
 function cardRows(L,n){
@@ -7707,6 +7862,7 @@ function cardTile(L,st,i){
       <div class="cct-act">${act}</div>
     </div>
     ${src?`<div class="cct-notes">${src}</div>`:''}
+    ${L.fundOwe>=RUPEE?`<div class="cct-notes"><span class="cct-fund">${CC_CHECK}<span>Your ${esc(andList(cardFundParts(L).map(x=>x.name)))} covers <b>${fmt(L.fundOwe)}</b> of what is on this card, so your bank only needs <b>${fmt(cardBankOwe(L))}</b>.</span></span></div>`:''}
     <button type="button" class="cct-month" onclick="openCycle('${cid}','${L.cur}')" title="See this month’s spends and change any of them">
       <span class="cm-l"><span class="k">This month so far, not billed yet</span><span class="s">${esc(nowSub)}</span></span>
       <span class="cm-v">${ccNum('now-'+c.id,now.spend)}</span><span class="cm-go" aria-hidden="true">&rsaquo;</span>
@@ -8836,7 +8992,9 @@ function ccpPaint(){
   else if(billLeft>0)tail=`<b>${fmt(billLeft)}</b> of the bill will still be left to pay.`;
   else if(L.dueNow>0)tail=`<b>The bill is fully paid.</b>`+(monthLeft>0?` This month’s ${fmt(monthLeft)} is not billed yet.`:` ${esc(c.name)} goes back to zero.`);
   else tail=monthLeft>0?`${fmt(monthLeft)} of this month’s spending is still not billed.`:`${esc(c.name)} goes back to <b>zero</b>.`;
-  el.innerHTML='Goes toward '+parts.map(p=>`<b>${p.cycle===L.cur?'this month':esc(monShort(p.cycle))+' bill'}</b> ${fmt(p.amount)}`).join(' + ')+'. '+tail;
+  let fundTxt='';
+  if(L.fundOwe>=RUPEE){const fp=r2(Math.min(amt,L.fundOwe));fundTxt=` <span class="ccp-fund"><b>${fmt(fp)}</b> of this comes from your ${esc(andList(cardFundParts(L).map(x=>x.name)))}${amt>fp?', <b>'+fmt(amt-fp)+'</b> from your bank':''}.</span>`}
+  el.innerHTML='Goes toward '+parts.map(p=>`<b>${p.cycle===L.cur?'this month':esc(monShort(p.cycle))+' bill'}</b> ${fmt(p.amount)}`).join(' + ')+'. '+tail+fundTxt;
 }
 function ccpSave(){
   const c=cardById(document.getElementById('ccp-card').value);if(!c)return;
@@ -8870,7 +9028,7 @@ function openCycle(id,ym){
   document.getElementById('ccm-sub').innerHTML=(isCalendarCard(c)?'Spends dated in '+esc(span):'Spends from '+esc(span))+
     (isNow||isAhead?' · becomes a bill on '+esc(niceDate(ym+'-'+pad2(closeDay(c,ym)))):(cy.due?' · pay by '+esc(niceDate(cy.due)):''))+
     (cy.tracked?'':' · <b>Past bill</b> from before you started tracking this card ('+esc(monthName(c.since))+'), so it is kept as a record and never adds to what you owe.');
-  const list=cy.ch.map(e=>`<div class="mini-row" style="cursor:pointer" onclick="closeM('m-ccmonth');openEditEntry(${e.id})"><div class="mb"><div class="mn">${esc(e.note&&e.note.trim()?e.note:e.who)}</div><div class="ms">${esc(shortDate(e.date))} · ${esc(e.who)}</div></div><span class="amount neg">${fmt(e.amount)}</span></div>`).join('')+
+  const list=cy.ch.map(e=>`<div class="mini-row" style="cursor:pointer" onclick="closeM('m-ccmonth');openEditEntry(${e.id})"><div class="mb"><div class="mn">${esc(e.note&&e.note.trim()?e.note:e.who)}</div><div class="ms">${esc(shortDate(e.date))} · ${esc(e.who)}${e.fund?` · <span class="feed-tag is-fund">From ${esc(fundShort(e.fund))}</span>`:''}</div></div><span class="amount neg">${fmt(e.amount)}</span></div>`).join('')+
     cy.recs.map(r=>`<div class="mini-row"><div class="mb"><div class="mn">${esc(r.name)}</div><div class="ms">${r.kind==='emi'?'EMI':'Subscription'}, added every month</div></div><span class="amount neg">${fmt(r.amount)}</span></div>`).join('');
   document.getElementById('ccm-tracked').innerHTML=`<div class="card-title">${isNow?'Spent this month so far':'Spends on this bill'} &middot; ${fmt(cy.spend)}</div>`+
     `<div class="mini-list">${list||'<div class="mini-empty">Nothing logged for this month. Type the bill from your statement below.</div>'}</div>`+
@@ -9955,8 +10113,10 @@ function bankLive(){
     else if(e.type==='investment'){const m=e.date.slice(0,7);invLog[m]=(invLog[m]||0)+amt}
     else if(!isCardCharge(e)&&!e.viaCard&&!e.fund)spent+=amt;
   });
-  const sp_=set('pays');
-  ((CARDS&&CARDS.pays)||[]).forEach(p=>{if(!p||p.del||!(+p.amount>0))return;if(p.date>on||(p.date===on&&!sp_.has(p.id)))cards+=+p.amount});
+  const sp_=set('pays'),pf={};
+  // The part of a card payment that clears fund spends came out of that fund, not the bank
+  activeCards().forEach(c=>{const m=cardLedger(c).payFund||{};Object.keys(m).forEach(id=>{pf[id]=m[id]})});
+  ((CARDS&&CARDS.pays)||[]).forEach(p=>{if(!p||p.del||!(+p.amount>0))return;if(p.date>on||(p.date===on&&!sp_.has(p.id)))cards+=Math.max(0,+p.amount-(pf[p.id]||0))});
   const sf=set('flat');
   (FLAT.people||[]).forEach(p=>(p&&p.items||[]).forEach(it=>Object.keys(it.payments||{}).forEach(m=>{if(!it.payments[m])return;if(!sf.has(String(p.name||'')+'|'+String(it.label||'')+'|'+m))flatIn+=+it.amount||0})));
   const am=on.slice(0,7),ss=set('sip'),sfd=set('fund'),sip=sipMonthly();
@@ -10140,7 +10300,8 @@ function safeToSpend(){
   if(_ssMemo)return _ssMemo;
   const t=td(),ym=cm(),dim=dimYM(ym),daysLeft=Math.max(1,dim-(+t.slice(8,10))+1);
   const bank=nwAuto()?bankLive().amt:+NW.bank||0;
-  const cardOwe=r2(activeCards().reduce((s,c)=>s+Math.max(0,cardLedger(c).toPay),0));
+  const cardOwe=r2(activeCards().reduce((s,c)=>s+cardBankOwe(cardLedger(c)),0));
+  const fundCover=r2(activeCards().reduce((s,c)=>s+cardLedger(c).fundOwe,0));
   let rec=0,rent=0;const recList=[];
   alItems(ym).forEach(x=>{
     if(x.card||x.date<t||alExisting(x,ym))return;
@@ -10153,7 +10314,7 @@ function safeToSpend(){
   const logged=r2(LB.filter(e=>e&&e.type==='investment'&&typeof e.date==='string'&&e.date.startsWith(ym)).reduce((a,e)=>a+(+e.amount||0),0));
   const invest=Math.max(0,r2(planned-Math.max(ticks,logged)));
   const safe=r2(bank-cardOwe-rec-rent-invest);
-  return (_ssMemo={bank,cardOwe,rec,recList,rent,invest,safe,daysLeft,perDay:r2(safe/daysLeft),end:ym+'-'+pad2(dim)});
+  return (_ssMemo={bank,cardOwe,fundCover,rec,recList,rent,invest,safe,daysLeft,perDay:r2(safe/daysLeft),end:ym+'-'+pad2(dim)});
 }
 function renderSafe(){
   const host=document.getElementById('ov-safe');if(!host)return;
@@ -10168,7 +10329,8 @@ function renderSafe(){
     <div class="sts-bar" role="img" aria-label="${esc(Math.round(p*100)+'% of your bank balance is free to spend')}"><i style="width:${(p*100).toFixed(1)}%"></i></div>
     <div class="sts-rows">
       <div class="sts-r"><span>In your bank${a?`<small>${a.src==='start'?'First estimate':'Confirmed '+esc(bankAgo(a))}, kept up to date</small>`:''}</span><b>${fmt(s.bank)}</b></div>
-      ${row('Card bills',s.cardOwe,'Including this month’s card spends')}
+      ${row('Card bills',s.cardOwe,'Including this month’s card spends'+(s.fundCover>=RUPEE?', less what your funds cover':''))}
+      ${s.fundCover>=RUPEE?`<div class="sts-r is-info"><span>Paid by your funds<small>Card spends from ${esc(andList([...new Set(activeCards().flatMap(c=>cardFundParts(cardLedger(c)).map(x=>x.name)))]))}. That money is already set aside, so your bank is not touched</small></span><b>${fmt(s.fundCover)}</b></div>`:''}
       ${row('Still to charge',s.rec,s.recList.length?esc(s.recList.slice(0,3).map(x=>x.name).join(', '))+(s.recList.length>3?' and '+(s.recList.length-3)+' more':''):'')}
       ${row('Rent',s.rent,'Not paid yet this month')}
       ${row('Investing still to do',s.invest,'SIP and fund top-ups for this month')}
@@ -10647,6 +10809,34 @@ function _runSelfTests(T,ok){
      const g=fundGroups('travel');ok('fundGroups groups by trip',g.length===1&&g[0].name==='Goa'&&g[0].total===R(5000));
      ok('monthSpendEvents leaves fund spends out',monthSpendEvents('2026-05').length===2);
    }finally{LB=keepLB;_rev=keepRev+2}}
+  // v19: a fund spend on a card is on the card's bill, but the fund clears it, not the bank
+  {const keepLB=LB,keepC=CARDS,keepRev=_rev;
+   CARDS={list:[{id:'tc',name:'Test card',stmt:0,due:5,since:'2026-04'}],pays:[],bills:{}};
+   LB=[{id:11,date:'2026-05-10',type:'expense',who:'Food',amount:R(3000),cc:true,card:'tc'},
+       {id:12,date:'2026-05-12',type:'expense',who:'Flights',amount:R(5000),cc:true,card:'tc',fund:'travel',trip:'Goa'}];
+   _rev++;
+   try{
+     let L=cardLedger(CARDS.list[0]);const cy=L.cycles.find(x=>x.ym==='2026-05');
+     ok('card+fund: the fund spend is on the card bill',cy&&cy.bill===R(8000),cy&&fmt(cy.bill));
+     ok('card+fund: the fund covers its share of the bill',L.fundOwe===R(5000),fmt(L.fundOwe));
+     ok('card+fund: the bank only owes the rest',cardBankOwe(L)===R(3000),fmt(cardBankOwe(L)));
+     ok('card+fund: it still comes off the fund',fundSpent('travel')===R(5000));
+     ok('card+fund: it stays out of the monthly budget',monthStats('2026-05').exp===R(3000));
+     CARDS.pays.push({id:'tp1',card:'tc',cycle:'2026-05',amount:R(6000),date:'2026-06-02',del:false});_rev++;
+     L=cardLedger(CARDS.list[0]);
+     ok('card+fund: a payment uses the fund money first',L.payFund.tp1===R(5000),fmt(L.payFund.tp1||0));
+     ok('card+fund: what is left is the bank\'s part',L.fundOwe===0&&cardBankOwe(L)===R(2000),fmt(cardBankOwe(L)));
+   }finally{LB=keepLB;CARDS=keepC;_rev=keepRev+2}}
+  // v19: rent in the Budget plan and in Flat and Lending is one number
+  {const keepBG=BG,keepF=FLAT;
+   BG={income:0,fixed:[{name:'Rent',amount:R(13000)}],variable:[],savings:[]};FLAT={rent:R(13000),startMonth:'2026-01',endMonth:'2026-12',myPayments:{},people:[]};
+   try{
+     BG.fixed[0].amount=R(20000);rentToFlat(R(13000));
+     ok('rent: a budget change reaches Flat and Lending',FLAT.rent===R(20000),fmt(FLAT.rent));
+     ok('rent: Safe to spend sees the new rent',(alItems('2026-10').find(x=>x.k==='rent')||{}).amt===R(20000));
+     FLAT.rent=R(22000);rentToBudget();
+     ok('rent: a Flat change reaches the budget',BG.fixed[0].amount===R(22000),fmt(BG.fixed[0].amount));
+   }finally{BG=keepBG;FLAT=keepF}}
   // Merge rules
   {const del={'3':1000};
    const m=mergeLogbook([{id:1,u:5,amount:1,date:'2026-01-01',type:'expense'},{id:2,u:1,amount:1,date:'2026-01-01',type:'expense'},{id:3,u:500,amount:1,date:'2026-01-01',type:'expense'}],[{id:1,u:9,amount:2,date:'2026-01-01',type:'expense'},{id:4,u:2,amount:1,date:'2026-01-01',type:'expense'}],del);
@@ -10710,14 +10900,48 @@ function renderPage(p){
   fns.forEach((fn,i)=>safeRender(fn,p+'#'+i));
   delete _stale[p];
 }
+
+// ---- v19: a small live figure beside the pages that have something to say ----
+function railOwedToYou(){
+  const now=cm();let t=0;
+  (FLAT.people||[]).forEach(p=>(p&&p.items||[]).forEach(it=>{const a=+it.amount||0;genMonths(it.startMonth,it.endMonth).forEach(m=>{if(m<=now&&!(it.payments&&it.payments[m]))t+=a})}));
+  try{splitsOwed().forEach(e=>{t+=splitOf(e).amt})}catch(e){}
+  return r2(t);
+}
+function paintRailBadges(){
+  const set=(page,txt,tone)=>{
+    const t=document.querySelector('.tab[data-page="'+page+'"]');if(!t)return;
+    let b=t.querySelector('.tab-badge');if(!b){b=document.createElement('span');b.className='tab-badge';t.appendChild(b)}
+    b.textContent=txt||'';b.className='tab-badge'+(tone?' is-'+tone:'');
+    if(txt)t.setAttribute('aria-description',txt);else t.removeAttribute('aria-description');
+  };
+  try{const s=safeToSpend();set('overview',(s.safe<0?'−':'')+fmtS(Math.abs(s.safe)),s.safe<0?'red':'')}catch(e){set('overview','')}
+  try{
+    const Ls=activeCards().map(cardLedger),sts=Ls.map(ccStatus);
+    const due=r2(Ls.reduce((a,L,i)=>a+((sts[i].k==='red'||sts[i].k==='amber')?L.dueNow:0),0));
+    set('cards',due>0?fmtS(due)+' due':'',sts.some(x=>x.k==='red')?'red':due>0?'amber':'');
+  }catch(e){set('cards','')}
+  try{const o=railOwedToYou();set('flat',o>=RUPEE?fmtS(o):'',o>=RUPEE?'green':'')}catch(e){set('flat','')}
+}
+// Swipe the drawer to the left to close it
+(function(){
+  const r=document.getElementById('rail');if(!r)return;let x0=null,y0=0,dx=0;
+  r.addEventListener('touchstart',e=>{if(!document.body.classList.contains('rail-open'))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0},{passive:true});
+  r.addEventListener('touchmove',e=>{if(x0==null)return;dx=e.touches[0].clientX-x0;const dy=Math.abs(e.touches[0].clientY-y0);if(dy>Math.abs(dx)){x0=null;r.style.transform='';return}if(dx<0){r.style.transition='none';r.style.transform='translateX('+dx+'px)'}},{passive:true});
+  r.addEventListener('touchend',()=>{if(x0==null)return;r.style.transition='';r.style.transform='';if(dx<-70)closeRail();x0=null},{passive:true});
+})();
 function renderAll(){
   if(_TESTING)return;
+  // Once per device and data set: a rent changed in the Budget plan before the two were linked
+  // is carried across to Flat and Lending, so Safe to spend shows it
+  try{if(FLAT&&!FLAT.rentLinked){FLAT.rentLinked=1;if(!rentToFlat(null))S(K.flat,FLAT)}}catch(e){}
   v16Fresh();
   Object.keys(PAGE_RENDER).forEach(p=>{_stale[p]=true});
   const p=activePage();
   if(p)renderPage(p);
   safeRender(paintBell,'bell');
   safeRender(paintStatus,'status');
+  safeRender(paintRailBadges,'rail badges');
   // The quick-log chips live on the logbook page but their state is global
   if(p!=='logbook')safeRender(paintLogPayWith,'paywith');
   // The cards page keeps its own enter-animation state, so it must notice when it is not on screen
