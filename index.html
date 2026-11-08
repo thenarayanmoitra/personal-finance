@@ -3446,6 +3446,89 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
 .page>.section-header:first-child{margin-bottom:10px}
 .page>.section-header:first-child:empty{display:none}
 .v22-hide{display:none!important}
+
+/* ---------- v22.4 · the add sheet cannot collapse: a content basis for the body, a definite height on desktop ---------- */
+#m-add .modal{display:flex;flex-direction:column;padding:0;overflow:hidden;max-height:92vh}
+#m-add .ad-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#m-add .ad-head,#m-add .ad-foot,#m-add .kp,#m-add .ad-grab{flex:0 0 auto}
+@media(min-width:641px){#m-add .modal{height:min(92vh,760px)}}
+
+/* ---------- Transactions: a slim search bar and a proper register on a wide screen ---------- */
+#lg-search.srch{background:transparent;border:none;padding:0;margin:0 0 6px}
+#lg-search .srch-input input{background:var(--surface-2);border-color:transparent;border-radius:12px;padding:11px 12px 11px 38px}
+#lg-search .srch-input input:focus{background:var(--surface);border-color:var(--brand)}
+#lg-search .srch-quick{margin-top:8px}
+#lg-search .qchip{background:transparent;border-color:var(--border)}
+#lg-search .qchip.on{background:var(--brand-soft);border-color:transparent;color:var(--brand-ink)}
+#lg-search .srch-grid{margin-top:10px;padding:12px;background:var(--surface-2);border-radius:12px}
+.feed{padding:0}
+.feed-day{padding:16px 6px 6px;border-bottom:1px solid var(--border);background:transparent;position:static}
+.feed-day:first-child{padding-top:6px}
+.feed-row{gap:12px;padding:10px 6px}
+.feed-row:hover{background:var(--surface-2)}
+.feed-av{width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--fc,var(--txt-3)) 14%,var(--surface));color:var(--fc,var(--txt-2))}
+.feed-av svg{width:16px;height:16px}
+.feed-note{font-size:14px;font-weight:600}
+.feed-sub{font-size:12px;color:var(--txt-3)}
+.feed-sub.dk{display:none}
+.feed-cat,.feed-acc{display:none}
+.feed-cat .pill{max-width:100%;overflow:hidden;text-overflow:ellipsis;display:inline-block;background:color-mix(in srgb,var(--fc,var(--txt-3)) 12%,var(--surface));color:var(--fc,var(--txt-2));font-weight:650}
+.feed-acc{font-size:12.5px;color:var(--txt-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-acc i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0;background:var(--border-strong)}
+.feed-amt{font-size:14.5px;min-width:84px}
+@media(min-width:821px){
+  .feed-row{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(120px,170px) minmax(100px,150px) 110px 30px 30px;align-items:center;gap:12px;padding:9px 8px}
+  .feed-cat,.feed-acc{display:block;min-width:0}
+  .feed-sub.ph{display:none}
+  .feed-sub.dk{display:block}
+  .feed-sub.dk:empty{display:none}
+  .feed-amt{min-width:0}
+  .feed-day{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:18px 8px 6px}
+  .feed-cols{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(120px,170px) minmax(100px,150px) 110px 60px;gap:12px;padding:0 8px 8px;font-family:var(--label);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);font-weight:700;border-bottom:1px solid var(--border)}
+  .feed-cols span:nth-child(5){text-align:right}
+}
+@media(max-width:820px){.feed-cols{display:none}}
+
+/* ---------- Budget bars: deeper, rounded, a tick for where today sits ---------- */
+.bt .bar{height:9px;border-radius:999px;background:var(--surface-3);overflow:visible;position:relative;box-shadow:inset 0 1px 1px rgba(19,33,26,.05)}
+.bt .bar i{border-radius:999px;background:linear-gradient(90deg,var(--brand-2),var(--green-vivid));box-shadow:0 1px 3px rgba(30,127,102,.28);min-width:4px}
+.bt .bar i[style="width:0%"]{min-width:0;box-shadow:none}
+.bt .bar i.warn{background:linear-gradient(90deg,#C27D1E,#E8B25C);box-shadow:0 1px 3px rgba(201,138,43,.3)}
+.bt .bar i.over{background:linear-gradient(90deg,#A8402A,#D14B4B);box-shadow:0 1px 3px rgba(177,74,46,.3)}
+.bt .bar em{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:2px;background:var(--txt);opacity:.45}
+.bt .bar em::after{content:'';position:absolute;left:-2px;top:-4px;width:6px;height:6px;border-radius:50%;background:var(--txt);opacity:.6}
+.bt-r .bt-n b{font-size:14px}
+.bt-r{min-height:56px}
+.bt-g .bt-gn i{background:var(--surface);border:1px solid var(--border)}
+.tile .bar{height:8px}
+.tile .bar i{border-radius:999px;background:linear-gradient(90deg,var(--brand-2),var(--green-vivid))}
+.tile .bar i.warn{background:linear-gradient(90deg,#C27D1E,#E8B25C)}.tile .bar i.over{background:linear-gradient(90deg,#A8402A,#D14B4B)}
+
+/* ---------- Tax projection ---------- */
+.txp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.txp-big{font-family:var(--num);font-size:30px;font-weight:650;letter-spacing:-.035em;line-height:1.05}
+.txp-big .rs{font-size:.6em;opacity:.55}
+.txp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.txp-grid .metric{padding:12px 13px}
+.txp-ladder{display:flex;gap:4px;margin-top:14px}
+.txp-ladder span{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.txp-ladder i{display:block;height:10px;border-radius:999px;background:var(--surface-3);overflow:hidden;position:relative}
+.txp-ladder i b{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--border-strong)}
+.txp-ladder span.is-in i b{background:linear-gradient(90deg,var(--brand-2),var(--green-vivid))}
+.txp-ladder span.is-top i b{background:linear-gradient(90deg,#C27D1E,#E8B25C)}
+.txp-ladder small{font-family:var(--label);font-size:9px;letter-spacing:.04em;color:var(--txt-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;line-height:1.3}
+.txp-ladder small em{display:block;font-style:normal;font-weight:600;opacity:.8}
+.txp-ladder span.is-top small{color:var(--accent-deep)}
+.txp-note{font-size:12.5px;color:var(--txt-2);line-height:1.5;margin-top:12px}
+.txp-note b{color:var(--txt)}
+@media(max-width:820px){.txp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.txp-big{font-size:26px}.txp-ladder small{font-size:8px}.txp-head{flex-direction:column;align-items:flex-start;gap:6px}.txp-head>div{text-align:left!important}}
+
+/* ---------- SIP figures you can tap to change ---------- */
+.inv-nums div.is-edit{cursor:pointer;border-radius:10px;padding:4px 8px;margin:-4px -8px;transition:background .15s}
+.inv-nums div.is-edit:hover{background:var(--surface-2)}
+.inv-nums div.is-edit>span::after{content:'\270e';margin-left:5px;font-size:10px;opacity:.55}
+.inv-nums b span{font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}
+.inv-nums b .unset{color:var(--txt-3);font-weight:500;font-size:13px}
 </style>
 </head>
 <body>
@@ -3865,6 +3948,7 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
     <div class="stat-card"><div class="card-title">Projected full year tax</div><div class="big-number" id="tx-proj"></div><div class="big-label" id="tx-proj-sub"></div></div>
     <div class="stat-card"><div class="card-title">ITR filing due</div><div class="big-number" id="tx-due" style="font-size:21px"></div><div class="big-label" id="tx-due-sub"></div></div>
   </div>
+  <div class="card mb-16" id="tx-projection"></div>
   <section class="ccf pgf" id="f-tax-build">
   <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>How the tax is worked out</b><small>Each slab, the rebate, cess, and the advance tax dates</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
   <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
@@ -4471,10 +4555,10 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
   <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="fsSave()">Log it</button><button class="btn btn-secondary" onclick="closeM('m-fund')">Cancel</button></div>
 </div></div>
 
-<div class="modal-overlay" id="m-sipgoal"><div class="modal"><h3>SIP goal</h3>
-  <p class="np-hint" style="margin:-8px 0 14px">The corpus you are building through your SIPs. The goal shows up on the Goals page and fills as each month's SIP goes out.</p>
-  <div class="form-row"><div class="form-group"><label>Target corpus (₹)</label><input type="text" inputmode="decimal" id="sg-target" placeholder="e.g. 50,00,000" enterkeyhint="done"></div><div class="form-group"><label>By when (optional)</label><input type="month" id="sg-by"></div></div>
-  <div class="form-row"><div class="form-group"><label>Put in so far (₹)</label><input type="text" inputmode="decimal" id="sg-put" enterkeyhint="done"><small class="nwm-hint">What you have invested through SIPs to date. Each month you log as done adds the month's SIP to this.</small></div></div>
+<div class="modal-overlay" id="m-sipgoal"><div class="modal"><h3>SIP balance and goal</h3>
+  <p class="np-hint" style="margin:-8px 0 14px">Set what you have put in through your SIPs and what it is worth today. Each month you mark as done adds that month's SIP to the put-in figure on its own.</p>
+  <div class="form-row"><div class="form-group"><label>Put in so far (₹)</label><input type="text" inputmode="decimal" id="sg-put" placeholder="e.g. 4,08,379" enterkeyhint="done"><small class="nwm-hint">The total you have invested to date</small></div><div class="form-group"><label>Worth now (₹, optional)</label><input type="text" inputmode="decimal" id="sg-worth" placeholder="Current value" enterkeyhint="done"><small class="nwm-hint">From your fund statement. Also sets Investments in your net worth</small></div></div>
+  <div class="form-row"><div class="form-group"><label>Goal corpus (₹, optional)</label><input type="text" inputmode="decimal" id="sg-target" placeholder="e.g. 50,00,000" enterkeyhint="done"><small class="nwm-hint">Shows on the Goals page and fills as SIPs go out</small></div><div class="form-group"><label>By when (optional)</label><input type="month" id="sg-by"></div></div>
   <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="saveSipGoal()">Save</button><button class="btn btn-secondary" onclick="closeM('m-sipgoal')">Cancel</button></div>
 </div></div>
 
@@ -5591,28 +5675,55 @@ function feedIcon(e){
   return svgIco(CAT_ICON[e.who]||'spark');
 }
 // Transaction feed, grouped by day
+// One row reads the same everywhere: icon tinted by category, the note, then on a wide screen the
+// category, where it was paid from and the amount sit in their own columns.
+function feedColor(e){
+  if(!e)return 'var(--txt-3)';
+  if(e.type==='income')return 'var(--money-in)';
+  if(e.type==='payout')return 'var(--accent-deep)';
+  if(e.type==='fixed')return 'var(--brand-2)';
+  if(e.type==='investment')return 'var(--purple)';
+  const i=CATSlist().indexOf(e.who);
+  return i>=0?OV_COLS[i%OV_COLS.length]:'var(--txt-3)';
+}
+function feedAccount(e){
+  if(e.card)return cardLabel(e.card)+' card';
+  if(e.cc)return 'Card not set';
+  if(e.viaCard)return cardLabel(e.viaCard)+' bill';
+  return 'Bank / UPI';
+}
 function feedItem(e){
   const isInc=e.type==='income';
   const title=(e.note&&e.note.trim())?e.note:e.who;
+  const tm=TYPE_META[e.type]||TYPE_META.expense;
+  const cardTxt=(e.card||e.cc)?' · '+entryCardName(e):'';
   let sub;
-  const cardTxt=(e.card||e.cc)?' \u00b7 '+entryCardName(e):'';
-  if(e.type==='expense'){sub=e.who+(e.fund?' \u00b7 from the '+fundName(e.fund)+(e.trip?' \u00b7 '+e.trip:''):'')+cardTxt}
-  else{const tm=TYPE_META[e.type]||{};sub=(tm.label||'')+((e.note&&e.note.trim()&&e.who&&e.who!==e.note)?' \u00b7 '+e.who:'')+cardTxt}
-  if(e.fx&&e.fxAmt)sub+=' \u00b7 '+(e.fxCur||'USD')+' '+Number(e.fxAmt).toLocaleString('en-IN');
-  if(e.viaCard&&!e.card)sub+=' \u00b7 in the '+cardLabel(e.viaCard)+' bill';
+  if(e.type==='expense'){sub=e.who+(e.fund?' · from the '+fundName(e.fund)+(e.trip?' · '+e.trip:''):'')+cardTxt}
+  else{sub=(tm.label||'')+((e.note&&e.note.trim()&&e.who&&e.who!==e.note)?' · '+e.who:'')+cardTxt}
+  if(e.fx&&e.fxAmt)sub+=' · '+(e.fxCur||'USD')+' '+Number(e.fxAmt).toLocaleString('en-IN');
+  if(e.viaCard&&!e.card)sub+=' · in the '+cardLabel(e.viaCard)+' bill';
   const sp=splitOf(e);
-  if(sp)sub+=' \u00b7 '+(sp.back?sp.who+' paid back '+fmt(sp.amt):sp.who+' owes '+fmt(sp.amt));
-  const amt=(isInc?'+ ':'\u2212 ')+fmt(e.amount);
+  if(sp)sub+=' · '+(sp.back?sp.who+' paid back '+fmt(sp.amt):sp.who+' owes '+fmt(sp.amt));
+  // On a wide screen the category and the account have their own columns, so only the extras stay under the note
+  const extras=[];
+  if(e.fund)extras.push('From the '+fundName(e.fund)+(e.trip?' · '+e.trip:''));
+  if(e.fx&&e.fxAmt)extras.push((e.fxCur||'USD')+' '+Number(e.fxAmt).toLocaleString('en-IN')+(e.fxRate?' at '+Number(e.fxRate).toFixed(2):''));
+  if(sp)extras.push(sp.back?sp.who+' paid back '+fmt(sp.amt):sp.who+' owes '+fmt(sp.amt));
+  if(isInc&&isMonthStr(e.for))extras.push('For '+monthName(e.for));
+  if(e.note&&e.note.trim()&&e.type!=='expense'&&e.who&&e.who!==e.note)extras.unshift(e.who);
+  const amt=(isInc?'+ ':'− ')+fmt(e.amount);
   const tags=(e.auto?'<span class="feed-tag">Auto</span>':'')+(e.fund?`<span class="feed-tag is-fund">${esc(fundShort(e.fund))}</span>`:'')+(sp?`<span class="feed-tag ${sp.back?'is-ok':'is-due'}">Split</span>`:'')+(isInc&&isMonthStr(e.for)?`<span class="feed-tag is-for">For ${esc(monShort(e.for))}</span>`:'');
-  return `<div class="feed-row" role="button" tabindex="0" data-id="${esc(String(e.id))}" title="Tap to edit this entry" onclick="openEditEntry(${e.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEditEntry(${e.id})}">
+  const col=feedColor(e);
+  return `<div class="feed-row" role="button" tabindex="0" data-id="${esc(String(e.id))}" style="--fc:${col}" title="Tap to edit this entry" onclick="openEditEntry(${e.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEditEntry(${e.id})}">
     <div class="feed-av">${feedIcon(e)}</div>
-    <div class="feed-body"><div class="feed-note">${esc(title)}</div><div class="feed-sub">${tags}${esc(sub)}</div></div>
+    <div class="feed-body"><div class="feed-note">${esc(title)}</div><div class="feed-sub ph">${tags}${esc(sub)}</div><div class="feed-sub dk">${e.auto?'<span class="feed-tag">Auto</span>':''}${esc(extras.join(' · '))}</div></div>
+    <div class="feed-cat"><span class="pill">${esc(e.type==='expense'?e.who:(tm.label+' · '+e.who))}</span></div>
+    <div class="feed-acc"><i></i>${esc(feedAccount(e))}</div>
     <div class="feed-amt ${isInc?'pos':'neg'}">${amt}${sp?`<small>yours ${fmt(myAmt(e))}</small>`:''}</div>
-    <button class="feed-pen" title="Edit entry" aria-label="Edit entry" onclick="event.stopPropagation();openEditEntry(${e.id})">\u270e</button>
-    <button class="feed-del" title="Delete entry" aria-label="Delete entry" onclick="event.stopPropagation();deleteLogEntry(${e.id})">\u2715</button>
+    <button class="feed-pen" title="Edit entry" aria-label="Edit entry" onclick="event.stopPropagation();openEditEntry(${e.id})">✎</button>
+    <button class="feed-del" title="Delete entry" aria-label="Delete entry" onclick="event.stopPropagation();deleteLogEntry(${e.id})">✕</button>
   </div>`;
 }
-// Deleting is never immediate in effect: the removed record is held so undo can put it back where it was.
 function deleteLogEntry(id){
   const i=LB.findIndex(x=>x.id===id);
   if(i<0)return;
@@ -7001,17 +7112,19 @@ function openSipGoal(){
   document.getElementById('sg-target').value=rsIn(sipTargetV());
   document.getElementById('sg-by').value=isMonthStr(INV.sipBy)?INV.sipBy:'';
   document.getElementById('sg-put').value=rsIn(sipCorpus());
+  document.getElementById('sg-worth').value=rsIn(sipWorth());
   openM('m-sipgoal');
 }
 function saveSipGoal(){
-  const t=toP(document.getElementById('sg-target').value),by=document.getElementById('sg-by').value,put=toP(document.getElementById('sg-put').value);
-  const was={t:INV.sipTarget,by:INV.sipBy,put:(INV.funds||{}).investment};
+  const t=toP(document.getElementById('sg-target').value),by=document.getElementById('sg-by').value,put=toP(document.getElementById('sg-put').value),worth=toP(document.getElementById('sg-worth').value);
+  const was={t:INV.sipTarget,by:INV.sipBy,put:(INV.funds||{}).investment,worth:NW.investments,upd:NW.updatedAt};
   INV.sipTarget=Math.max(0,t);INV.sipBy=isMonthStr(by)?by:'';INV.funds=INV.funds||{};INV.funds.investment=Math.max(0,put);
   S(K.inv,INV);
+  if(Math.max(0,worth)!==P(NW.investments||0)){NW.investments=Math.max(0,worth);NW.updatedAt=new Date().toISOString();S(K.nw,NW)}
   if(INV.sipTarget>0)syncGoalFor(sipFundObj(),sipCorpus(),true);
   else{const i=GOALS.findIndex(g=>goalFund(g)&&goalFund(g).key===SIP_KEY);if(i>=0){GOALS.splice(i,1);S(K.goals,GOALS)}}
   closeM('m-sipgoal');renderAll();sfx('save');
-  toast(INV.sipTarget>0?'SIP goal set to '+fmt(INV.sipTarget):'SIP goal cleared',fmt(sipCorpus())+' put in so far','Undo',()=>{INV.sipTarget=was.t;INV.sipBy=was.by;INV.funds.investment=was.put;S(K.inv,INV);if(INV.sipTarget>0)syncGoalFor(sipFundObj(),sipCorpus(),true);renderAll()},7000);
+  toast('SIP balance saved',fmt(sipCorpus())+' put in'+(sipWorth()>0?', worth '+fmt(sipWorth()):'')+(INV.sipTarget>0?', goal '+fmtS(INV.sipTarget):''),'Undo',()=>{INV.sipTarget=was.t;INV.sipBy=was.by;INV.funds.investment=was.put;S(K.inv,INV);NW.investments=was.worth;NW.updatedAt=was.upd;S(K.nw,NW);if(INV.sipTarget>0)syncGoalFor(sipFundObj(),sipCorpus(),true);renderAll()},7000);
 }
 function sipAdjustOpen(){FUND_UI.adjust[SIP_KEY]=!FUND_UI.adjust[SIP_KEY];renderSipPot();if(FUND_UI.adjust[SIP_KEY])setTimeout(()=>{const i=document.getElementById('fa-sip');if(i)i.focus()},60)}
 function sipAdjustSave(){const i=document.getElementById('fa-sip');if(!i)return;const was=sipCorpus();setSipCorpus(toP(i.value));FUND_UI.adjust[SIP_KEY]=false;renderAll();sfx('save');toast('SIP corpus set to '+fmt(sipCorpus()),'Months you log as done keep adding to it','Undo',()=>{setSipCorpus(was);renderAll()},7000)}
@@ -12703,7 +12816,7 @@ function feedHTML(entries){
   const groups={},order=[];shown.forEach(e=>{if(!groups[e.date]){groups[e.date]=[];order.push(e.date)}groups[e.date].push(e)});
   order.sort((a,b)=>b.localeCompare(a));
   const today=td(),yest=localDay(Date.now()-86400000);
-  let h=order.map(d=>{
+  let h='<div class="feed-cols"><span></span><span>Entry</span><span>Category</span><span>Paid from</span><span>Amount</span><span></span></div>'+order.map(d=>{
     const list=groups[d];
     const out=list.filter(e=>e.type!=='income').reduce((s,e)=>s+myAmt(e),0),inc=list.filter(e=>e.type==='income').reduce((s,e)=>s+(+e.amount||0),0);
     const label=d===today?'Today':d===yest?'Yesterday':dWD(dOf(d));
@@ -13001,12 +13114,12 @@ function renderBudget(){
   if(rd){rd.className='ready'+(left<0?' is-over':'');rd.innerHTML=`<div class="rd-b"><div class="rd-v">${left<0?'−':''}${fmt(Math.abs(left))}</div><div class="rd-k">${left<0?'Plan spends more than you earn':'Left to assign'}</div><div class="rd-s">${fmt(BG.income)} planned income · ${fmt(planned)} assigned across ${BG.fixed.length+BG.variable.length+BG.savings.length} lines</div></div><button class="btn btn-sm" onclick="openBudgetModal()">Edit plan</button>`}
   // ---- the table
   const avail=(b,act,isSave)=>{const d=r2(b-act);if(isSave){if(b<=0)return '<b>'+fmt(act)+'</b>';return d<=0?'<b class="ok">Done</b>':'<b class="warn">'+fmt(d)+' to go</b>'}if(b<=0)return act>0?'<b class="bad">'+fmt(act)+' unplanned</b>':'<b>—</b>';return d<0?'<b class="bad">−'+fmt(-d)+'</b>':'<b class="ok">'+fmt(d)+'</b>'};
-  const bar=(b,act,isSave)=>{if(b<=0)return act>0?'<div class="bar"><i class="over" style="width:100%"></i></div>':'';const p=Math.min(100,Math.round(act/b*100));return `<div class="bar"><i class="${isSave?'':(act>b?'over':p>=85?'warn':'')}" style="width:${p}%"></i></div>`};
-  const row=(name,b,act,sub,go,isSave)=>`<div class="bt-r" onclick="${go}"><span class="bt-n"><b>${esc(name)}</b>${bar(b,act,isSave)}${sub?`<span class="bt-sub">${sub}</span>`:''}</span><span class="bt-b">${b>0?fmt(b):'—'}</span><span class="bt-a ${isSave?'in':''} ${act?'':'zero'}">${act?(isSave?'+':'−')+fmt(act):'₹0'}</span><span class="bt-av">${avail(b,act,isSave)}</span></div>`;
+  const bar=(b,act,isSave,tick)=>{if(b<=0)return act>0?'<div class="bar"><i class="over" style="width:100%"></i></div>':'';const p=Math.min(100,Math.round(act/b*100));const tk=(tick!=null&&tick>0&&tick<100)?`<em style="left:${tick}%" title="Where today sits in the month"></em>`:'';return `<div class="bar"><i class="${isSave?'':(act>b?'over':p>=85?'warn':'')}" style="width:${p}%"></i>${tk}</div>`};
+  const row=(name,b,act,sub,go,isSave,tick)=>`<div class="bt-r" onclick="${go}"><span class="bt-n"><b>${esc(name)}</b>${bar(b,act,isSave,tick)}${sub?`<span class="bt-sub">${sub}</span>`:''}</span><span class="bt-b">${b>0?fmt(b):'—'}</span><span class="bt-a ${isSave?'in':''} ${act?'':'zero'}">${act?(isSave?'+':'−')+fmt(act):'₹0'}</span><span class="bt-av">${avail(b,act,isSave)}</span></div>`;
   const grp=(key,title,b,act,rows,isSave)=>{const closed=!!BG_UI.closed[key];return `<div class="bt-g${closed?' is-closed':''}" onclick="bgGroupClose('${key}')"><span class="bt-gn"><i>▾</i>${esc(title)} <small>${rows.n}</small></span><span>${fmt(b)}</span><span class="${isSave?'in':''}">${act?(isSave?'+':'−')+fmt(act):'₹0'}</span><span class="bt-av">${avail(b,act,isSave)}</span></div>${closed?'':rows.h}`};
   const lb=(cat,type)=>`switchPage('logbook');LGF={q:'',type:'${type}',cat:${JSON.stringify(cat).replace(/"/g,'&quot;')},from:'${m}-01',to:'${m}-${pad2(dimYM(m))}'};renderLogbook()`;
   const fixedRows=BG.fixed.map(x=>row(x.name,x.amount,a.fixed[x.name]||0,'',lb(x.name,'fixed'),false)).concat(Object.entries(a.extraFixed).map(([k,v])=>row(k,0,v,'Not in the plan',lb(k,'fixed'),false)));
-  const varRows=BG.variable.map(x=>{const act=a.variable[x.name]||0,d=isCur?new Date().getDate():dimYM(m),pace=x.amount>0?Math.round(x.amount*d/dimYM(m)):0;const sub=isCur&&x.amount>0?(act>x.amount?'Over by '+fmt(act-x.amount):act>pace*1.1?'Ahead of pace for day '+d:fmt(x.amount-act)+' left'):'';return row(x.name,x.amount,act,sub,lb(x.name,'expense'),false)}).concat(Object.entries(a.extraVar).map(([k,v])=>row(k,0,v,'Not in the plan',lb(k,'expense'),false)));
+  const varRows=BG.variable.map(x=>{const act=a.variable[x.name]||0,d=isCur?new Date().getDate():dimYM(m),pace=x.amount>0?Math.round(x.amount*d/dimYM(m)):0;const sub=isCur&&x.amount>0?(act>x.amount?'Over by '+fmt(act-x.amount):act>pace*1.1?'Ahead of pace for day '+d:fmt(x.amount-act)+' left'):'';return row(x.name,x.amount,act,sub,lb(x.name,'expense'),false,isCur&&x.amount>0?Math.round(d/dimYM(m)*100):null)}).concat(Object.entries(a.extraVar).map(([k,v])=>row(k,0,v,'Not in the plan',lb(k,'expense'),false)));
   const savRows=BG.savings.map(x=>{const s=a.savings[x.name]||{v:0,src:''};return row(x.name,x.amount,s.v,s.src==='ticked'?'Ticked off on the Investments page':s.src==='logged'?'Logged as an investment':'',"switchPage('investments')",true)}).concat(a.otherInv?[row('Other investments',0,a.otherInv,'Logged, not in the plan',"switchPage('investments')",true)]:[]);
   const tb=document.getElementById('bg-table');
   if(tb)tb.innerHTML=`<div class="bt-cols"><span>${esc(monthName(m))}${isCur?' so far':''}</span><span>Budgeted</span><span>Activity</span><span>Available</span></div>`+
@@ -13137,10 +13250,10 @@ function renderInvestments(){
   const p=tgt>0?Math.max(0,Math.min(100,Math.round(corpus/tgt*100))):0,togo=sipMonthsToGo(),gain=worth>0?r2(worth-corpus):null;
   if(g('inv-sip'))g('inv-sip').innerHTML=`<div class="card mb-12 inv-card is-sip">
     <div class="row" style="padding:0 0 10px;border:none"><span class="row-ico purple"><svg viewBox="0 0 24 24">${ICO.trend}</svg></span><span class="row-b"><span class="row-t" style="font-size:16px">SIPs</span><span class="row-s">${sips.length?sips.length+(sips.length===1?' fund':' funds')+', auto-debit on the 11th':'No SIPs set up yet'}</span></span><span class="row-r"><span class="row-v">${fmt(monthly)}</span><small>a month</small></span></div>
-    <div class="inv-nums"><div><span>Put in so far</span><b>${ccNum('sip-corpus',corpus)}</b></div>${worth>0?`<div><span>Worth now</span><b>${fmt(worth)}</b></div>`:''}${gain!=null&&Math.abs(gain)>=RUPEE?`<div><span>${gain>=0?'Gain':'Down'}</span><b class="${gain>=0?'in':'out'}">${fmtSign(gain)}</b></div>`:''}${tgt>0?`<div><span>Goal</span><b>${fmt(tgt)}</b></div>`:''}</div>
+    <div class="inv-nums"><div class="is-edit" role="button" tabindex="0" title="Tap to change what you have put in" onclick="openSipGoal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSipGoal()}"><span>Put in so far</span><b>${ccNum('sip-corpus',corpus)}</b></div><div class="is-edit" role="button" tabindex="0" title="Tap to update the current value" onclick="openSipGoal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSipGoal()}"><span>Worth now</span><b>${worth>0?fmt(worth):'<span class="unset">Add value</span>'}</b></div>${gain!=null&&Math.abs(gain)>=RUPEE?`<div><span>${gain>=0?'Gain':'Down'}</span><b class="${gain>=0?'in':'out'}">${fmtSign(gain)}</b></div>`:''}${tgt>0?`<div><span>Goal</span><b>${fmt(tgt)}</b></div>`:''}</div>
     ${tgt>0?`<div class="bar" style="margin:10px 0 6px"><i style="width:${p}%;background:var(--purple)"></i></div><div class="tile-s">${p}% of the goal${togo?' · about '+(togo>=24?Math.round(togo/12)+' years':togo+' months')+' to go at this pace':''}${isMonthStr(INV.sipBy)?' · aiming for '+esc(monthName(INV.sipBy)):''}</div>`:''}
     ${sips.length?`<div class="rows inv-siplist" id="sip-list">${sips.map(x=>`<div class="row" style="padding:7px 2px"><span class="row-b"><span class="row-t" style="font-size:13px;font-weight:550">${esc(x.name)}</span>${x.why||x.horizon?`<span class="row-s">${esc([x.why,x.horizon?'Horizon '+x.horizon:''].filter(Boolean).join(' · '))}</span>`:''}</span><span class="row-v" style="font-size:13.5px">${fmt(x.current)}</span></div>`).join('')}</div>`:''}
-    <div class="inv-acts">${monthly>0?`<button class="btn ${sipDone?'btn-secondary':'btn-primary'} btn-sm" onclick="sipQuickDone('${m}')">${sipDone?'✓ '+esc(mn)+'’s SIP went out':'Mark '+esc(mn)+'’s SIP as done'}</button>`:''}<button class="btn btn-secondary btn-sm" onclick="openInvEdit()">Edit SIPs</button><button class="btn btn-secondary btn-sm" onclick="openSipGoal()">${tgt>0?'Goal and balance':'Set a goal'}</button><button class="btn btn-secondary btn-sm" onclick="switchPage('calculator')">Project it</button></div>
+    <div class="inv-acts">${monthly>0?`<button class="btn ${sipDone?'btn-secondary':'btn-primary'} btn-sm" onclick="sipQuickDone('${m}')">${sipDone?'✓ '+esc(mn)+'’s SIP went out':'Mark '+esc(mn)+'’s SIP as done'}</button>`:''}<button class="btn btn-secondary btn-sm" onclick="openInvEdit()">Edit SIPs</button><button class="btn btn-secondary btn-sm" onclick="openSipGoal()">${tgt>0?'Edit balance and goal':'Edit balance, set a goal'}</button><button class="btn btn-secondary btn-sm" onclick="switchPage('calculator')">Project it</button></div>
   </div>`;
   renderFunds(m);
   renderSIPLog();
@@ -13232,6 +13345,104 @@ function renderLendTiles(){
     `<div class="tile"><div class="tile-k">Received so far</div><div class="tile-v in">${fmt(got)}</div><div class="tile-s">${dueNow>0?fmt(dueNow)+' falls due this month':'Across every month ticked off'}</div></div>`;
 }
 {const _rf0=renderFlat;renderFlat=function(){_rf0();try{renderLendTiles()}catch(e){console.error('lend tiles',e)}}}
+
+// ============ v22.4 · TAX PROJECTION ============
+// Takes the receipts logged so far this financial year, runs them forward at the same pace, and shows the
+// slab the taxable income lands in, the tax that would mean, and what is left to set aside each month.
+function taxProjection(fy){
+  const b=fyBreakdown(fy),months=fyMonthList(fy),cur=cm();
+  const complete=fy<currentFY();
+  const elapsed=complete?12:Math.max(1,months.indexOf(cur)+1);
+  const factor=elapsed>=12?1:12/elapsed;
+  const receipts=Math.round(b.receipts*factor),costs=Math.round(b.costs*factor);
+  const tax=taxBreakdown(receipts,costs);
+  const paid=tax.bands.filter(x=>x.rate>0&&x.due>0);
+  const top=tax.bands.length?tax.bands[tax.bands.length-1]:null;
+  const covered=taxCovered(fy),gap=Math.max(0,r2(tax.total-covered));
+  const left=Math.max(0,12-elapsed);
+  return {fy,complete,elapsed,left,factor,soFar:b.receipts,receipts,costs,tax,top,paid,covered,gap,perMonth:left>0?Math.round(gap/left):gap,eff:receipts>0?tax.total/receipts*100:0};
+}
+function renderTaxProjection(fy){
+  const host=document.getElementById('tx-projection');if(!host)return;
+  const p=taxProjection(fy);
+  if(p.soFar<=0){host.innerHTML=`<div class="card-title">Where this year is heading</div><div class="txp-note">Log income for FY ${esc(fyLabel(fy))} and this works out the slab you are heading for and the tax that would mean.</div>`;return}
+  const t=p.tax,top=p.top;
+  const bandTxt=x=>x.to===Infinity?'above '+fmtS(x.from):fmtS(x.from)+' to '+fmtS(x.to);
+  const method=TAX.mode==='44ADA'?TAX.deemedPct+'% of receipts counts as income under 44ADA':'profit after agency costs';
+  let say;
+  if(t.taxable<=0)say='Nothing taxable at this rate.';
+  else if(t.rebate>0&&t.total<=0){say=`Taxable income of about <b>${fmt(Math.round(t.taxable))}</b> stays inside the rebate limit of ${fmtS(TAX.rebateLimit)}, so <b>no tax is due</b> at this pace.`;
+    if(TAX.mode==='44ADA'&&TAX.deemedPct>0){const hr=Math.round((TAX.rebateLimit-(TAX.otherIncome||0)+(TAX.deductions||0))/(TAX.deemedPct/100));if(hr>p.receipts)say+=` Receipts can grow to about <b>${fmtS(hr)}</b> for the year, ${fmt(hr-p.receipts)} more than this pace, before any tax is due.`}}
+  else if(top&&top.rate>0)say=`Taxable income of about <b>${fmt(Math.round(t.taxable))}</b> reaches the <b>${top.rate}% band</b> (${bandTxt(top)}). That band only applies to the ${fmt(Math.round(top.slice))} above ${fmtS(top.from)}; the rest is taxed in the lower bands.`;
+  else say=`Taxable income of about <b>${fmt(Math.round(t.taxable))}</b> sits in the nil band.`;
+  const plan=p.complete?'The year is complete, so this is the real figure rather than a projection.':(p.gap>0?(p.left>0?`<b>${fmt(p.gap)}</b> still to set aside, about <b>${fmt(p.perMonth)} a month</b> for the ${p.left} month${p.left===1?'':'s'} left to March.`:`<b>${fmt(p.gap)}</b> still to set aside before the year closes.`):'What is parked and paid already covers the projected tax.');
+  const ladder=TAX.slabs.map((s,i)=>{
+    const from=i?(+TAX.slabs[i-1].upto||0):0,cap=(s.upto===null||s.upto===undefined||s.upto==='')?Infinity:+s.upto;
+    const span=cap===Infinity?Math.max(from*0.5,R(400000)):cap-from;
+    const used=Math.max(0,Math.min(1,(t.taxable-from)/span));
+    const isTop=top&&top.from===from,isIn=used>0;
+    return `<span class="${isTop?'is-top':isIn?'is-in':''}" title="${s.rate}% on ${bandTxt({from,to:cap})}"><i><b style="width:${Math.round(used*100)}%"></b></i><small>${+s.rate||0}%<em>${cap===Infinity?fmtS(from)+'+':'to '+fmtS(cap)}</em></small></span>`;
+  }).join('');
+  const metrics=[
+    {k:'Receipts at this pace',v:fmt(p.receipts),s:p.complete?'Full year':fmt(p.soFar)+' so far over '+p.elapsed+(p.elapsed===1?' month':' months')},
+    {k:'Taxable income',v:fmt(Math.round(t.taxable)),s:method},
+    {k:'Top band reached',v:top&&top.rate>0?top.rate+'%':'Nil',s:t.rebate>0&&t.total<=0?'Rebate wipes the tax below '+fmtS(TAX.rebateLimit):top&&top.rate>0?'On income '+bandTxt(top):'Within the nil band'},
+    {k:'Effective rate',v:p.eff.toFixed(1)+'%',s:'Of every rupee received'}
+  ].map(x=>`<div class="metric"><div class="k">${x.k}</div><div class="v">${x.v}</div><div class="s">${x.s}</div></div>`).join('');
+  host.innerHTML=`<div class="txp-head"><div><div class="card-title">Where this year is heading</div><div class="ch-sub">${p.complete?'FY '+esc(fyLabel(fy))+' as it closed':'If the rest of FY '+esc(fyLabel(fy))+' goes like the first '+p.elapsed+(p.elapsed===1?' month':' months')}</div></div><div style="text-align:right"><div class="txp-big">${fmt(t.total)}</div><div class="ch-sub">estimated tax${t.cess>0?' incl. '+TAX.cess+'% cess':''}${t.rebate>0?' after rebate':''}</div></div></div>
+    <div class="txp-grid">${metrics}</div>
+    <div class="txp-ladder" aria-label="Tax slabs">${ladder}</div>
+    <div class="txp-note">${say} ${plan} Working estimate from the slabs in Tax settings, not a filed return.</div>`;
+}
+{const _rt0=renderTax;renderTax=function(){_rt0();safeRender(()=>renderTaxProjection(activeFY()),'tax projection')}}
+
+// ============ v22.5 · LAYOUT GUARD ============
+// Structure checks that catch stray or unclosed markup. They run with Settings > Self test, so a
+// broken release shows up as a failed check instead of as a stray bar on a page.
+function layoutAudit(){
+  const out=[],ck=(name,bad)=>out.push({name,ok:!bad.length,detail:bad.slice(0,4).join(' · ')});
+  const d=e=>e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+(e.className&&typeof e.className==='string'&&e.className.trim()?'.'+e.className.trim().split(/\s+/)[0]:'');
+  {const seen={},dup=[];document.querySelectorAll('[id]').forEach(e=>{if(seen[e.id]&&!dup.includes(e.id))dup.push(e.id);seen[e.id]=1});ck('Layout: every element id is used once',dup)}
+  {const okTag=/^(SCRIPT|STYLE|LINK|META|TEMPLATE|NOSCRIPT|SVG|ASIDE|HEADER|NAV|MAIN|FOOTER)$/;
+   ck('Layout: nothing loose sits outside the app shell',[...document.body.children].filter(e=>!e.id&&!okTag.test(e.tagName)&&!e.classList.contains('shell')).map(d))}
+  ck('Layout: every sheet is a top-level overlay with its own panel',[...document.querySelectorAll('.modal-overlay')].filter(o=>o.parentElement!==document.body||!o.querySelector(':scope > .modal')).map(d));
+  {const host=document.querySelector('.pages');
+   ck('Layout: only pages sit inside the pages container',host?[...host.children].filter(c=>!c.classList.contains('page')).map(d).concat([...document.querySelectorAll('.page')].filter(p=>p.parentElement!==host).map(d)):['no pages container'])}
+  ck('Layout: the screen does not scroll sideways',document.documentElement.scrollWidth>innerWidth+1?['wider by '+(document.documentElement.scrollWidth-innerWidth)+'px']:[]);
+  return out;
+}
+{const _rst0=runSelfTests;runSelfTests=function(){const T=_rst0();try{layoutAudit().forEach(c=>T.push(c))}catch(e){T.push({name:'Layout checks ran',ok:false,detail:e.message})}return T}}
+// A developer sweep, not part of normal use: visits every page and opens every sheet, looking for
+// what the structure checks cannot see (render errors, sideways scroll, sheets that collapse).
+// Run layoutSweep() in the console; it returns the list of problems, empty when all is well.
+async function layoutSweep(){
+  const bad=[],tick=()=>Promise.resolve();   // rendering and layout reads are synchronous, so no timers: a hidden tab throttles them
+  const here=((document.querySelector('.page.active')||{}).id||'page-overview').replace('page-','');
+  const errs=[],ce=console.error;console.error=function(){errs.push([].join.call(arguments,' '));ce.apply(console,arguments)};
+  const s0=sfx;sfx=function(){};
+  try{
+    for(const id of Object.keys(PAGE_RENDER)){
+      errs.length=0;
+      try{switchPage(id)}catch(e){bad.push(id+': '+e.message);continue}
+      await tick();
+      if(errs.length)bad.push(id+': '+errs[0].slice(0,100));
+      if(document.documentElement.scrollWidth>innerWidth+1)bad.push(id+': scrolls sideways by '+(document.documentElement.scrollWidth-innerWidth)+'px');
+      layoutAudit().filter(c=>!c.ok).forEach(c=>bad.push(id+': '+c.name+' ('+c.detail+')'));
+    }
+    for(const o of [...document.querySelectorAll('.modal-overlay')]){
+      if(o.classList.contains('open'))continue;
+      o.classList.add('open');await tick();
+      // offset sizes, not screen position: sheets slide in, so their position is mid-animation right after opening
+      const m=o.querySelector(':scope > .modal'),sc=m&&m.querySelector('.ad-body');
+      if(!m||m.offsetHeight<60||m.offsetWidth<200)bad.push('sheet '+(o.id||'?')+': collapsed ('+(m?m.offsetWidth+'x'+m.offsetHeight:'no panel')+')');
+      else if(sc&&sc.clientHeight<120)bad.push('sheet '+o.id+': its scrolling body collapsed to '+sc.clientHeight+'px');
+      else if(m.offsetWidth>innerWidth+1)bad.push('sheet '+o.id+': wider than the screen ('+m.offsetWidth+'px)');
+      else if(m.offsetHeight>innerHeight+1)bad.push('sheet '+o.id+': taller than the screen ('+m.offsetHeight+'px)');
+      o.classList.remove('open');
+    }
+  }finally{sfx=s0;console.error=ce;try{switchPage(here)}catch(e){}}
+  return bad;
+}
 
 // ============ BOOT ============
 // Runs last, once every function and constant above exists.
