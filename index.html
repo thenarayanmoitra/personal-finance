@@ -3145,41 +3145,41 @@ body.rail-open .mnav{opacity:0;pointer-events:none}
 /* ---------- Add Transaction sheet ---------- */
 #m-add .modal{max-width:520px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:92vh}
 #m-add .modal::before{display:none}
-.ad-head{display:flex;align-items:center;gap:10px;padding:14px 16px 8px}
-.ad-head h3{margin:0;font-size:18px;flex:1}
-.ad-grab{display:none;width:42px;height:5px;border-radius:3px;background:var(--border-strong);margin:8px auto 0}
-.ad-x{width:36px;height:36px;border-radius:11px;background:var(--surface-2);color:var(--txt-2);padding:0;font-size:16px}
-.ad-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px 12px;min-height:0}
-.ad-body .pw-row{margin:0;padding:0;background:transparent;border:none}
-.ad-body .pw-head,.ad-body .form-group>label,.ad-body .ql-cats>label{display:none}
+.sh-head{display:flex;align-items:center;gap:10px;padding:14px 16px 8px}
+.sh-head h3{margin:0;font-size:18px;flex:1}
+.sh-grab{display:none;width:42px;height:5px;border-radius:3px;background:var(--border-strong);margin:8px auto 0}
+.sh-x{width:36px;height:36px;border-radius:11px;background:var(--surface-2);color:var(--txt-2);padding:0;font-size:16px}
+.sh-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px 12px;min-height:0}
+.sh-body .pw-row{margin:0;padding:0;background:transparent;border:none}
+.sh-body .pw-head,.sh-body .form-group>label,.sh-body .ql-cats>label{display:none}
 .inv-nums{display:flex;gap:16px 22px;flex-wrap:wrap;padding:4px 0 8px}.inv-nums div{display:flex;flex-direction:column;gap:1px}.inv-nums span{font-size:11px;font-weight:600;color:var(--txt-3)}.inv-nums b{font-family:var(--num);font-size:16px;font-weight:650;letter-spacing:-.01em}.inv-nums b.in{color:var(--money-in)}.inv-nums b.out{color:var(--money-out)}
 .inv-acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.inv-big{display:flex;flex-direction:column;gap:2px;padding-top:4px}.inv-siplist{border-top:1px dashed var(--border);margin-top:4px}
 @media(max-width:640px){.inv-acts{display:grid;grid-template-columns:1fr 1fr}.inv-acts .btn{width:100%;justify-content:center;min-height:42px}.inv-acts .btn:first-child{grid-column:1/-1}}
 .greet-r{display:flex;gap:8px}
-.ad-body .np-section{margin:0;padding:0;border:none}
-.ad-body .np-head{display:none}
-.ad-body .sp-row{margin:0;border:none;background:transparent}
-.ad-body .sp-head{padding:0 0 10px}
-.ad-body .sp-fields{padding:0}
-.ad-body .fx-head{padding:10px 12px}
-.ad-body #log-fx-fields{margin-top:10px!important}
+.sh-body .np-section{margin:0;padding:0;border:none}
+.sh-body .np-head{display:none}
+.sh-body .sp-row{margin:0;border:none;background:transparent}
+.sh-body .sp-head{padding:0 0 10px}
+.sh-body .sp-fields{padding:0}
+.sh-body .fx-head{padding:10px 12px}
+.sh-body #log-fx-fields{margin-top:10px!important}
 .seg-io{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:3px;gap:3px;margin:4px 0 8px}
 .seg-io button{flex:1;min-height:42px;border-radius:11px;font-size:14.5px;font-weight:700;color:var(--txt-2);background:transparent;box-shadow:none;padding:8px}
 .seg-io button.active.out{background:var(--out-soft);color:var(--money-out)}
 .seg-io button.active.in{background:var(--in-soft);color:var(--money-in)}
-.ad-kinds{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 6px;margin:0 -2px}
-.ad-kinds::-webkit-scrollbar{display:none}
-.ad-kinds button{flex:0 0 auto;min-height:32px;padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:650;background:var(--surface-2);color:var(--txt-2);border:1px solid transparent;box-shadow:none}
-.ad-kinds button.active{background:var(--surface);color:var(--txt);border-color:var(--border-strong)}
-.ad-amt{text-align:center;padding:10px 0 2px}
-.ad-amt .amt-wrap{justify-content:center;border:none;padding:0;gap:4px}
-.ad-amt .amt-wrap .rs{font-size:30px;color:var(--money-out);opacity:.7}
-.ad-amt .amt-wrap input{text-align:center;font-size:48px;font-weight:650;color:var(--money-out);caret-color:var(--brand);width:auto;max-width:100%;min-width:3ch}
-.ad-amt.is-in .amt-wrap .rs,.ad-amt.is-in .amt-wrap input{color:var(--money-in)}
-.ad-amt .ad-hint{font-size:12.5px;color:var(--txt-3);margin-top:2px;min-height:18px}
-.ad-amt .amt-ops{justify-content:center;margin-top:6px}
-.ad-amt .amt-ops-k{display:none}
-.ad-rows{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.sh-kinds{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 6px;margin:0 -2px}
+.sh-kinds::-webkit-scrollbar{display:none}
+.sh-kinds button{flex:0 0 auto;min-height:32px;padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:650;background:var(--surface-2);color:var(--txt-2);border:1px solid transparent;box-shadow:none}
+.sh-kinds button.active{background:var(--surface);color:var(--txt);border-color:var(--border-strong)}
+.sh-amt{text-align:center;padding:10px 0 2px}
+.sh-amt .amt-wrap{justify-content:center;border:none;padding:0;gap:4px}
+.sh-amt .amt-wrap .rs{font-size:30px;color:var(--money-out);opacity:.7}
+.sh-amt .amt-wrap input{text-align:center;font-size:48px;font-weight:650;color:var(--money-out);caret-color:var(--brand);width:auto;max-width:100%;min-width:3ch}
+.sh-amt.is-in .amt-wrap .rs,.sh-amt.is-in .amt-wrap input{color:var(--money-in)}
+.sh-amt .sh-hint{font-size:12.5px;color:var(--txt-3);margin-top:2px;min-height:18px}
+.sh-amt .amt-ops{justify-content:center;margin-top:6px}
+.sh-amt .amt-ops-k{display:none}
+.sh-rows{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .ar{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
 .ar.is-missing .ar-v{color:var(--txt-3);font-weight:500}
 .ar-head{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;background:transparent;border:none;box-shadow:none;text-align:left;white-space:normal;font-weight:inherit;color:inherit;min-height:52px;cursor:pointer}
@@ -3206,20 +3206,20 @@ body.rail-open .mnav{opacity:0;pointer-events:none}
 .kp button.op{background:var(--brand-soft);color:var(--brand-2);font-size:24px}
 .kp button.op.eq{font-size:22px}
 .kp button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ad-foot{padding:10px 12px calc(12px + var(--safe-b));background:var(--surface)}
-.ad-foot .btn{width:100%;min-height:52px;font-size:16px;border-radius:14px}
+.sh-foot{padding:10px 12px calc(12px + var(--safe-b));background:var(--surface)}
+.sh-foot .btn{width:100%;min-height:52px;font-size:16px;border-radius:14px}
 @media(min-width:821px){
   .kp{display:none}
   #m-add .modal{border-radius:22px}
 }
 @media(max-width:640px){
   #m-add .modal{max-height:calc(100dvh - var(--safe-t) - 8px);border-radius:22px 22px 0 0}
-  .ad-grab{display:block}
-  .ad-head{padding-top:8px}
-  .ad-amt .amt-wrap input{font-size:44px}
-  .ad-amt .amt-ops{display:none}
-  .ad-rows{gap:6px}
-  .ad-body{padding-bottom:6px}
+  .sh-grab{display:block}
+  .sh-head{padding-top:8px}
+  .sh-amt .amt-wrap input{font-size:44px}
+  .sh-amt .amt-ops{display:none}
+  .sh-rows{gap:6px}
+  .sh-body{padding-bottom:6px}
 }
 
 /* ---------- v22 components ---------- */
@@ -3449,8 +3449,8 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
 
 /* ---------- v22.4 · the add sheet cannot collapse: a content basis for the body, a definite height on desktop ---------- */
 #m-add .modal{display:flex;flex-direction:column;padding:0;overflow:hidden;max-height:92vh}
-#m-add .ad-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-#m-add .ad-head,#m-add .ad-foot,#m-add .kp,#m-add .ad-grab{flex:0 0 auto}
+#m-add .sh-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#m-add .sh-head,#m-add .sh-foot,#m-add .kp,#m-add .sh-grab{flex:0 0 auto}
 @media(min-width:641px){#m-add .modal{height:min(92vh,760px)}}
 
 /* ---------- Transactions: a slim search bar and a proper register on a wide screen ---------- */
@@ -3529,6 +3529,118 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
 .inv-nums div.is-edit>span::after{content:'\270e';margin-left:5px;font-size:10px;opacity:.55}
 .inv-nums b span{font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}
 .inv-nums b .unset{color:var(--txt-3);font-weight:500;font-size:13px}
+
+/* ---------- v22.6 · premium polish: same palette, finer surfaces ---------- */
+/* Sheets: deeper backdrop, layered shadow, soft filled fields */
+.modal-overlay{background:rgba(14,28,22,.46);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2)}
+.modal{position:relative;border-radius:24px;border:1px solid var(--card-brd);box-shadow:0 0 0 1px var(--border),0 46px 100px -36px rgba(19,33,26,.55),0 16px 34px -22px rgba(19,33,26,.28);padding:22px 22px 20px;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent}
+.modal::-webkit-scrollbar,.sh-body::-webkit-scrollbar{width:8px}
+.modal::-webkit-scrollbar-thumb,.sh-body::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+.modal h3{font-size:19px;letter-spacing:-.02em;margin-bottom:14px}
+.modal .np-hint{margin:-8px 0 16px;color:var(--txt-2)}
+.modal .form-group:not(.ul)>input:not([type=checkbox]):not([type=radio]):not([type=range]),.modal .form-group:not(.ul)>select,.modal .form-group:not(.ul)>textarea{background:var(--surface-2);border-color:transparent;border-radius:13px;transition:background .15s,border-color .15s,box-shadow .15s}
+.modal .form-group:not(.ul)>input:focus,.modal .form-group:not(.ul)>select:focus,.modal .form-group:not(.ul)>textarea:focus{background:var(--surface);border-color:var(--brand);box-shadow:0 0 0 4px var(--ring)}
+/* Buttons: a touch of depth, a lift on hover where there is a pointer */
+.btn{transition:transform .12s var(--ease),box-shadow .2s var(--ease),background .15s,color .15s,border-color .15s}
+.btn-primary{box-shadow:0 10px 22px -12px rgba(30,127,102,.85),inset 0 1px 0 rgba(255,255,255,.22)}
+.btn-secondary{background:var(--surface-2);border-color:var(--border)}
+@media(hover:hover){
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 14px 28px -12px rgba(30,127,102,.9),inset 0 1px 0 rgba(255,255,255,.22)}
+  .btn-secondary:hover{background:var(--surface-3);border-color:var(--border-strong)}
+  .btn:active{transform:translateY(0) scale(.985)}
+}
+/* Cards, tiles and folds: one shadow language */
+.card,.stat-card,.tile,.ccf,.hero{box-shadow:0 1px 2px rgba(19,33,26,.04),0 18px 44px -30px rgba(19,33,26,.3)}
+.card-title{letter-spacing:-.012em}
+.metric{box-shadow:inset 0 1px 0 var(--card-brd)}
+/* Chips: one active look everywhere */
+.qchip.on{background:var(--brand-soft-2);border-color:transparent;color:var(--brand-ink)}
+/* Add buttons and the toast */
+.mnav-add{box-shadow:0 12px 26px -10px rgba(30,127,102,.75),inset 0 1px 0 rgba(255,255,255,.25)}
+.tb-add{box-shadow:0 10px 22px -12px rgba(30,127,102,.85),inset 0 1px 0 rgba(255,255,255,.22)}
+.toast{border:1px solid rgba(255,255,255,.09)}
+/* The add sheet */
+#m-add .modal{border-radius:24px}
+.sh-head{padding:14px 18px 8px}
+.sh-head h3{font-size:17px;letter-spacing:-.015em}
+.sh-x{width:34px;height:34px;border-radius:50%}
+.sh-body{padding:4px 16px 14px}
+.seg-io{border-color:transparent;padding:4px}
+.seg-io button.active,.sh-kinds button.active{box-shadow:0 1px 2px rgba(19,33,26,.08)}
+.sh-amt{margin:6px 0 2px;padding:16px 10px 8px;border-radius:20px;background:radial-gradient(130% 100% at 50% 0%,var(--out-soft),transparent 72%)}
+.sh-amt.is-in{background:radial-gradient(130% 100% at 50% 0%,var(--in-soft),transparent 72%)}
+.ar{border-color:transparent;border-radius:16px;transition:box-shadow .2s var(--ease),background .2s var(--ease)}
+.ar.open{background:var(--surface);box-shadow:0 0 0 1px var(--border),0 14px 30px -22px rgba(19,33,26,.35)}
+.ar-body{border-top:1px solid var(--border)}
+.kp button{box-shadow:inset 0 -1px 0 rgba(19,33,26,.05)}
+.sh-foot .btn{border-radius:16px;letter-spacing:-.005em}
+/* On the phone every sheet rises from the bottom, like the add sheet */
+@media(max-width:640px){
+  .modal-overlay:not(.cmd-overlay){align-items:flex-end;padding:0}
+  .modal-overlay:not(.cmd-overlay) .modal{width:100%;max-width:none;border-radius:24px 24px 0 0;border-bottom:none;max-height:calc(100vh - var(--safe-t) - 12px);max-height:calc(100dvh - var(--safe-t) - 12px);padding:14px 18px calc(18px + var(--safe-b))}
+}
+
+/* ============ v23 · step up explainer, remittance rate, phone polish ============ */
+/* v23 · phone polish: every tap target at least ~36px, no label smaller than 10.5px */
+@media(max-width:640px){
+  .btn-sm{min-height:38px}
+  .btn-xs{min-height:34px}
+  .icon-btn{min-width:36px;min-height:36px}
+  .wl-mini{min-height:34px;padding-left:12px;padding-right:12px}
+  .soon-link{min-height:36px;display:inline-flex;align-items:center}
+  .range-pills button{min-height:36px}
+  .toggle{position:relative}
+  .toggle::before{content:'';position:absolute;inset:-9px -6px}
+  .leg-r{padding:6px 0}
+  .hero-k,.rd-k,.slog-yr,.sr-card,.feed-tag,.pf-chips .k,.ag-tg small,.cy-m small,.up-d small,.fl-mp .y{font-size:10.5px}
+  .feed-day>span,.card-title,.cpd-k,.cch-k,.calc-result-card .label,.tile .k,.tiles .k{font-size:11px}
+  .hero-chips small,.hero-st,th{font-size:11px}
+  .scroll-table{-webkit-overflow-scrolling:touch}
+  #page-calculator .scroll-table th,#page-calculator .scroll-table td{padding:8px 6px;white-space:nowrap}
+  .metric .k,.fl-pfig .k,.cm-l .k,.hr-fig .k,.rd-b .rd-k,.card .card-title,.stat-card .card-title,.sts-top .card-title,.alc-h .card-title{font-size:11px!important}
+  .ch-leg span,.mini-net .net,.cpd-row span,.cy-n small,.fl-mp .s,.wl-price small,.bm-caption,.nw-bk-h,.leg-r small,.pf-rates-k,.pf-mc .s,.in .n{font-size:10.5px!important}
+  .leg-r{padding:7px 0}
+}
+
+.su-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 12px 7px 13px;min-height:36px;border-radius:999px;background:var(--surface-2);color:var(--brand);border:1px solid var(--border);font-size:12.5px;font-weight:650;box-shadow:none;align-self:flex-start;width:auto}
+.su-link svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.su-link[aria-expanded="true"] svg{transform:rotate(180deg)}
+.su-panel{margin-top:12px;padding:14px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);font-size:13px;line-height:1.5;color:var(--txt-2)}
+.su-panel[hidden]{display:none}
+.su-panel p{margin:0 0 10px}
+.su-panel b{color:var(--txt);font-family:var(--num);font-weight:650}
+.su-head{font-size:14px;color:var(--txt);margin:0 0 6px;line-height:1.45}
+.su-cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 8px}
+.su-cmp>div{padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--border);min-width:0}
+.su-cmp>div.is-on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.su-cmp span{display:block;font-size:11.5px;color:var(--txt-2)}
+.su-cmp b{display:block;font-size:18px;margin:2px 0 1px;letter-spacing:-.02em}
+.su-cmp small{display:block;font-size:11.5px;color:var(--txt-3,var(--txt-2))}
+.su-add{font-size:12.5px;margin:0 0 12px}
+.su-add b{color:var(--money-in,var(--green))}
+.su-lad-h{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--txt-2);margin:0 0 6px}
+.su-lad{max-height:248px;overflow-y:auto;overscroll-behavior:contain;margin:0 -4px;padding:0 4px}
+.su-r{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:4px 0;font-size:12.5px}
+.su-r .su-y{color:var(--txt-2)}
+.su-r .su-bar{height:8px;border-radius:5px;background:var(--border);overflow:hidden}
+.su-r .su-bar i{display:block;height:100%;border-radius:5px;background:var(--brand);opacity:.75}
+.su-r .su-v{font-family:var(--num);color:var(--txt);font-weight:600;text-align:right;min-width:84px}
+.su-r.is-now .su-y,.su-r.is-now .su-v{color:var(--brand);font-weight:700}
+.sh-body #log-fx-fields .form-group>label{display:block;font-size:11.5px;font-weight:650;color:var(--txt-2);margin:0 0 5px;text-transform:none;letter-spacing:0}
+#log-fx-fields .form-group input,#log-fx-fields .form-group select{min-height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--border);padding:8px 12px;font-size:16px;font-family:var(--num);width:100%}
+#log-fx-fields .amt-wrap{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:0 0 0 12px;gap:2px;min-height:44px;align-items:center}
+#log-fx-fields .amt-wrap input{border:none;background:transparent;font-size:16px;padding:8px 12px 8px 2px;min-height:0;font-weight:600}
+#log-fx-fields .amt-wrap .rs{font-size:15px;color:var(--txt-2);opacity:1}
+#log-fx-fields .fx-land{flex:1 1 100%!important;max-width:none!important}
+.fx-calc{flex:1 1 100%;order:9;font-size:12.5px;color:var(--txt-2);padding:9px 12px;border-radius:10px;border:1px dashed var(--border-strong,var(--border));line-height:1.45}
+.fx-calc b{color:var(--txt);font-family:var(--num);font-weight:650}
+.fx-calc em{font-style:normal;color:var(--txt-2)}
+@media(max-width:640px){
+  #log-fx-fields,#ed-fx-fields,#txm-fx-fields,#ep-fx-fields{display:none;flex-direction:row!important;flex-wrap:wrap;align-items:flex-end;gap:10px}
+  #log-fx-fields .fx-cur,#ed-fx-fields .fx-cur,#txm-fx-fields .fx-cur,#ep-fx-fields .fx-cur{flex:0 0 96px!important;min-width:96px!important;max-width:96px!important}
+  #log-fx-fields .fx-sent,#ed-fx-fields .fx-sent,#txm-fx-fields .fx-sent,#ep-fx-fields .fx-sent{flex:1 1 0!important;min-width:0!important;max-width:none!important}
+  .su-cmp b{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -3872,9 +3984,10 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       <div class="card-title">Inputs</div>
       <div id="calc-sip-inputs">
         <div class="form-row"><div class="form-group ul"><label>Monthly SIP amount</label><div class="amt-wrap sm"><span class="rs">₹</span><input type="text" inputmode="decimal" id="c-sip-amt" value="43,000" oninput="calcRun()"></div></div></div>
-        <div class="form-row"><div class="form-group"><label>Annual step up (<span id="c-step-v">10</span>%)</label><input type="range" id="c-step" min="0" max="25" value="10" step="1" oninput="document.getElementById('c-step-v').textContent=this.value;calcRun()"></div></div>
+        <div class="form-row"><div class="form-group"><label>Annual step up (<span id="c-step-v">10</span>%)</label><input type="range" id="c-step" min="0" max="25" value="10" step="1" oninput="document.getElementById('c-step-v').textContent=this.value;calcRun()"><button type="button" class="su-link" id="c-step-btn" onclick="suToggle()" aria-expanded="false" aria-controls="c-step-panel"><span id="c-step-btn-t">What does a step up mean?</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></button></div></div>
         <div class="form-row"><div class="form-group"><label>Expected return (<span id="c-ret-v">12</span>% p.a.)</label><input type="range" id="c-ret" min="6" max="20" value="12" step="0.5" oninput="document.getElementById('c-ret-v').textContent=this.value;calcRun()"></div></div>
         <div class="form-row"><div class="form-group"><label>Duration (<span id="c-yr-v">15</span> years)</label><input type="range" id="c-yr" min="1" max="40" value="15" step="1" oninput="document.getElementById('c-yr-v').textContent=this.value;calcRun()"></div></div>
+        <div class="su-panel" id="c-step-panel" hidden></div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -3886,7 +3999,7 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
   <section class="ccf pgf" id="f-calc-years">
   <button type="button" class="ccf-head" onclick="pgFold(this)" aria-expanded="false"><span class="ccf-ico"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></span><span class="ccf-t"><b>Year by year</b><small>What you put in and what it could be worth, each year</small></span><span class="ccf-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg></span></button>
   <div class="ccf-wrap" inert><div class="ccf-in"><div class="ccf-pad">
-  <div class="card"><div class="card-title">Year by year</div><div class="scroll-table"><table><thead><tr><th>Year</th><th class="amount">Invested</th><th class="amount">Market value</th><th class="amount">Gain</th></tr></thead><tbody id="calc-tbl"></tbody></table></div></div>
+  <div class="card"><div class="card-title">Year by year</div><div class="scroll-table"><table><thead><tr><th>Year</th><th class="amount">Monthly SIP</th><th class="amount">Invested</th><th class="amount">Market value</th><th class="amount">Gain</th></tr></thead><tbody id="calc-tbl"></tbody></table></div></div>
   </div></div></div>
   </section>
 </div>
@@ -4033,24 +4146,24 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
 </nav>
 <!-- MODALS -->
 <div class="modal-overlay" id="m-add"><div class="modal" role="dialog" aria-label="Add transaction">
-  <div class="ad-grab" aria-hidden="true"></div>
-  <div class="ad-head"><h3 id="ad-title">Add Transaction</h3><button class="ad-x" onclick="closeAdd()" aria-label="Close">&#10005;</button></div>
-  <div class="ad-body">
-    <div class="seg-io" id="ad-io" role="group" aria-label="Money in or out"><button type="button" class="out active" onclick="adIO('out')">&minus; Outflow</button><button type="button" class="in" onclick="adIO('in')">+ Inflow</button></div>
-    <div class="ad-kinds" id="log-segment" role="group" aria-label="Kind">
+  <div class="sh-grab" aria-hidden="true"></div>
+  <div class="sh-head"><h3 id="sh-title">Add Transaction</h3><button class="sh-x" onclick="closeAdd()" aria-label="Close">&#10005;</button></div>
+  <div class="sh-body">
+    <div class="seg-io" id="sh-io" role="group" aria-label="Money in or out"><button type="button" class="out active" onclick="adIO('out')">&minus; Outflow</button><button type="button" class="in" onclick="adIO('in')">+ Inflow</button></div>
+    <div class="sh-kinds" id="log-segment" role="group" aria-label="Kind">
       <button type="button" class="active exp" data-lt="expense" onclick="setLogType('expense')">Spending</button>
       <button type="button" class="fix" data-lt="fixed" onclick="setLogType('fixed')">Fixed cost</button>
       <button type="button" class="pay" data-lt="payout" onclick="setLogType('payout')">Agency cost</button>
       <button type="button" class="inv" data-lt="investment" onclick="setLogType('investment')">Investment</button>
       <button type="button" class="inc" data-lt="income" onclick="setLogType('income')" hidden>Income</button>
     </div>
-    <div class="ad-amt" id="ad-amt">
+    <div class="sh-amt" id="sh-amt">
       <label id="log-amt-label" for="log-a" class="v22-hide">Amount</label>
       <div class="amt-wrap"><span class="rs">&#8377;</span><input type="text" id="log-a" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Amount" enterkeyhint="done" size="4"></div>
-      <div class="ad-hint" id="ad-hint">Enter amount</div>
+      <div class="sh-hint" id="sh-hint">Enter amount</div>
       <div class="amt-ops" id="log-a-ops" aria-label="Calculator keys"><span class="amt-ops-k">Add it up</span><button type="button" onclick="amtOp('log-a','+')" aria-label="Plus">+</button><button type="button" onclick="amtOp('log-a','-')" aria-label="Minus">&minus;</button><button type="button" onclick="amtOp('log-a','*')" aria-label="Times">&times;</button><button type="button" onclick="amtOp('log-a','/')" aria-label="Divide">&divide;</button><button type="button" class="eq" onclick="amtEq('log-a')" aria-label="Equals">=</button><span class="amt-eq" id="log-a-eq" hidden></span></div>
     </div>
-    <div class="ad-rows">
+    <div class="sh-rows">
       <div class="ar is-missing" id="ar-cat">
         <button type="button" class="ar-head" onclick="arToggle('ar-cat')"><span class="ar-ico"><svg viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 012-2h4l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2h-13a2 2 0 01-2-2z"/></svg></span><span class="ar-t"><span class="ar-k" id="ar-cat-k">Category</span><span class="ar-v" id="ar-cat-v">Select category&hellip;</span></span><span class="ar-chev">&rsaquo;</span></button>
         <div class="ar-body"><div id="log-cat-section" class="ql-cats"><label>Category</label><div class="chip-row" id="log-chips"></div></div></div>
@@ -4095,9 +4208,9 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       <div class="ar ar-plain" id="log-fx-row" style="display:none">
         <div class="fx-head"><div style="flex:1"><div style="font-size:13.5px;font-weight:650">Foreign remittance</div><div style="font-size:11.5px;color:var(--txt-2)" id="log-fx-out">Converts to rupees and flows into Agency and Tax</div></div><div class="toggle sm" id="log-fx-toggle" onclick="toggleLogFX()"><div class="toggle-knob"></div></div></div>
         <div class="form-row" id="log-fx-fields" style="display:none;margin:0;padding:0 14px 14px">
-          <div class="form-group" style="max-width:120px"><label>Currency</label><select id="log-fx-cur" onchange="fxRecalc()"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
-          <div class="form-group"><label>Amount abroad</label><input type="number" id="log-fx-amt" inputmode="decimal" placeholder="0" oninput="fxRecalc();paintAddRows()"></div>
-          <div class="form-group"><label>Rate your bank gave you</label><input type="number" id="log-fx-rate" inputmode="decimal" step="0.01" placeholder="0" oninput="fxRecalc();paintAddRows()"></div>
+          <div class="form-group fx-cur" style="max-width:120px"><label>Currency</label><select id="log-fx-cur" onchange="fxRecalc()"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
+          <div class="form-group fx-sent"><label>Client sent</label><input type="number" id="log-fx-amt" inputmode="decimal" placeholder="0" oninput="fxRecalc();paintAddRows()"></div>
+          <div class="form-group fx-land"><label>Landed in your bank</label><div class="amt-wrap sm"><span class="rs">₹</span><input type="text" id="log-fx-inr" inputmode="decimal" autocomplete="off" placeholder="0" oninput="fxLand('log','land');fxRecalc()"></div></div><input type="hidden" id="log-fx-rate"><div class="fx-calc" id="log-fx-calc" aria-live="polite"></div>
         </div>
       </div>
       <div class="ar" id="log-for-row" style="display:none">
@@ -4106,13 +4219,13 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       </div>
     </div>
   </div>
-  <div class="kp" id="ad-kp" aria-label="Keypad">
+  <div class="kp" id="sh-kp" aria-label="Keypad">
     <button type="button" onclick="kpKey('7')">7</button><button type="button" onclick="kpKey('8')">8</button><button type="button" onclick="kpKey('9')">9</button><button type="button" class="op" onclick="kpKey('/')">&divide;</button>
     <button type="button" onclick="kpKey('4')">4</button><button type="button" onclick="kpKey('5')">5</button><button type="button" onclick="kpKey('6')">6</button><button type="button" class="op" onclick="kpKey('*')">&times;</button>
     <button type="button" onclick="kpKey('1')">1</button><button type="button" onclick="kpKey('2')">2</button><button type="button" onclick="kpKey('3')">3</button><button type="button" class="op" onclick="kpKey('-')">&minus;</button>
     <button type="button" onclick="kpKey('.')">.</button><button type="button" onclick="kpKey('0')">0</button><button type="button" onclick="kpKey('del')" aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M9 5h11a1.5 1.5 0 011.5 1.5v11A1.5 1.5 0 0120 19H9l-6-7z"/><path d="M12 9.5l5 5M17 9.5l-5 5"/></svg></button><button type="button" class="op" onclick="kpKey('+')">+</button>
   </div>
-  <div class="ad-foot"><button class="btn btn-primary" id="log-add-btn" onclick="addLog()">Done</button></div>
+  <div class="sh-foot"><button class="btn btn-primary" id="log-add-btn" onclick="addLog()">Done</button></div>
 </div></div>
 <div class="modal-overlay" id="m-nw"><div class="modal"><h3>Update net worth</h3>
   <button type="button" class="nwm-auto" onclick="nwmToggle()" aria-controls="nw-lend-auto">
@@ -4270,9 +4383,9 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       <div class="toggle" id="ed-fx-toggle" onclick="toggleEditFX()"><div class="toggle-knob"></div></div>
     </div>
     <div class="form-row" id="ed-fx-fields" style="display:none;margin-top:12px;margin-bottom:0">
-      <div class="form-group" style="max-width:120px"><label>Currency</label><select id="ed-fx-cur"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
-      <div class="form-group"><label>Amount abroad</label><input type="number" id="ed-fx-amt" inputmode="decimal" oninput="edFxRecalc()"></div>
-      <div class="form-group"><label>Rate</label><input type="number" id="ed-fx-rate" inputmode="decimal" step="0.01" oninput="edFxRecalc()"></div>
+      <div class="form-group fx-cur" style="max-width:120px"><label>Currency</label><select id="ed-fx-cur" onchange="edFxRecalc()"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
+      <div class="form-group fx-sent"><label>Client sent</label><input type="number" id="ed-fx-amt" inputmode="decimal" placeholder="0" oninput="edFxRecalc()"></div>
+      <div class="form-group fx-land"><label>Landed in your bank</label><div class="amt-wrap sm"><span class="rs">₹</span><input type="text" id="ed-fx-inr" inputmode="decimal" autocomplete="off" placeholder="0" oninput="fxLand('ed','land');edFxRecalc()"></div></div><input type="hidden" id="ed-fx-rate"><div class="fx-calc" id="ed-fx-calc" aria-live="polite"></div>
       <div class="form-group" style="max-width:170px"><label>FIRA / FIRC</label><select id="ed-fira"><option value="">Not received yet</option><option value="yes">Received</option><option value="na">Not needed</option></select></div>
     </div>
   </div>
@@ -4311,9 +4424,9 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       <div class="toggle" id="txm-fx-toggle" onclick="toggleTxmFX()"><div class="toggle-knob"></div></div>
     </div>
     <div class="form-row" id="txm-fx-fields" style="display:none;margin-top:12px;margin-bottom:0">
-      <div class="form-group" style="max-width:120px"><label>Currency</label><select id="txm-fx-cur"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
-      <div class="form-group"><label>Amount abroad</label><input type="number" id="txm-fx-amt" inputmode="decimal" oninput="txmFxRecalc()"></div>
-      <div class="form-group"><label>Rate</label><input type="number" id="txm-fx-rate" inputmode="decimal" step="0.01" oninput="txmFxRecalc()"></div>
+      <div class="form-group fx-cur" style="max-width:120px"><label>Currency</label><select id="txm-fx-cur" onchange="txmFxRecalc()"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
+      <div class="form-group fx-sent"><label>Client sent</label><input type="number" id="txm-fx-amt" inputmode="decimal" placeholder="0" oninput="txmFxRecalc()"></div>
+      <div class="form-group fx-land"><label>Landed in your bank</label><div class="amt-wrap sm"><span class="rs">₹</span><input type="text" id="txm-fx-inr" inputmode="decimal" autocomplete="off" placeholder="0" oninput="fxLand('txm','land');txmFxRecalc()"></div></div><input type="hidden" id="txm-fx-rate"><div class="fx-calc" id="txm-fx-calc" aria-live="polite"></div>
     </div>
   </div>
   <div class="form-row" style="margin-bottom:0"><button class="btn btn-primary" onclick="txmAdd()">Add entry</button><button class="btn btn-secondary" onclick="closeM('m-txm')">Done</button></div>
@@ -4525,9 +4638,9 @@ input,select,textarea{border-radius:12px;padding:10px 12px;font-size:14.5px}
       <div class="toggle" id="ep-fx-toggle" onclick="toggleEpFX()"><div class="toggle-knob"></div></div>
     </div>
     <div class="form-row" id="ep-fx-fields" style="display:none;margin-top:12px;margin-bottom:0">
-      <div class="form-group" style="max-width:120px"><label>Currency</label><select id="ep-fx-cur"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
-      <div class="form-group"><label>Amount abroad</label><input type="number" id="ep-fx-amt" inputmode="decimal" oninput="epFxRecalc()"></div>
-      <div class="form-group"><label>Rate</label><input type="number" id="ep-fx-rate" inputmode="decimal" step="0.01" oninput="epFxRecalc()"></div>
+      <div class="form-group fx-cur" style="max-width:120px"><label>Currency</label><select id="ep-fx-cur" onchange="epFxRecalc()"><option>USD</option><option>EUR</option><option>GBP</option><option>SGD</option><option>AUD</option><option>CAD</option><option>AED</option><option>CHF</option><option>JPY</option><option>THB</option></select></div>
+      <div class="form-group fx-sent"><label>Client sent</label><input type="number" id="ep-fx-amt" inputmode="decimal" placeholder="0" oninput="epFxRecalc()"></div>
+      <div class="form-group fx-land"><label>Landed in your bank</label><div class="amt-wrap sm"><span class="rs">₹</span><input type="text" id="ep-fx-inr" inputmode="decimal" autocomplete="off" placeholder="0" oninput="fxLand('ep','land');epFxRecalc()"></div></div><input type="hidden" id="ep-fx-rate"><div class="fx-calc" id="ep-fx-calc" aria-live="polite"></div>
     </div>
   </div>
   <div class="form-row"><div class="form-group"><label>Note (optional)</label><input type="text" id="ep-note" placeholder="Invoice number, anything useful"></div></div>
@@ -12914,9 +13027,9 @@ function paintAddRows(){
   const m=document.getElementById('m-add');if(!m)return;
   const g=id=>document.getElementById(id),set=(id,v)=>{const el=g(id);if(el)el.textContent=v};
   const inc=LOG_TYPE==='income';
-  document.querySelectorAll('#ad-io button').forEach(b=>b.classList.toggle('active',b.classList.contains(inc?'in':'out')));
+  document.querySelectorAll('#sh-io button').forEach(b=>b.classList.toggle('active',b.classList.contains(inc?'in':'out')));
   const kinds=g('log-segment');if(kinds)kinds.style.display=inc?'none':'';
-  const amt=g('ad-amt');if(amt)amt.classList.toggle('is-in',inc);
+  const amt=g('sh-amt');if(amt)amt.classList.toggle('is-in',inc);
   const labels={expense:'Category',fixed:'Fixed cost',payout:'Agency expense',investment:'Investment',income:'Client or source'};
   const lab=LOG_TYPE==='expense'&&LOG_FUND?'What it was for':(labels[LOG_TYPE]||'Category');
   set('ar-cat-k',lab);set('ar-cat-v',LOG_CAT||('Select '+lab.toLowerCase()+'…'));
@@ -12934,7 +13047,7 @@ function paintAddRows(){
   const h2=g('log-for-hint2');if(h2)h2.innerHTML=LOG_FOR?'Paid ahead: ticked off on Agency for <b>'+esc(monthName(LOG_FOR))+'</b>, counted as '+esc(monthName(d.slice(0,7)).split(' ')[0])+' money everywhere else.':'An invoice paid before its month starts? Pick the month it covers.';
   const a=toP((g('log-a')||{}).value||'');
   const who=LOG_CAT?LOG_CAT:'';
-  set('ad-hint',a?(who?who+' · '+(inc?'coming in':'going out'):'Now pick a category'):'Enter amount');
+  set('sh-hint',a?(who?who+' · '+(inc?'coming in':'going out'):'Now pick a category'):'Enter amount');
   const btn=g('log-add-btn');if(btn)btn.textContent=a?('Add '+fmtP(a)):'Done';
 }
 // The keypad writes into the same amount field, so sums (150+30) still work
@@ -12954,7 +13067,7 @@ function kpKey(k){
   paintAddRows();
 }
 // After an entry is added the sheet stays open for the next one on a phone, and closes on a desktop
-{const _addLog0=addLog;addLog=function(force){const before=LB.length;_addLog0(force);if(LB.length>before){paintAddRows();if(!isPhone()&&!force)closeAdd();else{const c=document.getElementById('ar-cat');if(c){document.querySelectorAll('#m-add .ar.open').forEach(x=>x.classList.remove('open'));c.classList.add('open')}const b=document.querySelector('#m-add .ad-body');if(b)b.scrollTop=0}}}}
+{const _addLog0=addLog;addLog=function(force){const before=LB.length;_addLog0(force);if(LB.length>before){paintAddRows();if(!isPhone()&&!force)closeAdd();else{const c=document.getElementById('ar-cat');if(c){document.querySelectorAll('#m-add .ar.open').forEach(x=>x.classList.remove('open'));c.classList.add('open')}const b=document.querySelector('#m-add .sh-body');if(b)b.scrollTop=0}}}}
 {const w=(name,after)=>{const f=window[name];if(typeof f!=='function')return;window[name]=function(){const r=f.apply(this,arguments);try{after()}catch(e){}return r}};
  ['setLogType','selectChip','pickLogCard','pickLogFund','pickLogFor','setDateChip','toggleLogSplit','toggleLogFX','paintLogPayWith'].forEach(n=>w(n,paintAddRows));}
 function goLogbook(){openAdd()}
@@ -13408,6 +13521,7 @@ function layoutAudit(){
   ck('Layout: every sheet is a top-level overlay with its own panel',[...document.querySelectorAll('.modal-overlay')].filter(o=>o.parentElement!==document.body||!o.querySelector(':scope > .modal')).map(d));
   {const host=document.querySelector('.pages');
    ck('Layout: only pages sit inside the pages container',host?[...host.children].filter(c=>!c.classList.contains('page')).map(d).concat([...document.querySelectorAll('.page')].filter(p=>p.parentElement!==host).map(d)):['no pages container'])}
+  ck('Layout: no element uses a name ad blockers hide',[...document.querySelectorAll('[class^="ad-"],[class*=" ad-"],[id^="ad-"],[class^="ads-"],[id^="ads-"],[class^="adv-"],[id^="adv-"]')].map(d));
   ck('Layout: the screen does not scroll sideways',document.documentElement.scrollWidth>innerWidth+1?['wider by '+(document.documentElement.scrollWidth-innerWidth)+'px']:[]);
   return out;
 }
@@ -13433,7 +13547,7 @@ async function layoutSweep(){
       if(o.classList.contains('open'))continue;
       o.classList.add('open');await tick();
       // offset sizes, not screen position: sheets slide in, so their position is mid-animation right after opening
-      const m=o.querySelector(':scope > .modal'),sc=m&&m.querySelector('.ad-body');
+      const m=o.querySelector(':scope > .modal'),sc=m&&m.querySelector('.sh-body');
       if(!m||m.offsetHeight<60||m.offsetWidth<200)bad.push('sheet '+(o.id||'?')+': collapsed ('+(m?m.offsetWidth+'x'+m.offsetHeight:'no panel')+')');
       else if(sc&&sc.clientHeight<120)bad.push('sheet '+o.id+': its scrolling body collapsed to '+sc.clientHeight+'px');
       else if(m.offsetWidth>innerWidth+1)bad.push('sheet '+o.id+': wider than the screen ('+m.offsetWidth+'px)');
@@ -13444,6 +13558,105 @@ async function layoutSweep(){
   return bad;
 }
 
+// ============ v22.6 · SHEET GUARD ============
+// Ad blockers hide elements by generic class names on every site. The sheet's names were renamed away
+// from that list; if an extension still hides part of it, say so instead of showing an empty sheet.
+{const _oa0=openAdd;openAdd=function(t){_oa0(t);try{const m=document.getElementById('m-add'),hd=m&&m.querySelector('.sh-head'),bd=m&&m.querySelector('.sh-body');if((hd&&!hd.offsetHeight)||(bd&&!bd.offsetHeight))toast('Something is hiding this sheet','A browser extension, usually an ad blocker, is hiding parts of the page. Allow this site in it and reload.',null,null,9000)}catch(e){}}}
+
+
+// ============ v23 · SIP STEP UP, EXPLAINED ============
+// One projection rule for the calculator, its headline and the step up panel:
+// the monthly amount rises by the step up once every 12 months, money compounds monthly.
+function sipProject(amt,stepPct,retPct,yrs){
+  const rPer=(retPct||0)/100/12,rows=[];let mv=0,inv=0,cur=amt;
+  for(let k=1;k<=yrs*12;k++){if(k>1&&(k-1)%12===0)cur*=1+(stepPct||0)/100;mv=(mv+cur)*(1+rPer);inv+=cur;
+    if(k%12===0)rows.push({year:k/12,monthly:Math.round(cur),invested:Math.round(inv),mv:Math.round(mv)})}
+  return {rows,mv:Math.round(mv),invested:Math.round(inv),last:rows.length?rows[rows.length-1].monthly:Math.round(amt)};
+}
+function calcInputs(){const g=id=>document.getElementById(id);return {amt:toP(g('c-sip-amt').value),step:+g('c-step').value||0,ret:+g('c-ret').value||0,yrs:+g('c-yr').value||1}}
+let SU_OPEN=false;
+function suToggle(force){
+  SU_OPEN=typeof force==='boolean'?force:!SU_OPEN;
+  const b=document.getElementById('c-step-btn'),pn=document.getElementById('c-step-panel');
+  if(b)b.setAttribute('aria-expanded',SU_OPEN?'true':'false');
+  if(pn){pn.hidden=!SU_OPEN;if(SU_OPEN){suPaint();try{if(isPhone())setTimeout(()=>pn.scrollIntoView({block:'nearest',behavior:ccReduced()?'auto':'smooth'}),40)}catch(e){}}}
+}
+function suPaint(){
+  const g=id=>document.getElementById(id);if(!g('c-sip-amt'))return;
+  const {amt,step,ret,yrs}=calcInputs();
+  const t=g('c-step-btn-t');if(t)t.textContent=step?('What does a '+step+'% step up mean?'):'What would a step up do?';
+  const pn=g('c-step-panel');if(!pn||pn.hidden)return;
+  const w=sipProject(amt,step,ret,yrs),flat=sipProject(amt,0,ret,yrs),yw=n=>n+' '+(n===1?'year':'years');
+  if(!amt){pn.innerHTML='<p>Enter a monthly SIP amount above and this shows what the step up does to it.</p>';return}
+  if(!step){
+    const s10=sipProject(amt,10,ret,yrs);
+    pn.innerHTML=`<p class="su-head">No step up: you put in <b>${fmt(amt)}</b> every month for all ${yw(yrs)}.</p>
+      <p>A step up raises the monthly amount once a year, usually in line with a pay rise. At 10% a year, your ${fmt(amt)} would be <b>${fmt(s10.last)}</b> a month by year ${yrs}, and the end value would be <b>${fmtS(s10.mv)}</b> instead of <b>${fmtS(flat.mv)}</b>.</p>
+      <p style="margin:0">Move the step up slider to try your own figure.</p>`;
+    return;
+  }
+  const y2=w.rows[1],y3=w.rows[2],extraEnd=w.mv-flat.mv,extraIn=w.invested-flat.invested;
+  const max=Math.max(1,...w.rows.map(r=>r.monthly));
+  const lad=w.rows.map(r=>`<div class="su-r${r.year===1?' is-now':''}"><span class="su-y">Yr ${r.year}</span><span class="su-bar"><i style="width:${Math.max(4,Math.round(r.monthly/max*100))}%"></i></span><span class="su-v">${fmt(r.monthly)}</span></div>`).join('');
+  pn.innerHTML=`<p class="su-head">Your <b>${fmt(amt)}</b> a month becomes <b>${fmt(w.last)}</b> a month by year ${yrs}.</p>
+    <p>Every 12 months the monthly SIP goes up by ${step}% of what it was the year before${y2?`: year 2 is ${fmt(y2.monthly)}`:''}${y3?`, year 3 is ${fmt(y3.monthly)}`:''}${w.rows.length>3?', and so on':''}.</p>
+    <div class="su-cmp"><div><span>Without step up</span><b>${fmtS(flat.mv)}</b><small>${fmtS(flat.invested)} put in</small></div><div class="is-on"><span>With ${step}% step up</span><b>${fmtS(w.mv)}</b><small>${fmtS(w.invested)} put in</small></div></div>
+    <p class="su-add">The step up adds <b>${fmtS(extraEnd)}</b> to the end value. ${fmtS(extraIn)} of that is your own extra money, the rest is growth on it.</p>
+    <div class="su-lad-h"><span>Monthly SIP, year by year</span><span>${w.rows.length} ${w.rows.length===1?'year':'years'}</span></div>
+    <div class="su-lad">${lad}</div>`;
+}
+// The year table gets the monthly amount for each year, and the panel follows the sliders
+{const _cr23=calcRun;calcRun=function(){_cr23();try{
+  const g=id=>document.getElementById(id);if(!g('calc-tbl'))return;
+  const {amt,step,ret,yrs}=calcInputs(),w=sipProject(amt,step,ret,yrs);
+  g('calc-tbl').innerHTML=w.rows.map(d=>`<tr><td>Year ${d.year}</td><td class="amount">${fmt(d.monthly)}</td><td class="amount">${fmt(d.invested)}</td><td class="amount pos">${fmt(d.mv)}</td><td class="amount" style="color:var(--green)">${fmt(d.mv-d.invested)}</td></tr>`).join('');
+  suPaint();
+}catch(e){console.warn('step up panel',e)}}}
+heroCalc=function(){
+  const g=id=>document.getElementById(id);if(!g('c-sip-amt'))return;
+  const {amt,step,ret,yrs}=calcInputs(),w=sipProject(amt,step,ret,yrs);
+  const mv=fmtS(w.mv),inv=fmtS(w.invested),gain=fmtS(w.mv-w.invested);
+  const say=`Putting in ${M$(amt)} a month${step?', raised '+step+'% a year,':''} could grow to <b class="amt good">${esc(mv)}</b> in ${yrs} ${yrs===1?'year':'years'}.`;
+  const sub='Markets move, so treat this as a guide, not a promise.';
+  const chips=[{k:'Your money',v:esc(inv)},{k:'Growth',v:esc(gain),tone:'in'},step?{k:'Monthly by year '+yrs,v:fmt(w.last),go:'suToggle(true)'}:null,{k:'Return a year',v:ret+'%'},{k:'Years',v:String(yrs)}];
+  pgHero('h-calculator',{tone:'green',say,sub,chips,k:'Could grow to',fig:'<span>'+esc(mv)+'</span>'});
+};
+
+// ============ v23 · FOREIGN REMITTANCE: THE RATE IS WORKED OUT FOR YOU ============
+// You enter what the client sent (in their currency) and what landed in your bank in rupees.
+// The rate is landed ÷ sent. It is still saved on the entry as fxRate, so Agency, Tax and the
+// CA pack read it exactly as before. The landed field mirrors the form's own rupee amount.
+const FXF={log:{main:'log-a',on:()=>LOG_FX,out:'log-fx-out'},ed:{main:'ed-amt',on:()=>ED_FX},txm:{main:'txm-amt',on:()=>TXM_FX,out:'txm-fx-out'},ep:{main:'ep-amt',on:()=>EP.fx,out:'ep-fx-out'}};
+function fxRateTxt(r){return '₹'+r.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fxLand(px,from){
+  const c=FXF[px];if(!c)return null;const g=id=>document.getElementById(id);
+  const land=g(px+'-fx-inr'),main=g(c.main),rate=g(px+'-fx-rate'),calc=g(px+'-fx-calc'),sent=g(px+'-fx-amt');
+  if(!land||!main||!rate)return null;
+  const cur=(g(px+'-fx-cur')||{}).value||'USD';
+  if(from==='land'){try{inrField(land)}catch(e){}main.value=land.value;if(px==='log'){try{paintAddRows()}catch(e){}}}
+  else if(document.activeElement!==land){const raw=String(main.value||'').trim(),s=raw.replace(/[₹,\s]/g,'');land.value=!s?'':hasExpr(s)?raw:fmtP(toP(raw)).slice(1)}
+  const a=+(sent&&sent.value)||0,inr=toP(land.value);
+  let r=0;
+  if(a>0&&inr>0){r=inr/100/a;rate.value=String(Math.round(r*10000)/10000)}else rate.value='';
+  if(calc)calc.innerHTML=r?`Rate you got: <b>${fxRateTxt(r)}</b> per ${esc(cur)} <em>· ${esc(cur)} ${a.toLocaleString('en-IN')} became ${fmt(inr)}</em>`:a>0?'Now enter the rupees that landed, and the rate is worked out.':'Enter what the client sent and what landed in your bank. The rate is worked out for you.';
+  return r?{r,inr,a,cur}:null;
+}
+function fxStatus(px){
+  const c=FXF[px],out=c&&c.out?document.getElementById(c.out):null;
+  if(!c.on()){if(out)out.textContent=px==='log'?'Converts to rupees and flows into Agency and Tax':'Converts to rupees and counts as export of services';return}
+  const x=fxLand(px);
+  if(out)out.textContent=x?'Credits '+fmt(x.inr)+' at '+fxRateTxt(x.r)+' per '+x.cur:'Enter what was sent and what landed';
+}
+fxRecalc=function(){fxStatus('log')};
+edFxRecalc=function(){if(ED_FX)fxLand('ed')};
+txmFxRecalc=function(){fxStatus('txm')};
+epFxRecalc=function(){fxStatus('ep')};
+const FX_RECALC={log:()=>fxRecalc(),ed:()=>edFxRecalc(),txm:()=>txmFxRecalc(),ep:()=>epFxRecalc()};
+function fxWire(){Object.keys(FXF).forEach(px=>{const m=document.getElementById(FXF[px].main);if(m&&!m._fx23){m._fx23=1;m.addEventListener('input',()=>{try{if(FXF[px].on())FX_RECALC[px]()}catch(e){}})}})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fxWire);else fxWire();
+{const _oe23=openEditEntry;openEditEntry=function(id){_oe23(id);try{const l=document.getElementById('ed-fx-inr');if(l)l.value=document.getElementById('ed-amt').value;fxLand('ed')}catch(e){}}}
+{const _op23=openEarlyPay;openEarlyPay=function(id){const l=document.getElementById('ep-fx-inr');if(l)l.value='';_op23(id);try{epFxRecalc();fxLand('ep')}catch(e){}}}
+{const _ot23=openTxMonth;openTxMonth=function(mn){const l=document.getElementById('txm-fx-inr');if(l)l.value='';_ot23(mn);try{txmFxRecalc();fxLand('txm')}catch(e){}}}
 // ============ BOOT ============
 // Runs last, once every function and constant above exists.
 chartTheme();
