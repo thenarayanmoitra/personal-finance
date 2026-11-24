@@ -3,6 +3,15 @@ My Finance Tracker
 
 One file: `index.html`. Upload it to the repo to deploy.
 
+## v25 (24 Nov 2026), the red pen look
+- The whole app now follows my brand guidelines. White page, charcoal type, hairline rules, one 4px corner.
+- Eleven colours only. Red is kept for the Add button, what is late or over, and three pen marks (the underline under the main figure, the highlighter, the handwritten note).
+- Newsreader for titles and big figures, Google Sans Flex for the rest, Caveat for the note.
+- The tax pack and the monthly report export in the same style.
+- Menu items, page titles, sheet titles, form labels and buttons are in sentence case.
+- New icon. Upload `index.html` and the four `FAV` files together.
+- No change to data, storage keys, sync, sums or what any button does. Same 92 self tests.
+
 ## v21 (30 Oct 2026)
 - Sums typed straight into any amount field (150+30, 3x450, 899-10%), with calculator keys on the phone.
 - Income can be marked as being for a later month ("Paid early" on Agency, or the chips on the logbook), so an invoice cleared ahead of time ticks off the right month.
